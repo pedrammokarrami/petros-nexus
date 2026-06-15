@@ -1,13 +1,38 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Plus, Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Play, Plus, Check, Star } from 'lucide-react'
 import Badge from './Badge'
 import usePlayerStore from '../../store/usePlayerStore'
+import { searchTracks } from '../../services/jamendo'
 
 export default function HeroBanner({ items = [] }) {
+  const { t } = useTranslation()
   const [current, setCurrent] = useState(0)
-  const play = usePlayerStore((s) => s.play)
+  const [savedItems, setSavedItems] = useState(new Set())
+  const storePlay = usePlayerStore((s) => s.play)
+
+  const play = async (item) => {
+    if (item.source === 'jamendo' || item.source === 'pexels' || item.type === 'movie' || item.type === 'series') {
+      storePlay(item)
+      return
+    }
+    const nameQuery = `${item.title || item.show || ''} ${item.artist || item.host || ''}`.trim()
+    const genreQuery = item.genre || 'pop'
+    const queries = [nameQuery, genreQuery, 'pop instrumental']
+    for (let i = 0; i < queries.length; i++) {
+      try {
+        const tracks = await searchTracks(queries[i], 1)
+        if (tracks.length > 0) {
+          storePlay(tracks[0])
+          return
+        }
+      } catch {}
+    }
+    storePlay(item)
+  }
   const item = items[current]
+  const isSaved = savedItems.has(item?.id)
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % items.length)
@@ -80,7 +105,7 @@ export default function HeroBanner({ items = [] }) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <Badge variant={item.quality ? 'hd' : 'new'}>
-              {item.quality || 'جدید'}
+              {item.quality || t('mediaCard.new')}
             </Badge>
             <Badge variant="default" style={{ background: 'rgba(0,0,0,0.4)' }}>
               {item.genre}
@@ -134,26 +159,32 @@ export default function HeroBanner({ items = [] }) {
               }}
             >
               <Play size={18} fill="#fff" />
-              پخش
+              {t('hero.play')}
             </button>
             <button
+              onClick={() => {
+                const next = new Set(savedItems)
+                if (isSaved) next.delete(item.id)
+                else next.add(item.id)
+                setSavedItems(next)
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
                 padding: '12px 20px',
                 borderRadius: 30,
-                background: 'rgba(255,255,255,0.1)',
-                color: 'var(--text-primary)',
+                background: isSaved ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.1)',
+                color: '#fff',
                 fontWeight: 500,
                 fontSize: 14,
-                border: '1px solid var(--glass-border)',
+                border: isSaved ? 'none' : '1px solid var(--glass-border)',
                 cursor: 'pointer',
                 backdropFilter: 'blur(10px)'
               }}
             >
-              <Plus size={18} />
-              افزودن
+              {isSaved ? <Check size={18} /> : <Plus size={18} />}
+              {isSaved ? t('hero.added') : t('hero.add')}
             </button>
           </div>
         </motion.div>

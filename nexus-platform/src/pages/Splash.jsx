@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Music, Film } from 'lucide-react'
 import usePlayerStore from '../store/usePlayerStore'
 
@@ -20,6 +21,7 @@ const itemVariants = {
 export default function Splash() {
   const navigate = useNavigate()
   const setMode = usePlayerStore((s) => s.setMode)
+  const { t } = useTranslation()
   const [animating, setAnimating] = useState(false)
 
   const handleSelect = (mode) => {
@@ -85,7 +87,7 @@ export default function Splash() {
               marginBottom: 8
             }}
           >
-            NEXUS
+            {t('app.brand')}
           </h1>
         </motion.div>
 
@@ -99,7 +101,7 @@ export default function Splash() {
             marginBottom: 40
           }}
         >
-          Your Universe of Entertainment
+          {t('app.tagline')}
         </motion.p>
 
         <motion.div variants={itemVariants} style={{ display: 'flex', gap: 16, flexDirection: 'column', width: '100%', maxWidth: 320 }}>
@@ -124,7 +126,7 @@ export default function Splash() {
             }}
           >
             <Music size={22} />
-            ورود به دنیای صدا
+            {t('app.splashSound')}
           </motion.button>
 
           <motion.button
@@ -148,7 +150,7 @@ export default function Splash() {
             }}
           >
             <Film size={22} />
-            ورود به دنیای تصویر
+            {t('app.splashVision')}
           </motion.button>
         </motion.div>
       </motion.div>

@@ -21,6 +21,13 @@
   --header-height: 60px;
   --miniplayer-height: 80px;
   --bottomnav-height: 80px;
+
+  --card-hover-scale: 1.06;
+  --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  --card-radius: 12px;
+  --section-gap: 36px;
+  --hero-height: 55vh;
+  --hero-min-height: 380px;
 }
 
 [data-mode="sound"] {

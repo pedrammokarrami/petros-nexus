@@ -1,19 +1,21 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Home, Search, Library, User, Music, Film } from 'lucide-react'
 import usePlayerStore from '../../store/usePlayerStore'
 
 const tabs = [
-  { path: '/home', icon: Home, label: 'خانه' },
-  { path: '/search', icon: Search, label: 'جستجو' },
+  { path: '/home', icon: Home, labelKey: 'nav.home' },
+  { path: '/search', icon: Search, labelKey: 'nav.search' },
   { path: null, icon: null, label: null, isModeSwitch: true },
-  { path: '/library', icon: Library, label: 'کتابخانه' },
-  { path: '/library', icon: User, label: 'من' }
+  { path: '/library', icon: Library, labelKey: 'nav.library' },
+  { path: '/library', icon: User, labelKey: 'nav.profile' }
 ]
 
 export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
   const { mode, toggleMode } = usePlayerStore()
 
   return (
@@ -35,12 +37,16 @@ export default function BottomNav() {
         borderTop: '1px solid var(--glass-border)'
       }}
     >
-      {tabs.map((tab) => {
+      {tabs.map((tab, index) => {
         if (tab.isModeSwitch) {
           return (
             <button
-              key="mode-switch"
-              onClick={toggleMode}
+              key={`mode-switch-${index}`}
+              onClick={() => {
+                const newMode = mode === 'sound' ? 'vision' : 'sound'
+                toggleMode()
+                navigate(newMode === 'sound' ? '/sound' : '/vision')
+              }}
               style={{
                 width: 56,
                 height: 56,
@@ -67,7 +73,7 @@ export default function BottomNav() {
                 {mode === 'sound' ? <Music size={22} /> : <Film size={22} />}
               </motion.div>
               <span style={{ fontSize: 9, fontWeight: 600, opacity: 0.8 }}>
-                {mode === 'sound' ? 'صدا' : 'تصویر'}
+                {mode === 'sound' ? t('nav.sound') : t('nav.vision')}
               </span>
             </button>
           )
@@ -77,7 +83,7 @@ export default function BottomNav() {
 
         return (
           <button
-            key={tab.path}
+            key={`tab-${index}`}
             onClick={() => navigate(tab.path)}
             style={{
               width: 64,
@@ -115,7 +121,7 @@ export default function BottomNav() {
                 color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)'
               }}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </span>
           </button>
         )

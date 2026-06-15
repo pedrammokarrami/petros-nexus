@@ -7,6 +7,7 @@ import Sound from './pages/Sound'
 import Vision from './pages/Vision'
 import Search from './pages/Search'
 import Library from './pages/Library'
+import Settings from './pages/Settings'
 import AudioPlayer from './components/player/AudioPlayer'
 import VideoPlayer from './components/player/VideoPlayer'
 import usePlayerStore from './store/usePlayerStore'
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/vision" element={<Vision />} />
           <Route path="/search" element={<Search />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Route>
       </Routes>

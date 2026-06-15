@@ -1,40 +1,84 @@
 import { motion } from 'framer-motion'
-import { Play, Music, Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Play, Music, Star, Film } from 'lucide-react'
 import Badge from './Badge'
 import usePlayerStore from '../../store/usePlayerStore'
+import { searchTracks } from '../../services/jamendo'
 
-export default function MediaCard({ item, size = 'md', showProgress = false }) {
-  const play = usePlayerStore((s) => s.play)
+export default function MediaCard({ item, size = 'md', showProgress = false, onClick }) {
+  const { t } = useTranslation()
+  const storePlay = usePlayerStore((s) => s.play)
 
-  const isSound = item.type === 'music' || item.type === 'podcast'
-  const dimensions = {
-    sm: { width: 120, height: isSound ? 120 : 68 },
-    md: { width: 160, height: isSound ? 160 : 90 },
-    lg: { width: 200, height: isSound ? 200 : 113 }
+  const handlePlay = async () => {
+    if (onClick) {
+      onClick()
+      return
+    }
+    if (item.source === 'jamendo' || item.source === 'pexels' || item.type === 'movie' || item.type === 'series') {
+      storePlay(item)
+      return
+    }
+    const nameQuery = `${item.title || item.show || ''} ${item.artist || item.host || ''}`.trim()
+    const genreQuery = item.genre || 'pop'
+    const queries = [nameQuery, genreQuery, 'pop instrumental']
+    for (let i = 0; i < queries.length; i++) {
+      try {
+        const tracks = await searchTracks(queries[i], 1)
+        if (tracks.length > 0) {
+          storePlay(tracks[0])
+          return
+        }
+      } catch {}
+    }
+    storePlay(item)
   }
 
-  const dim = dimensions[size]
+  const isSound = item.type === 'music' || item.type === 'podcast'
+  const isVision = item.type === 'movie' || item.type === 'series' || item.type === 'anime'
+
+  const sizeMap = {
+    sm: { w: 140, h: isSound ? 160 : 200 },
+    md: { w: 180, h: isSound ? 200 : 260 },
+    lg: { w: 220, h: isSound ? 240 : 320 }
+  }
+
+  const dim = sizeMap[size]
   const thumb = item.cover || item.thumbnail
 
   return (
     <motion.div
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.97 }}
-      onClick={() => play(item)}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{
+        scale: 1.06,
+        transition: { type: 'spring', stiffness: 350, damping: 18 }
+      }}
+      whileTap={{ scale: 0.96 }}
+      onClick={handlePlay}
       style={{
-        width: dim.width,
+        width: dim.w,
         flexShrink: 0,
         cursor: 'pointer',
-        borderRadius: 16,
+        borderRadius: 'var(--card-radius)',
         overflow: 'hidden',
+        position: 'relative',
         background: 'var(--glass-bg)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border)',
         willChange: 'transform'
       }}
     >
-      <div style={{ position: 'relative', width: dim.width, height: dim.height }}>
+      <motion.div
+        whileHover={{
+          boxShadow: '0 12px 40px rgba(0,0,0,0.6), 0 0 20px rgba(56, 189, 248, 0.15)',
+          transition: { duration: 0.25 }
+        }}
+        style={{
+          width: dim.w,
+          height: dim.h,
+          borderRadius: 'var(--card-radius)',
+          overflow: 'hidden',
+          position: 'relative'
+        }}
+      >
         <img
           src={thumb}
           alt={item.title || item.show}
@@ -49,7 +93,7 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)'
+            background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)'
           }}
         />
         <div
@@ -58,9 +102,11 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
             top: 8,
             right: 8,
             display: 'flex',
-            gap: 4
+            gap: 4,
+            zIndex: 2
           }}
         >
+          {item.source === 'pexels' && <Badge variant="default" style={{ background: 'rgba(0,0,0,0.6)' }}>{t('mediaCard.sample')}</Badge>}
           {item.quality && <Badge variant="hd">{item.quality}</Badge>}
           {item.rating && (
             <Badge variant="default" style={{ background: 'rgba(0,0,0,0.6)' }}>
@@ -77,7 +123,8 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
               left: 0,
               right: 0,
               height: 3,
-              background: 'rgba(255,255,255,0.1)'
+              background: 'rgba(255,255,255,0.1)',
+              zIndex: 2
             }}
           >
             <div
@@ -93,9 +140,11 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
         <div
           style={{
             position: 'absolute',
-            bottom: 8,
-            left: 8,
-            right: 8
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '10px 10px 12px',
+            zIndex: 2
           }}
         >
           <div
@@ -103,17 +152,18 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              marginBottom: 2
+              marginBottom: 3
             }}
           >
             {isSound && <Music size={10} color="var(--accent-sound)" />}
+            {isVision && <Film size={10} color="var(--accent-vision)" />}
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
               {item.genre}
             </span>
           </div>
           <div
             style={{
-              fontSize: 12,
+              fontSize: isVision ? 13 : 12,
               fontWeight: 600,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -123,7 +173,7 @@ export default function MediaCard({ item, size = 'md', showProgress = false }) {
             {item.title || item.show}
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   )
 }

@@ -124,7 +124,7 @@ export const mockMovies = [
     description_fa: 'در آینده‌ای نزدیک، بشریت برای بقا به سیاره‌ای جدید سفر می‌کند.',
     quality: '4K',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+    file_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
   },
   {
     id: 'mv2',
@@ -138,7 +138,7 @@ export const mockMovies = [
     description_fa: 'داستان زندگی یک خانواده تهرانی در دهه ۶۰.',
     quality: '1080p',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+    file_url: 'https://www.w3schools.com/html/movie.mp4'
   },
   {
     id: 'mv3',
@@ -152,7 +152,7 @@ export const mockMovies = [
     description_fa: 'یک هکر جوان وارد دنیای تاریک جرایم سایبری می‌شود.',
     quality: '4K',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    file_url: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4'
   },
   {
     id: 'mv4',
@@ -166,7 +166,7 @@ export const mockMovies = [
     description_fa: 'عشق ممنوعه بین دو هنرمند در شیراز.',
     quality: '1080p',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+    file_url: 'https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_1MB.mp4'
   },
   {
     id: 'mv5',
@@ -180,7 +180,7 @@ export const mockMovies = [
     description_fa: 'یک تیم نخبه برای جلوگیری از یک حمله سایبری جهانی تشکیل می‌شود.',
     quality: '4K',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
+    file_url: 'https://samplelib.com/mp4/sample-5s.mp4'
   },
   {
     id: 'mv6',
@@ -194,7 +194,7 @@ export const mockMovies = [
     description_fa: 'یک ماجراجو برای یافتن پادشاهی افسانه‌ای به سفری خطرناک می‌رود.',
     quality: '1080p',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
+    file_url: 'https://samplelib.com/mp4/sample-10s.mp4'
   },
   {
     id: 'mv7',
@@ -208,7 +208,7 @@ export const mockMovies = [
     description_fa: 'رازهایی که در یک قطار شبانه فاش می‌شوند.',
     quality: '4K',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    file_url: 'https://samplelib.com/mp4/sample-15s.mp4'
   },
   {
     id: 'mv8',
@@ -222,7 +222,7 @@ export const mockMovies = [
     description_fa: 'مستندی درباره جنبش‌های آزادی‌خواهانه در جهان.',
     quality: '4K',
     type: 'movie',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerSunblazes.mp4'
+    file_url: 'https://samplelib.com/mp4/sample-5s.mp4'
   }
 ]
 
@@ -235,7 +235,8 @@ export const mockPodcasts = [
     duration: 2700,
     cover: 'https://picsum.photos/seed/podcast1/400/400',
     description_fa: 'بررسی معمای قتل‌های زنجیره‌ای دهه ۷۰ ایران.',
-    genre: 'True Crime'
+    genre: 'True Crime',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
   },
   {
     id: 'p2',
@@ -245,7 +246,8 @@ export const mockPodcasts = [
     duration: 2400,
     cover: 'https://picsum.photos/seed/podcast2/400/400',
     description_fa: 'تأثیر هوش مصنوعی بر بازار کار در دهه آینده.',
-    genre: 'Technology'
+    genre: 'Technology',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
   },
   {
     id: 'p3',
@@ -255,7 +257,8 @@ export const mockPodcasts = [
     duration: 3600,
     cover: 'https://picsum.photos/seed/podcast3/400/400',
     description_fa: 'مروری بر فلسفه نیچه و مفهوم ابرانسان.',
-    genre: 'Philosophy'
+    genre: 'Philosophy',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
   },
   {
     id: 'p4',
@@ -265,7 +268,8 @@ export const mockPodcasts = [
     duration: 2100,
     cover: 'https://picsum.photos/seed/podcast4/400/400',
     description_fa: 'اسرار کیهان و جدیدترین کشفیات نجومی.',
-    genre: 'Science'
+    genre: 'Science',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
   },
   {
     id: 'p5',
@@ -275,7 +279,8 @@ export const mockPodcasts = [
     duration: 1800,
     cover: 'https://picsum.photos/seed/podcast5/400/400',
     description_fa: 'بازخوانی داستان‌های کلاسیک هزار و یک شب.',
-    genre: 'Storytelling'
+    genre: 'Storytelling',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
   },
   {
     id: 'p6',
@@ -285,7 +290,8 @@ export const mockPodcasts = [
     duration: 3000,
     cover: 'https://picsum.photos/seed/podcast6/400/400',
     description_fa: 'تحلیل بازار سرمایه و پیش‌بینی روند سال آینده.',
-    genre: 'Economy'
+    genre: 'Economy',
+    file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'
   }
 ]
 
@@ -378,6 +384,72 @@ export const mockNewReleases = [
   ...mockPodcasts.slice(2, 4)
 ]
 
+export const mockRadioStations = [
+  { id: 'r1', title: 'رادیو جوان', artist: 'FM ۸۸.۰', genre: 'Pop', duration: 0, cover: 'https://picsum.photos/seed/radio1/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 'r2', title: 'رادیو فرهنگ', artist: 'FM ۹۰.۵', genre: 'Classic', duration: 0, cover: 'https://picsum.photos/seed/radio2/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 'r3', title: 'رادیو خبر', artist: 'FM ۹۲.۰', genre: 'Talk', duration: 0, cover: 'https://picsum.photos/seed/radio3/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 'r4', title: 'رادیو ورزش', artist: 'FM ۹۴.۵', genre: 'Sports', duration: 0, cover: 'https://picsum.photos/seed/radio4/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+  { id: 'r5', title: 'رادیو موسیقی', artist: 'FM ۹۶.۲', genre: 'Jazz', duration: 0, cover: 'https://picsum.photos/seed/radio5/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+  { id: 'r6', title: 'رادیو نمایش', artist: 'FM ۹۸.۰', genre: 'Drama', duration: 0, cover: 'https://picsum.photos/seed/radio6/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+  { id: 'r7', title: 'رادیو قرآن', artist: 'FM ۱۰۰.۵', genre: 'Religious', duration: 0, cover: 'https://picsum.photos/seed/radio7/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+  { id: 'r8', title: 'رادیو دانشگاه', artist: 'FM ۱۰۲.۰', genre: 'Talk', duration: 0, cover: 'https://picsum.photos/seed/radio8/400/400', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+]
+
+export const mockAudiobooks = [
+  { id: 'ab1', title: 'شازده کوچولو', artist: 'آنتوان دو سنت اگزوپری', duration: 5400, cover: 'https://picsum.photos/seed/audiobook1/400/400', genre: 'Fiction', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 'ab2', title: 'کیمیاگر', artist: 'پائولو کوئیلو', duration: 7200, cover: 'https://picsum.photos/seed/audiobook2/400/400', genre: 'Fiction', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 'ab3', title: 'قدرت عادت', artist: 'چارلز دوهیگ', duration: 8100, cover: 'https://picsum.photos/seed/audiobook3/400/400', genre: 'Self-Help', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 'ab4', title: 'انسان در جستجوی معنا', artist: 'ویکتور فرانکل', duration: 4800, cover: 'https://picsum.photos/seed/audiobook4/400/400', genre: 'Philosophy', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+  { id: 'ab5', title: 'بوف کور', artist: 'صادق هدایت', duration: 3600, cover: 'https://picsum.photos/seed/audiobook5/400/400', genre: 'Fiction', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+  { id: 'ab6', title: 'مدیریت زمان', artist: 'برایان تریسی', duration: 6300, cover: 'https://picsum.photos/seed/audiobook6/400/400', genre: 'Self-Help', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+  { id: 'ab7', title: 'چنین گفت زرتشت', artist: 'فریدریش نیچه', duration: 9600, cover: 'https://picsum.photos/seed/audiobook7/400/400', genre: 'Philosophy', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+  { id: 'ab8', title: 'داستان دو شهر', artist: 'چارلز دیکنز', duration: 10800, cover: 'https://picsum.photos/seed/audiobook8/400/400', genre: 'Classic', file_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+]
+
+export const mockDocumentaries = [
+  { id: 'd1', title: 'کیهان', title_fa: 'کیهان', year: 2024, genre: 'Science', rating: 9.0, duration: 5400, thumbnail: 'https://picsum.photos/seed/doc1/640/360', description_fa: 'سفری به اعماق کهکشان‌ها و اسرار جهان هستی.', quality: '4K', type: 'movie', file_url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+  { id: 'd2', title: 'ایران باستان', title_fa: 'ایران باستان', year: 2023, genre: 'Historical', rating: 9.3, duration: 4800, thumbnail: 'https://picsum.photos/seed/doc2/640/360', description_fa: 'مروری بر تمدن‌های کهن فلات ایران.', quality: '4K', type: 'movie', file_url: 'https://www.w3schools.com/html/movie.mp4' },
+  { id: 'd3', title: 'اقیانوس‌ها', title_fa: 'اقیانوس‌ها', year: 2024, genre: 'Nature', rating: 8.8, duration: 6000, thumbnail: 'https://picsum.photos/seed/doc3/640/360', description_fa: 'زیبایی‌های نهفته در اعماق اقیانوس‌های جهان.', quality: '4K', type: 'movie', file_url: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4' },
+  { id: 'd4', title: 'انقلاب دیجیتال', title_fa: 'انقلاب دیجیتال', year: 2024, genre: 'Technology', rating: 8.5, duration: 4200, thumbnail: 'https://picsum.photos/seed/doc4/640/360', description_fa: 'داستان تحول دیجیتال از اینترنت تا هوش مصنوعی.', quality: '1080p', type: 'movie', file_url: 'https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_1MB.mp4' },
+  { id: 'd5', title: 'حیات وحش', title_fa: 'حیات وحش', year: 2023, genre: 'Nature', rating: 9.1, duration: 5100, thumbnail: 'https://picsum.photos/seed/doc5/640/360', description_fa: 'مستندی از زندگی جانوران در زیستگاه‌های مختلف.', quality: '4K', type: 'movie', file_url: 'https://samplelib.com/mp4/sample-5s.mp4' },
+  { id: 'd6', title: 'جهان زیر میکروسکوپ', title_fa: 'جهان زیر میکروسکوپ', year: 2024, genre: 'Science', rating: 8.7, duration: 3900, thumbnail: 'https://picsum.photos/seed/doc6/640/360', description_fa: 'دنیای شگفت‌انگیز میکروارگانیسم‌ها.', quality: '4K', type: 'movie', file_url: 'https://samplelib.com/mp4/sample-10s.mp4' },
+  { id: 'd7', title: 'جاده ابریشم', title_fa: 'جاده ابریشم', year: 2023, genre: 'Historical', rating: 8.9, duration: 6600, thumbnail: 'https://picsum.photos/seed/doc7/640/360', description_fa: 'تاریخ تمدن‌های در مسیر جاده ابریشم.', quality: '4K', type: 'movie', file_url: 'https://samplelib.com/mp4/sample-15s.mp4' },
+  { id: 'd8', title: 'آینده زمین', title_fa: 'آینده زمین', year: 2024, genre: 'Science', rating: 9.2, duration: 5700, thumbnail: 'https://picsum.photos/seed/doc8/640/360', description_fa: 'تغییرات اقلیمی و آینده سیاره ما.', quality: '4K', type: 'movie', file_url: 'https://samplelib.com/mp4/sample-5s.mp4' }
+]
+
+export const mockLiveChannels = [
+  { id: 'l1', name: 'شبکه یک', currentProgram: 'اخبار شامگاهی', genre: 'News', thumbnail: 'https://picsum.photos/seed/live1/640/360', isLive: true },
+  { id: 'l2', name: 'شبکه ورزش', currentProgram: 'مسابقه زنده فوتبال', genre: 'Sports', thumbnail: 'https://picsum.photos/seed/live2/640/360', isLive: true },
+  { id: 'l3', name: 'شبکه نمایش', currentProgram: 'سریال جدید', genre: 'Entertainment', thumbnail: 'https://picsum.photos/seed/live3/640/360', isLive: true },
+  { id: 'l4', name: 'شبکه خبر', currentProgram: 'گفتگوی ویژه خبری', genre: 'News', thumbnail: 'https://picsum.photos/seed/live4/640/360', isLive: true },
+  { id: 'l5', name: 'شبکه مستند', currentProgram: 'مستند طبیعت', genre: 'Documentary', thumbnail: 'https://picsum.photos/seed/live5/640/360', isLive: true },
+  { id: 'l6', name: 'شبکه کودک', currentProgram: 'کارتون صبحگاهی', genre: 'Kids', thumbnail: 'https://picsum.photos/seed/live6/640/360', isLive: true },
+  { id: 'l7', name: 'شبکه آموزش', currentProgram: 'برنامه آموزش زبان', genre: 'Education', thumbnail: 'https://picsum.photos/seed/live7/640/360', isLive: true },
+  { id: 'l8', name: 'شبکه موسیقی', currentProgram: 'کنسرت زنده', genre: 'Music', thumbnail: 'https://picsum.photos/seed/live8/640/360', isLive: true }
+]
+
+export const mockSavedItems = [
+  { id: 'sv1', type: 'music', ...mockMusic[0] },
+  { id: 'sv2', type: 'music', ...mockMusic[2] },
+  { id: 'sv3', type: 'movie', ...mockMovies[1] },
+  { id: 'sv4', type: 'podcast', ...mockPodcasts[0] },
+  { id: 'sv5', type: 'movie', ...mockMovies[3] },
+  { id: 'sv6', type: 'music', ...mockMusic[5] },
+  { id: 'sv7', type: 'podcast', ...mockPodcasts[2] },
+  { id: 'sv8', type: 'series', ...mockSeries[1] }
+]
+
+export const mockHistory = [
+  { id: 'h1', type: 'music', ...mockMusic[3], progress: 0.8, listenedAt: '۲ ساعت پیش' },
+  { id: 'h2', type: 'podcast', ...mockPodcasts[1], progress: 0.45, listenedAt: '۵ ساعت پیش' },
+  { id: 'h3', type: 'movie', ...mockMovies[0], progress: 0.6, listenedAt: 'دیروز' },
+  { id: 'h4', type: 'music', ...mockMusic[7], progress: 1, listenedAt: 'دیروز' },
+  { id: 'h5', type: 'series', ...mockSeries[2], progress: 0.3, listenedAt: '۲ روز پیش' },
+  { id: 'h6', type: 'music', ...mockMusic[1], progress: 0.9, listenedAt: '۳ روز پیش' },
+  { id: 'h7', type: 'podcast', ...mockPodcasts[4], progress: 0.5, listenedAt: '۳ روز پیش' },
+  { id: 'h8', type: 'movie', ...mockMovies[5], progress: 0.2, listenedAt: '۴ روز پیش' }
+]
+
 export const heroFeatured = [
   {
     id: 'hero1',
@@ -390,7 +462,7 @@ export const heroFeatured = [
     quality: '4K',
     type: 'movie',
     description_fa: 'یک هکر جوان وارد دنیای تاریک جرایم سایبری می‌شود.',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    file_url: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4'
   },
   {
     id: 'hero2',
@@ -416,7 +488,7 @@ export const heroFeatured = [
     quality: '4K',
     type: 'series',
     description_fa: 'مستند تاریخی درباره امپراتوری هخامنشیان.',
-    file_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+    file_url: 'https://www.w3schools.com/html/movie.mp4'
   }
 ]
 

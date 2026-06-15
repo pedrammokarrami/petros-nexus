@@ -1,31 +1,43 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
-  Play, Pause, Maximize, Minimize, Volume2, VolumeX,
+  Play, Pause, SkipBack, SkipForward, Maximize, Minimize, Volume2, VolumeX,
   ChevronDown, Subtitles, Settings, PictureInPicture2
 } from 'lucide-react'
 import usePlayerStore from '../../store/usePlayerStore'
 
 export default function VideoPlayer() {
+  const { t } = useTranslation()
   const { currentMedia, isPlaying, progress, closePlayer, togglePlay, setProgress } = usePlayerStore()
   const [showControls, setShowControls] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [quality, setQuality] = useState('Auto')
   const [showQuality, setShowQuality] = useState(false)
+  const [showSubtitles, setShowSubtitles] = useState(false)
   const controlsTimer = useRef(null)
   const videoRef = useRef(null)
   const containerRef = useRef(null)
 
   useEffect(() => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.play().catch(() => {})
-      } else {
-        videoRef.current.pause()
-      }
+    const video = videoRef.current
+    if (!video) return
+    video.load()
+    if (isPlaying) {
+      video.play().catch(() => {})
     }
-  }, [isPlaying, currentMedia])
+  }, [currentMedia])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (isPlaying) {
+      video.play().catch(() => {})
+    } else {
+      video.pause()
+    }
+  }, [isPlaying])
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
@@ -70,6 +82,20 @@ export default function VideoPlayer() {
   const duration = videoRef.current?.duration || 0
   const currentTime = videoRef.current?.currentTime || 0
 
+  const handleSkipBack = () => {
+    if (videoRef.current) videoRef.current.currentTime -= 10
+  }
+  const handleSkipForward = () => {
+    if (videoRef.current) videoRef.current.currentTime += 10
+  }
+  const handlePiP = async () => {
+    try {
+      if (videoRef.current) await videoRef.current.requestPictureInPicture()
+    } catch (e) {
+      console.log('PiP error:', e)
+    }
+  }
+
   const qualities = ['Auto', '4K', '1080p', '720p', '480p']
 
   return (
@@ -104,7 +130,7 @@ export default function VideoPlayer() {
           src={currentMedia?.file_url}
           onTimeUpdate={handleTimeUpdate}
           onEnded={closePlayer}
-          onError={(e) => console.log('Video error:', e)}
+          onError={(e) => console.warn('Video failed to load:', e.target?.src?.slice(0, 80))}
           preload="metadata"
           style={{
             width: '100%',
@@ -208,7 +234,7 @@ export default function VideoPlayer() {
                     {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                   </button>
 
-                  <button style={{ width: 48, height: 48, display: 'grid', placeItems: 'center' }}>
+                  <button onClick={handleSkipBack} style={{ width: 48, height: 48, display: 'grid', placeItems: 'center' }}>
                     <SkipBack size={24} />
                   </button>
 
@@ -227,12 +253,12 @@ export default function VideoPlayer() {
                     {isPlaying ? <Pause size={28} fill="#fff" /> : <Play size={28} fill="#fff" />}
                   </button>
 
-                  <button style={{ width: 48, height: 48, display: 'grid', placeItems: 'center' }}>
+                  <button onClick={handleSkipForward} style={{ width: 48, height: 48, display: 'grid', placeItems: 'center' }}>
                     <SkipForward size={24} />
                   </button>
 
-                  <button style={{ width: 44, height: 44, display: 'grid', placeItems: 'center' }}>
-                    <Subtitles size={20} />
+                  <button onClick={() => setShowSubtitles(!showSubtitles)} style={{ width: 44, height: 44, display: 'grid', placeItems: 'center' }}>
+                    <Subtitles size={20} color={showSubtitles ? 'var(--accent-primary)' : '#fff'} />
                   </button>
                 </div>
 
@@ -270,6 +296,7 @@ export default function VideoPlayer() {
                     {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
                   </button>
                   <button
+                    onClick={handlePiP}
                     style={{
                       padding: '8px 16px',
                       borderRadius: 20,
@@ -316,6 +343,35 @@ export default function VideoPlayer() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {showSubtitles && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: 120,
+                      left: 0,
+                      right: 0,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      pointerEvents: 'none'
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: '8px 20px',
+                        borderRadius: 8,
+                        background: 'rgba(0,0,0,0.7)',
+                        fontSize: 15,
+                        color: '#fff',
+                        textAlign: 'center',
+                        maxWidth: '80%',
+                        direction: 'rtl'
+                      }}
+                    >
+                      {t('player.subtitleActive')}
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
