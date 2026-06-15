@@ -218,9 +218,10 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
   const expressionNamesRef = useRef([])
   const activeExpressionRef = useRef(null)
   const bonesRef = useRef({})
-  const restRotationsRef = useRef({})
+  const restRotationsRef = useRef({ captured: false })
   const currentYawRef = useRef(0)
   const activePoseRef = useRef('idle')
+  const diagFrameRef = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -261,12 +262,6 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
           rightLowerArm: vrm.humanoid?.getRawBoneNode('rightLowerArm'),
         }
         bonesRef.current = boneMap
-
-        const rests = {}
-        for (const [key, bone] of Object.entries(boneMap)) {
-          if (bone) rests[key] = { x: bone.rotation.x, y: bone.rotation.y, z: bone.rotation.z }
-        }
-        restRotationsRef.current = rests
 
         console.log('[VRM] Bones found:', Object.fromEntries(
           Object.entries(boneMap).map(([k, v]) => [k, !!v])
@@ -317,8 +312,24 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
 
     if (!vrm?.expressionManager) return
 
-    const { head, neck, spine } = bonesRef.current
+    const { head, neck, spine, leftUpperArm, rightUpperArm } = bonesRef.current
     const rest = restRotationsRef.current
+
+    // Capture rest rotations on first frame (after VRM applies initial pose)
+    if (!restRotationsRef.current.captured && bonesRef.current) {
+      const rests = {}
+      for (const [key, bone] of Object.entries(bonesRef.current)) {
+        if (bone) rests[key] = { x: bone.rotation.x, y: bone.rotation.y, z: bone.rotation.z }
+      }
+      restRotationsRef.current = { ...rests, captured: true }
+      console.log('[VRM] Rest rotations captured on frame 0:', Object.fromEntries(
+        Object.entries(rests).map(([k, v]) => [k, { x: v.x.toFixed(4), y: v.y.toFixed(4), z: v.z.toFixed(4) }])
+      ))
+    }
+
+    // Skip animation until rest rotations are captured
+    if (!restRotationsRef.current.captured) return
+
     const expressionNames = expressionNamesRef.current
 
     // --- Look target (turn toward results panel) ---
