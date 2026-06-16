@@ -16,7 +16,7 @@ async function fetchWithRetry(url, retries = 3) {
     try {
       const res = await fetch(url)
       if (res.ok) return res
-      if (res.status < 500) throw new Error(`imdbapi error: ${res.status}`)
+      if (res.status < 500 && res.status !== 429) throw new Error(`imdbapi error: ${res.status}`)
       if (i < retries - 1) await sleep(800 * (i + 1))
     } catch (e) {
       if (e.message?.startsWith('imdbapi error')) throw e
@@ -25,7 +25,7 @@ async function fetchWithRetry(url, retries = 3) {
     }
   }
   const res = await fetch(url)
-  if (!res.ok) throw new Error(`imdbapi error: ${res.status}`)
+  if (!res.ok) return null
   return res
 }
 
@@ -50,20 +50,28 @@ function parseTitle(t) {
 export async function searchTitles(query, limit = 10) {
   if (!query.trim()) return []
   const params = new URLSearchParams({ query, limit: String(limit) })
-  const res = await fetchWithRetry(`${BASE}/search/titles?${params}`)
-  const data = await res.json()
-  return (data.titles || []).slice(0, limit).map(parseTitle)
+  try {
+    const res = await fetchWithRetry(`${BASE}/search/titles?${params}`)
+    if (!res) { console.warn('[imdbapi] returning empty — API unavailable'); return [] }
+    const data = await res.json()
+    return (data.titles || []).slice(0, limit).map(parseTitle)
+  } catch {
+    console.warn('[imdbapi] searchTitles failed, returning empty')
+    return []
+  }
 }
 
 export async function getTopMovies(limit = 10) {
   try {
     const res = await fetchWithRetry(`${BASE}/titles?limit=${limit * 2}`)
-    const data = await res.json()
-    const movies = (data.titles || [])
-      .filter((t) => t.type === 'movie')
-      .slice(0, limit)
-      .map(parseTitle)
-    if (movies.length > 0) return movies
+    if (res) {
+      const data = await res.json()
+      const movies = (data.titles || [])
+        .filter((t) => t.type === 'movie')
+        .slice(0, limit)
+        .map(parseTitle)
+      if (movies.length > 0) return movies
+    }
   } catch {}
   const seen = new Set()
   const results = []
@@ -87,6 +95,7 @@ export async function getTopMovies(limit = 10) {
 async function fetchMovies(params, limit, fallbackTerms) {
   try {
     const res = await fetchWithRetry(`${BASE}/titles?${params}`)
+    if (!res) throw new Error('unavailable')
     const data = await res.json()
     const movies = (data.titles || []).filter((t) => t.type === 'movie').slice(0, limit).map(parseTitle)
     if (movies.length > 0) return movies
@@ -142,22 +151,28 @@ export async function getByCountry(countryCodes, limit = 10) {
 }
 
 export async function getTitleDetail(imdbId) {
-  const res = await fetchWithRetry(`${BASE}/titles/${imdbId}`)
-  const t = await res.json()
-  return {
-    ...parseTitle(t),
-    runtimeSeconds: t.runtimeSeconds || null,
-    directors: (t.directors || []).map((d) => ({
-      id: d.id,
-      name: d.displayName,
-      image: d.primaryImage?.url || ''
-    })),
-    cast: (t.stars || []).map((s) => ({
-      id: s.id,
-      name: s.displayName,
-      image: s.primaryImage?.url || ''
-    })),
-    metacritic: t.metacritic || null,
-    trailer: t.trailer || null
+  try {
+    const res = await fetchWithRetry(`${BASE}/titles/${imdbId}`)
+    if (!res) { console.warn('[imdbapi] getTitleDetail: API unavailable'); return null }
+    const t = await res.json()
+    return {
+      ...parseTitle(t),
+      runtimeSeconds: t.runtimeSeconds || null,
+      directors: (t.directors || []).map((d) => ({
+        id: d.id,
+        name: d.displayName,
+        image: d.primaryImage?.url || ''
+      })),
+      cast: (t.stars || []).map((s) => ({
+        id: s.id,
+        name: s.displayName,
+        image: s.primaryImage?.url || ''
+      })),
+      metacritic: t.metacritic || null,
+      trailer: t.trailer || null
+    }
+  } catch {
+    console.warn('[imdbapi] getTitleDetail failed')
+    return null
   }
 }

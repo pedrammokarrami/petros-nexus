@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { VRMLoaderPlugin } from '@pixiv/three-vrm'
 import * as THREE from 'three'
@@ -218,10 +218,8 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
   const expressionNamesRef = useRef([])
   const activeExpressionRef = useRef(null)
   const bonesRef = useRef({})
-  const restRotationsRef = useRef({ captured: false })
   const currentYawRef = useRef(0)
   const activePoseRef = useRef('idle')
-  const diagFrameRef = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -248,7 +246,6 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
         if (vrm.expressionManager) {
           const names = vrm.expressionManager.expressions.map(e => e.expressionName)
           expressionNamesRef.current = names
-          console.log('[VRM] Available expressions:', names)
         }
 
         const boneMap = {
@@ -262,10 +259,6 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
           rightLowerArm: vrm.humanoid?.getRawBoneNode('rightLowerArm'),
         }
         bonesRef.current = boneMap
-
-        console.log('[VRM] Bones found:', Object.fromEntries(
-          Object.entries(boneMap).map(([k, v]) => [k, !!v])
-        ))
 
         vrmRef.current = vrm
         groupRef.current?.add(model)
@@ -293,7 +286,6 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
           }
         })
       } catch (e) {
-        console.warn('[VRM] Cleanup error:', e)
       }
       vrmRef.current = null
       groupRef.current = null
@@ -307,50 +299,46 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
     const vrm = vrmRef.current
     if (!vrm) return
 
-    // -- Breathing --
-    groupRef.current.scale.setScalar(2.4 + Math.sin(t * 2) * 0.005)
+    // -- Static scale (no breathing) --
+    groupRef.current.scale.setScalar(2.4)
 
     if (!vrm?.expressionManager) return
 
-    const { head, neck, spine, leftUpperArm, rightUpperArm } = bonesRef.current
-    const rest = restRotationsRef.current
+    const { head, neck, spine, hips, leftUpperArm, rightUpperArm } = bonesRef.current
 
-    // Capture rest rotations on first frame (after VRM applies initial pose)
-    if (!restRotationsRef.current.captured && bonesRef.current) {
-      const rests = {}
-      for (const [key, bone] of Object.entries(bonesRef.current)) {
-        if (bone) rests[key] = { x: bone.rotation.x, y: bone.rotation.y, z: bone.rotation.z }
-      }
-      restRotationsRef.current = { ...rests, captured: true }
-      console.log('[VRM] Rest rotations captured on frame 0:', Object.fromEntries(
-        Object.entries(rests).map(([k, v]) => [k, { x: v.x.toFixed(4), y: v.y.toFixed(4), z: v.z.toFixed(4) }])
-      ))
+    // --- Hardcoded arm rest poses (natural, not T-pose) ---
+    if (leftUpperArm) {
+      leftUpperArm.rotation.z = 0.1413
+      leftUpperArm.rotation.x = 0
+      leftUpperArm.rotation.y = 0
     }
-
-    // Skip animation until rest rotations are captured
-    if (!restRotationsRef.current.captured) return
+    if (rightUpperArm) {
+      rightUpperArm.rotation.z = -0.1413
+      rightUpperArm.rotation.x = 0
+      rightUpperArm.rotation.y = 0
+    }
 
     const expressionNames = expressionNamesRef.current
 
-    // --- Look target (turn toward results panel) ---
-    const lt = lookTargetRef?.current
-    const desiredYaw = (lt && performance.now() < lt.until) ? (lt.yaw || 0) : 0
-    currentYawRef.current += (desiredYaw - currentYawRef.current) * Math.min(1, delta * 4)
-
-    // --- Idle head motion (always on, additive from rest) ---
-    if (head && rest.head) {
-      head.rotation.x = rest.head.x + Math.sin(t * 0.5) * 8 * DEG
-      head.rotation.z = rest.head.z + Math.sin(t * 0.3 + 1.5) * 6 * DEG
-      head.rotation.y = rest.head.y + currentYawRef.current
+    // --- Static rest pose (no animation offsets) ---
+    if (head) {
+      head.rotation.x = 0
+      head.rotation.z = 0
+      head.rotation.y = 0
     }
-    if (neck && rest.neck) {
-      neck.rotation.x = rest.neck.x + Math.sin(t * 0.4 + 0.8) * 3 * DEG
-      neck.rotation.z = rest.neck.z + Math.sin(t * 0.25 + 2.0) * 2 * DEG
-      neck.rotation.y = rest.neck.y + currentYawRef.current * 0.6
+    if (neck) {
+      neck.rotation.x = 0
+      neck.rotation.z = 0
+      neck.rotation.y = 0
     }
-    if (spine && rest.spine) {
-      spine.rotation.x = rest.spine.x + Math.sin(t * 0.35 + 1.2) * 2 * DEG
-      spine.rotation.y = rest.spine.y + currentYawRef.current * 0.3
+    if (spine) {
+      spine.rotation.x = 0
+      spine.rotation.y = 0
+    }
+    if (hips) {
+      hips.rotation.x = 0
+      hips.rotation.y = 0
+      hips.rotation.z = 0
     }
 
     // --- Timed expression reaction ---
@@ -382,17 +370,11 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
           const next = available[Math.floor(Math.random() * available.length)]
           vrm.expressionManager.setValue(next, 0.6 + Math.random() * 0.4)
           ls.currentViseme = next
-        }
-        ls.lastSwitchTime = now
-        ls.nextInterval = 80 + Math.random() * 70
       }
-
-      // Speaking head overlay (additive from current)
-      if (head) {
-        head.rotation.x += Math.sin(t * 0.9 + 0.5) * 5 * DEG
-        head.rotation.z += Math.sin(t * 0.6 + 2.0) * 4 * DEG
-      }
-    } else {
+      ls.lastSwitchTime = now
+      ls.nextInterval = 80 + Math.random() * 70
+    }
+  } else {
       activePoseRef.current = 'idle'
       const ls = lipSyncRef.current
       if (ls.currentViseme) {
@@ -422,7 +404,8 @@ function VrmModel({ isSpeakingRef, expressionRef, lookTargetRef }) {
 // ========================
 // MAIN EXPORT
 // ========================
-export default function VrmAvatarScene({ isSpeakingRef, expressionRef, mode = 'video', lookTargetRef }) {
+export default function VrmAvatarScene({ isSpeakingRef, expressionRef, mode = 'video', lookTargetRef, onModeToggle, onSendMessage }) {
+  const [inputValue, setInputValue] = useState('')
   const bgStyle = useMemo(() => ({
     position: 'relative',
     height: '100%',
@@ -478,7 +461,6 @@ export default function VrmAvatarScene({ isSpeakingRef, expressionRef, mode = 'v
             expressionRef={expressionRef}
             lookTargetRef={lookTargetRef}
           />
-          <OrbitControls enablePan={false} enableZoom={true} minDistance={2.5} maxDistance={6} makeDefault />
         </Canvas>
       </div>
 
@@ -504,6 +486,106 @@ export default function VrmAvatarScene({ isSpeakingRef, expressionRef, mode = 'v
         }}
       >
         VRM Avatar
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          right: 16,
+          top: 16,
+          zIndex: 100,
+          display: 'flex',
+          gap: 6,
+        }}
+      >
+        {['audio', 'video'].map((m) => (
+          <button
+            key={m}
+            onClick={() => onModeToggle?.(m)}
+            style={{
+              padding: '6px 14px',
+              borderRadius: 999,
+              border: '1px solid rgba(255,255,255,0.15)',
+              background: mode === m ? 'rgba(124,58,237,0.6)' : 'rgba(0,0,0,0.35)',
+              color: 'rgba(255,255,255,0.9)',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {m === 'audio' ? 'صوتی' : 'تصویری'}
+          </button>
+        ))}
+      </div>
+
+      <div
+        style={{
+          position: 'fixed',
+          left: '50%',
+          bottom: 70,
+          transform: 'translateX(-50%)',
+          zIndex: 100,
+          width: 'calc(100% - 32px)',
+          maxWidth: 680,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 10,
+            background: 'rgba(15, 15, 35, 0.75)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 16,
+            padding: '8px 12px',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          }}
+        >
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && inputValue.trim() && onSendMessage?.(inputValue.trim()) && setInputValue('')}
+            placeholder="پیام خود را بنویسید..."
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              color: '#fff',
+              fontSize: 15,
+              fontFamily: 'inherit',
+              '&::placeholder': { color: 'rgba(255,255,255,0.4)' },
+            }}
+          />
+          <button
+            onClick={() => inputValue.trim() && onSendMessage?.(inputValue.trim()) && setInputValue('')}
+            disabled={!inputValue.trim()}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              border: 'none',
+              background: inputValue.trim() ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'rgba(255,255,255,0.1)',
+              color: '#fff',
+              cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              opacity: inputValue.trim() ? 1 : 0.5,
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   )
