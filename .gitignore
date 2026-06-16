@@ -1,1 +1,3 @@
 nexus-platform/.env
+nexus-platform/node_modules
+nexus-platform/dist
