@@ -1,0 +1,94 @@
+/* ============================================================
+   AUDIOVIDO · TYPOGRAPHY
+   Three families:
+     · Display — Unbounded. Marquee/neon. Club names, hero labels.
+     · Body    — Space Grotesk. Messages, UI labels.
+     · Mono    — Space Mono. Stats, timestamps, ambient metadata.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
+
+:root {
+  /* — Families ————————————————————————————————————————————— */
+  --font-display: "Unbounded", "Bebas Neue", system-ui, sans-serif;
+  --font-body: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Space Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* — Weights ——————————————————————————————————————————————— */
+  --fw-regular: 400; /* @kind font */
+  --fw-medium: 500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold: 700; /* @kind font */
+  --fw-black: 800; /* @kind font */
+
+  /* — Size scale (px → rem at 16px root) ——————————————————— */
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-32: 2rem;
+  --fs-40: 2.5rem;
+  --fs-56: 3.5rem;
+  --fs-72: 4.5rem;
+
+  /* — Line heights ————————————————————————————————————————— */
+  --lh-tight: 1.05; /* @kind font */
+  --lh-snug: 1.2; /* @kind font */
+  --lh-normal: 1.45; /* @kind font */
+  --lh-relaxed: 1.6; /* @kind font */
+
+  /* — Letter spacing —————————————————————————————————————— */
+  --ls-tight: -0.02em; /* @kind font */
+  --ls-normal: 0; /* @kind font */
+  --ls-wide: 0.08em; /* @kind font */
+  --ls-marquee: 0.18em; /* @kind font */    /* SMALL CAPS LABELS */
+
+  /* — Semantic roles ———————————————————————————————————————— */
+  --text-marquee-font: var(--font-display); /* @kind font */
+  --text-marquee-size: var(--fs-72); /* @kind font */
+  --text-marquee-weight: var(--fw-black); /* @kind font */
+  --text-marquee-lh: var(--lh-tight); /* @kind font */
+  --text-marquee-ls: var(--ls-tight); /* @kind font */
+
+  --text-club-name-font: var(--font-display); /* @kind font */
+  --text-club-name-size: var(--fs-40); /* @kind font */
+  --text-club-name-weight: var(--fw-bold); /* @kind font */
+
+  --text-heading-font: var(--font-display); /* @kind font */
+  --text-heading-size: var(--fs-24); /* @kind font */
+  --text-heading-weight: var(--fw-semibold); /* @kind font */
+
+  --text-body-font: var(--font-body); /* @kind font */
+  --text-body-size: var(--fs-16); /* @kind font */
+  --text-body-weight: var(--fw-regular); /* @kind font */
+  --text-body-lh: var(--lh-relaxed); /* @kind font */
+
+  --text-message-font: var(--font-body); /* @kind font */
+  --text-message-size: var(--fs-18); /* @kind font */ /* messages are slightly oversize */
+  --text-message-weight: var(--fw-regular); /* @kind font */
+  --text-message-lh: var(--lh-relaxed); /* @kind font */
+
+  --text-label-font: var(--font-mono); /* @kind font */
+  --text-label-size: var(--fs-12); /* @kind font */
+  --text-label-weight: var(--fw-regular); /* @kind font */
+  --text-label-ls: var(--ls-marquee); /* @kind font */
+  --text-label-transform: uppercase; /* @kind font */
+
+  --text-stat-font: var(--font-mono); /* @kind font */
+  --text-stat-size: var(--fs-14); /* @kind font */
+  --text-stat-weight: var(--fw-bold); /* @kind font */
+}
+
+/* — Base reset for typography ————————————————————————————— */
+html, body {
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: var(--lh-normal);
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

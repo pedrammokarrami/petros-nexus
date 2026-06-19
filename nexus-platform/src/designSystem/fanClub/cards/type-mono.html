@@ -1,0 +1,27 @@
+<!-- @dsCard group="Type" viewport="700x180" name="Mono · Space Mono" subtitle="Ambient labels, stats, timestamps. Always uppercase." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 28px; color: var(--text-dim); }
+  .row { display: flex; gap: 32px; align-items: flex-end; margin-bottom: 16px; }
+  .item { display: flex; flex-direction: column; gap: 4px; }
+  .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+  .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+  .stat { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--text-hi); }
+  .big { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--cyan-400); text-shadow: 0 0 16px var(--cyan-400); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="lbl">Label 12px</div><div class="label">CLUB · OPEN MIC</div></div>
+    <div class="item"><div class="lbl">Stat 14px</div><div class="stat">47 VIBING</div></div>
+    <div class="item"><div class="lbl">Counter 28px</div><div class="big">12:47</div></div>
+  </div>
+  <div class="row">
+    <div class="item"><div class="lbl">Timestamp</div><div class="label" style="color:var(--text-muted)">2 MIN AGO</div></div>
+    <div class="item"><div class="lbl">Trending</div><div class="label" style="color:var(--text-hi)">#NIGHTSHIFT</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,651 @@
+.fan-club-page {
+  min-height: 100%;
+  background: linear-gradient(180deg, #08080f 0%, #0f1118 100%);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  position: relative;
+}
+
+.fan-club-layout {
+  display: flex;
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 20px 24px;
+  min-height: 100%;
+}
+
+.fan-club-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.fan-club-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.fan-club-stage .tv-screen {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  border: 8px solid #1a1a1a;
+  box-shadow: 0 0 40px rgba(0, 245, 212, 0.3);
+  background: #000;
+  overflow: hidden;
+  position: relative;
+}
+
+.fan-club-stage .tv-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fan-club-stage .tv-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00f5d4;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.fan-club-stage .tv-content h2 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+
+.fan-club-stage .mood-meter {
+  width: 200px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 30px;
+  border: 2px solid rgba(0, 245, 212, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  flex-shrink: 0;
+}
+
+.fan-club-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 245, 212, 0.2) transparent;
+}
+
+.fan-club-chat::-webkit-scrollbar {
+  width: 4px;
+}
+
+.fan-club-chat::-webkit-scrollbar-thumb {
+  background: rgba(0, 245, 212, 0.2);
+  border-radius: 2px;
+}
+
+.fan-club-chat .floating-message {
+  background: rgba(0, 245, 212, 0.08);
+  border: 1px solid rgba(0, 245, 212, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: msgSlideIn 0.3s ease;
+}
+
+@keyframes msgSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fan-club-chat .floating-message.ai {
+  background: rgba(247, 37, 133, 0.1);
+  border-color: rgba(247, 37, 133, 0.3);
+  font-weight: 600;
+}
+
+.fan-club-chat .message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(0, 245, 212, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.fan-club-chat .message-content {
+  flex: 1;
+}
+
+.fan-club-chat .message-author {
+  font-weight: 700;
+  font-size: 12px;
+  color: #00f5d4;
+  margin-bottom: 2px;
+}
+
+.fan-club-chat .message-text {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.3;
+}
+
+.fan-club-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fan-club-actions .physical-button {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 245, 212, 0.5);
+  background: rgba(0, 245, 212, 0.08);
+  color: #00f5d4;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fan-club-actions .physical-button:hover {
+  border-color: #00f5d4;
+  background: rgba(0, 245, 212, 0.18);
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.35);
+  transform: scale(1.08);
+}
+
+.fan-club-composer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fan-club-composer .message-input {
+  flex: 1;
+  padding: 12px 16px;
+  background: rgba(8, 8, 15, 0.8);
+  border: 1px solid rgba(0, 245, 212, 0.35);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.fan-club-composer .message-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.fan-club-composer .message-input:focus {
+  outline: none;
+  border-color: #00f5d4;
+  background: rgba(8, 8, 15, 0.95);
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.15);
+}
+
+.fan-club-composer .btn-send {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #00f5d4, #0084ff);
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.fan-club-composer .btn-send:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(0, 245, 212, 0.35);
+}
+
+.fan-club-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fan-club-sidebar .member-stat-card {
+  background: rgba(20, 10, 30, 0.4);
+  border: 1px solid rgba(0, 245, 212, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.fan-club-sidebar .member-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(0, 245, 212, 0.6);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.fan-club-sidebar .member-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.fan-club-sidebar .member-stat-value.mood {
+  font-size: 14px;
+  color: #00f5d4;
+}
+
+.fan-club-sidebar .member-stat-value.name {
+  font-size: 13px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.fan-club-sidebar-toggle {
+  display: none;
+}
+
+/* modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+}
+
+.drink-menu,
+.emoji-picker {
+  background: #0f1118;
+  border: 1px solid rgba(0, 245, 212, 0.25);
+  border-radius: 20px;
+  padding: 24px;
+  min-width: 280px;
+  max-width: 90vw;
+  position: relative;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.drink-menu-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.drink-menu-sub {
+  font-size: 12px;
+  color: rgba(0, 245, 212, 0.6);
+  margin-bottom: 20px;
+}
+
+.drink-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drink-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  text-align: left;
+}
+
+.drink-item:hover {
+  background: rgba(0, 245, 212, 0.1);
+  border-color: rgba(0, 245, 212, 0.3);
+}
+
+.drink-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.drink-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.drink-order {
+  font-size: 12px;
+  color: #00f5d4;
+  font-weight: 600;
+}
+
+.drink-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.drink-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.emoji-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px;
+}
+
+.emoji-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-btn:hover {
+  background: rgba(0, 245, 212, 0.12);
+  border-color: rgba(0, 245, 212, 0.3);
+  transform: scale(1.1);
+}
+
+/* burst particles */
+.burst-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.burst-particle {
+  position: absolute;
+  font-size: 20px;
+  animation: burstFly 0.8s ease-out forwards;
+  animation-delay: var(--delay);
+}
+
+@keyframes burstFly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.3);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .fan-club-actions .physical-button:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .fan-club-composer .btn-send:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .fan-club-sidebar {
+    width: 200px;
+  }
+
+  .fan-club-stage .tv-content h2 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fan-club-layout {
+    flex-direction: column;
+    padding: 56px 16px 16px;
+    gap: 20px;
+  }
+
+  .fan-club-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .fan-club-sidebar .member-stat-card {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px;
+  }
+
+  .fan-club-sidebar .member-stat-value {
+    font-size: 20px;
+  }
+
+  .fan-club-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    margin-bottom: 4px;
+  }
+
+  .fan-club-sidebar.collapsed .member-stat-card {
+    display: none;
+  }
+
+  .fan-club-stage .tv-content h2 {
+    font-size: 24px;
+  }
+
+  .fan-club-stage .tv-screen {
+    border-width: 6px;
+    border-radius: 14px;
+  }
+
+  .fan-club-stage .mood-meter {
+    width: 160px;
+    height: 48px;
+    padding: 8px 14px;
+  }
+
+  .fan-club-chat {
+    max-height: 240px;
+  }
+
+  .fan-club-chat .floating-message {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .fan-club-actions {
+    gap: 10px;
+  }
+
+  .fan-club-actions .physical-button {
+    width: 56px;
+    height: 56px;
+    font-size: 18px;
+  }
+
+  .fan-club-composer .message-input {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .fan-club-layout {
+    padding: 52px 12px 12px;
+    gap: 16px;
+  }
+
+  .fan-club-stage .tv-content h2 {
+    font-size: 18px;
+  }
+
+  .fan-club-stage .tv-screen {
+    border-width: 4px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+  }
+
+  .fan-club-stage .mood-meter {
+    width: 140px;
+    height: 40px;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+
+  .fan-club-chat {
+    max-height: 180px;
+  }
+
+  .fan-club-chat .floating-message {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .fan-club-chat .message-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+  }
+
+  .fan-club-actions {
+    gap: 8px;
+  }
+
+  .fan-club-actions .physical-button {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .fan-club-composer {
+    gap: 8px;
+  }
+
+  .fan-club-composer .message-input {
+    font-size: 12px;
+    padding: 10px 12px;
+    min-height: 40px;
+  }
+
+  .fan-club-composer .btn-send {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fan-club-sidebar .member-stat-card {
+    padding: 10px;
+    min-width: 80px;
+  }
+
+  .fan-club-sidebar .member-stat-value {
+    font-size: 18px;
+  }
+}

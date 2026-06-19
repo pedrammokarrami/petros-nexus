@@ -1,0 +1,29 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Club scopes" subtitle="Each room rebinds --accent and the mood gradient." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 20px; font-family: var(--font-mono); color: var(--text-dim); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .room { aspect-ratio: 1.2 / 1; border-radius: 14px; padding: 14px; position: relative; overflow: hidden;
+          display: flex; flex-direction: column; justify-content: space-between;
+          background: var(--mood-gradient);
+          border: 1px solid var(--border-faint); }
+  .room::after { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(60% 50% at 50% 100%, color-mix(in oklab, var(--accent) 50%, transparent), transparent 70%);
+    pointer-events: none; }
+  .room .name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-hi); letter-spacing: -0.01em; position: relative; z-index: 1; }
+  .room .accent { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
+  .room .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="room"><div class="name">Default</div><div class="accent"><div class="dot"></div>cyan</div></div>
+    <div class="room club-music"><div class="name">Music</div><div class="accent"><div class="dot"></div>cyan</div></div>
+    <div class="room club-cinema"><div class="name">Cinema</div><div class="accent"><div class="dot"></div>coral</div></div>
+    <div class="room club-rock"><div class="name">Rock</div><div class="accent"><div class="dot"></div>amber</div></div>
+  </div>
+</body>
+</html>

@@ -5,7 +5,7 @@ import BottomNav from './BottomNav'
 import MiniPlayer from './MiniPlayer'
 import usePlayerStore from '../../store/usePlayerStore'
 
-const navPaths = ['/home', '/sound', '/vision', '/search', '/library']
+const navPaths = ['/home', '/sound', '/vision', '/search', '/library', '/profile']
 
 export default function AppShell() {
   const location = useLocation()

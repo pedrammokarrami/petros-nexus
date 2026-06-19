@@ -1,0 +1,38 @@
+<!-- @dsCard group="Spacing" viewport="700x200" name="Glow shadows" subtitle="Depth + halo. Pair shadow-md with glow-md on active surfaces." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 32px; font-family: var(--font-mono); color: var(--text-dim); }
+  .row { display: flex; gap: 24px; align-items: center; justify-content: center; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .box { width: 88px; height: 88px; background: var(--bg-surface-raised); border-radius: 14px; border: 1px solid var(--border-soft); }
+  .lbl { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col">
+      <div class="box" style="box-shadow: var(--shadow-sm)"></div>
+      <div class="lbl">shadow-sm</div>
+    </div>
+    <div class="col">
+      <div class="box" style="box-shadow: var(--shadow-md)"></div>
+      <div class="lbl">shadow-md</div>
+    </div>
+    <div class="col">
+      <div class="box" style="box-shadow: var(--shadow-lg)"></div>
+      <div class="lbl">shadow-lg</div>
+    </div>
+    <div class="col">
+      <div class="box" style="box-shadow: 0 0 24px #00f5d4, 0 0 56px rgba(0,245,212,0.4)"></div>
+      <div class="lbl">glow · cyan</div>
+    </div>
+    <div class="col">
+      <div class="box" style="box-shadow: 0 0 24px #f72585, 0 0 56px rgba(247,37,133,0.4)"></div>
+      <div class="lbl">glow · coral</div>
+    </div>
+  </div>
+</body>
+</html>

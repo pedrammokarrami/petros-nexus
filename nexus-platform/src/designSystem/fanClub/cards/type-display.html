@@ -1,0 +1,24 @@
+<!-- @dsCard group="Type" viewport="700x260" name="Display · Unbounded" subtitle="Marquee headers, club names, hero labels." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 28px; color: var(--text-hi); }
+  .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .marquee { font-family: var(--font-display); font-weight: 800; font-size: 72px; line-height: 1; letter-spacing: -0.02em;
+             background: linear-gradient(180deg, #f5f4ff 0%, #9a96b8 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+             text-shadow: 0 0 32px rgba(247, 37, 133, 0.3); }
+  .club { font-family: var(--font-display); font-weight: 700; font-size: 40px; line-height: 1.05; color: var(--text-hi); margin-top: 24px; letter-spacing: -0.01em; }
+  .heading { font-family: var(--font-display); font-weight: 600; font-size: 24px; color: var(--text-hi); margin-top: 16px; }
+</style>
+</head>
+<body>
+  <div class="lbl">Marquee · 72/800</div>
+  <div class="marquee">NEON BAR</div>
+  <div class="lbl">Club name · 40/700</div>
+  <div class="club">The Velvet Reel</div>
+  <div class="lbl">Heading · 24/600</div>
+  <div class="heading">Now playing in the club</div>
+</body>
+</html>

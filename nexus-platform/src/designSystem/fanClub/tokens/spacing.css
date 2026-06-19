@@ -1,0 +1,45 @@
+/* ============================================================
+   AUDIOVIDO · SPACING, RADII, Z-INDEX
+   4-based scale. The club has room to breathe.
+   ============================================================ */
+
+:root {
+  /* — Spacing scale ———————————————————————————————————————— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 96px;
+  --space-12: 128px;
+
+  /* — Semantic spacing aliases ————————————————————————————— */
+  --gutter-tight: var(--space-3);
+  --gutter: var(--space-4);
+  --gutter-loose: var(--space-6);
+  --section-y: var(--space-9);
+  --page-pad: var(--space-7);
+
+  /* — Border radius ———————————————————————————————————————— */
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 10px;          /* default cards */
+  --radius-lg: 16px;          /* large surfaces */
+  --radius-xl: 24px;          /* hero containers */
+  --radius-tv: 28px;          /* CRT screen outer */
+  --radius-tv-inner: 22px;    /* CRT screen glass */
+  --radius-pill: 999px;
+
+  /* — Z-index layers ——————————————————————————————————————— */
+  --z-base: 0; /* @kind other */
+  --z-stage: 10; /* @kind other */            /* the TV */
+  --z-floor: 20; /* @kind other */            /* chat / messages */
+  --z-overlay: 100; /* @kind other */         /* mood meter, side panels */
+  --z-modal: 1000; /* @kind other */
+  --z-toast: 1200; /* @kind other */
+}

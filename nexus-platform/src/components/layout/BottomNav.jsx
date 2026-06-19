@@ -9,7 +9,7 @@ const tabs = [
   { path: '/search', icon: Search, labelKey: 'nav.search' },
   { path: null, icon: null, label: null, isModeSwitch: true },
   { path: '/library', icon: Library, labelKey: 'nav.library' },
-  { path: '/library', icon: User, labelKey: 'nav.profile' }
+  { path: '/profile', icon: User, labelKey: 'nav.profile' }
 ]
 
 export default function BottomNav() {

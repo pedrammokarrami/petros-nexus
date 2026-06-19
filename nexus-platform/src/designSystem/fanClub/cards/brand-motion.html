@@ -1,0 +1,45 @@
+<!-- @dsCard group="Brand" viewport="700x220" name="Motion principles" subtitle="The club breathes. Mood shifts are 2.4s, hovers are 160ms." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 24px; font-family: var(--font-mono); color: var(--text-dim); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tile { background: var(--bg-surface); border: 1px solid var(--border-faint); border-radius: 14px; padding: 16px; height: 150px;
+          display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+  .lbl { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
+  .name { color: var(--text-hi); font-size: 14px; font-weight: 700; letter-spacing: 0.05em; }
+  .stage { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .dot { width: 28px; height: 28px; border-radius: 50%; background: var(--cyan-400);
+         box-shadow: 0 0 24px var(--cyan-400);
+         animation: av-pulse-glow 2.4s var(--ease-velvet) infinite; }
+  .glow { width: 80px; height: 30px; border-radius: 999px; background: var(--coral-400);
+          box-shadow: 0 0 24px var(--coral-400), 0 0 56px var(--coral-400);
+          animation: av-breathe 6s var(--ease-velvet) infinite; }
+  .grad { width: 100%; height: 40px; border-radius: 999px;
+          background: linear-gradient(90deg, #3a86ff, #b5179e, #f72585);
+          background-size: 200% 100%;
+          animation: av-marquee 5s linear infinite; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="tile">
+      <div class="lbl">Hover · 160ms</div>
+      <div class="stage"><div class="dot"></div></div>
+      <div class="name">pulse-glow</div>
+    </div>
+    <div class="tile">
+      <div class="lbl">Ambient · 6s</div>
+      <div class="stage"><div class="glow"></div></div>
+      <div class="name">breathe</div>
+    </div>
+    <div class="tile">
+      <div class="lbl">Mood shift · 2.4s</div>
+      <div class="stage"><div class="grad"></div></div>
+      <div class="name">marquee</div>
+    </div>
+  </div>
+</body>
+</html>

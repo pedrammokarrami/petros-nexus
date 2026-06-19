@@ -1,0 +1,9 @@
+/* Audiovido Fan Club — design-system entry point.
+   Consumers link this single file. Order matters:
+   typography first to register @font-face, then tokens. */
+
+@import url("./tokens/typography.css");
+@import url("./tokens/colors.css");
+@import url("./tokens/spacing.css");
+@import url("./tokens/effects.css");
+@import url("./tokens/motion.css");

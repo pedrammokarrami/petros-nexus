@@ -1,0 +1,53 @@
+<!-- @dsCard group="Colors" viewport="700x220" name="Accents · Music & Cinema" subtitle="Two club personalities. Always glow." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 24px; font-family: var(--font-mono); color: var(--text-dim); }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: var(--bg-surface); border-radius: 14px; padding: 18px; border: 1px solid var(--border-faint); }
+  .label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .chip-row { display: flex; gap: 10px; align-items: center; }
+  .chip { width: 56px; height: 56px; border-radius: 50%; }
+  .chip.music { background: #00f5d4; box-shadow: 0 0 24px rgba(0,245,212,0.55), 0 0 56px rgba(0,245,212,0.25); }
+  .chip.cinema { background: #f72585; box-shadow: 0 0 24px rgba(247,37,133,0.55), 0 0 56px rgba(247,37,133,0.25); }
+  .ramp { display:flex; gap: 4px; flex: 1; }
+  .ramp > div { flex: 1; height: 56px; border-radius: 6px; }
+  .name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-hi); margin-top: 12px; letter-spacing: -0.01em; }
+  .hex { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="card">
+      <div class="label">Accent 1 · Music</div>
+      <div class="chip-row">
+        <div class="chip music"></div>
+        <div class="ramp">
+          <div style="background:#6ffce7"></div>
+          <div style="background:#00f5d4"></div>
+          <div style="background:#00c2a8"></div>
+          <div style="background:#008f7d"></div>
+        </div>
+      </div>
+      <div class="name">Electric Cyan</div>
+      <div class="hex">--cyan-400 · #00f5d4</div>
+    </div>
+    <div class="card">
+      <div class="label">Accent 2 · Cinema</div>
+      <div class="chip-row">
+        <div class="chip cinema"></div>
+        <div class="ramp">
+          <div style="background:#ff7ab0"></div>
+          <div style="background:#f72585"></div>
+          <div style="background:#c41868"></div>
+          <div style="background:#8a0e48"></div>
+        </div>
+      </div>
+      <div class="name">Hot Coral</div>
+      <div class="hex">--coral-400 · #f72585</div>
+    </div>
+  </div>
+</body>
+</html>

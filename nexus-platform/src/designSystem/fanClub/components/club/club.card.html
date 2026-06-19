@@ -1,0 +1,98 @@
+<!-- @dsCard group="Components" viewport="900x720" name="Club components" subtitle="The CRT, mood meter, chat, now playing, challenges, member stack." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 32px; color: var(--text-dim); font-family: var(--font-body); }
+  #root { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+  .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .chat { display: flex; flex-direction: column; gap: 14px; padding: 18px;
+          background: rgba(18,18,31,0.5); backdrop-filter: blur(10px);
+          border-radius: 16px; border: 1px solid var(--border-faint); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+  const { TVScreen, MoodMeter, ChatMessage, NowPlaying, ChallengeCard, MemberStack } =
+    window.AudiovidoFanClubDesignSystem_013bf7;
+
+  function Demo() {
+    return (
+      <div className="club-music">
+        <div className="col">
+          <div>
+            <div className="lbl">TVScreen</div>
+            <TVScreen caption="LIVE FROM A CROWDED BAR · 9:42 PM">
+              <div style={{
+                fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800,
+                color: "var(--smoke-100)",
+                textShadow: "0 0 16px var(--cyan-400), 0 0 32px var(--coral-400)",
+                letterSpacing: "0.02em"
+              }}>♪ NIGHT SHIFT ♪</div>
+            </TVScreen>
+          </div>
+          <div>
+            <div className="lbl">ChatMessage · personas</div>
+            <div className="chat">
+              <ChatMessage author="DJ Echo" persona="dj" time="now">
+                welcome back to the floor — fresh tape just dropped 🎧
+              </ChatMessage>
+              <ChatMessage author="Reni Q" persona="spotlight" time="2m" reactions={[{emoji:"🔥",count:7},{emoji:"🤯",count:3}]}>
+                that drum break is unreal. who's the producer
+              </ChatMessage>
+              <ChatMessage author="Mara" time="1m">
+                i could live in this song
+              </ChatMessage>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div>
+            <div className="lbl">MoodMeter</div>
+            <MoodMeter value={0.72} sampleCount={47} />
+          </div>
+          <div>
+            <div className="lbl">NowPlaying</div>
+            <NowPlaying track="Nocturne 12 · Submerge Mix" artist="Submerge" progress={0.42} voted />
+          </div>
+          <div>
+            <div className="lbl">ChallengeCard</div>
+            <ChallengeCard
+              title="Drop a song for the rain"
+              description="Share one track that fits a gray afternoon."
+              progress={0.34}
+              progressLabel="17 of 50 shared"
+              tag="Daily"
+              onJoin={() => {}}
+            />
+          </div>
+          <div>
+            <div className="lbl">MemberStack</div>
+            <MemberStack members={[
+              {name:"Reni Q", active:true, status:"live"},
+              {name:"Mara", status:"online"},
+              {name:"Iggy", status:"online"},
+              {name:"Echo", status:"online"},
+              {name:"Submerge", status:"offline"},
+              {name:"K Honey", status:"online"},
+              {name:"Vinyl Joon", status:"offline"},
+              {name:"Atlas", status:"online"},
+              {name:"Polestar", status:"online"},
+            ]} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+</script>
+</body>
+</html>

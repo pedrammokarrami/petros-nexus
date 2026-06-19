@@ -1,0 +1,43 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Void & Smoke" subtitle="The dark base everything sits on, plus neutral text." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 20px; font-family: var(--font-mono); color: var(--text-dim); }
+  .row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .sw { aspect-ratio: 1.6 / 1; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; justify-content: flex-end;
+        font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .lbl { color: rgba(255,255,255,0.55); }
+  .val { color: rgba(255,255,255,0.9); font-weight: 700; }
+  .group { display: flex; flex-direction: column; gap: 8px; }
+  h4 { margin: 0 0 4px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); font-weight: 400; }
+</style>
+</head>
+<body>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div class="group">
+      <h4>Void · surfaces</h4>
+      <div class="row">
+        <div class="sw" style="background:#050509; border:1px solid var(--border-faint)"><div class="lbl">900</div><div class="val">#050509</div></div>
+        <div class="sw" style="background:#08080f"><div class="lbl">800</div><div class="val">#08080f</div></div>
+        <div class="sw" style="background:#0d0d18"><div class="lbl">700</div><div class="val">#0d0d18</div></div>
+        <div class="sw" style="background:#12121f"><div class="lbl">600</div><div class="val">#12121f</div></div>
+        <div class="sw" style="background:#1a1a2a"><div class="lbl">500</div><div class="val">#1a1a2a</div></div>
+        <div class="sw" style="background:#242438"><div class="lbl">400</div><div class="val">#242438</div></div>
+      </div>
+    </div>
+    <div class="group">
+      <h4>Smoke · text</h4>
+      <div class="row">
+        <div class="sw" style="background:#f5f4ff; color:#08080f"><div class="lbl" style="color:rgba(0,0,0,0.5)">100</div><div class="val" style="color:#08080f">#f5f4ff</div></div>
+        <div class="sw" style="background:#d8d5ea; color:#08080f"><div class="lbl" style="color:rgba(0,0,0,0.5)">200</div><div class="val" style="color:#08080f">#d8d5ea</div></div>
+        <div class="sw" style="background:#9a96b8"><div class="lbl">300</div><div class="val">#9a96b8</div></div>
+        <div class="sw" style="background:#6b6788"><div class="lbl">400</div><div class="val">#6b6788</div></div>
+        <div class="sw" style="background:#45425c"><div class="lbl">500</div><div class="val">#45425c</div></div>
+        <div class="sw" style="background:#2a2840"><div class="lbl">600</div><div class="val">#2a2840</div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

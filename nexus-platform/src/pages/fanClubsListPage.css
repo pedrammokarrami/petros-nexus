@@ -1,0 +1,528 @@
+.fan-clubs-list-container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #08080f 0%, #0f1118 100%);
+  padding: 40px 20px 100px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  position: relative;
+}
+
+.fan-clubs-header {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(0, 245, 212, 0.15);
+}
+
+.fan-clubs-header h1 {
+  font-size: 40px;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Unbounded', sans-serif;
+  letter-spacing: -1px;
+  margin: 0 0 8px;
+}
+
+.fan-clubs-header p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.fan-clubs-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.fan-club-card {
+  background: rgba(20, 10, 30, 0.5);
+  border: 1px solid rgba(0, 245, 212, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.fan-club-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(0, 245, 212, 0.5);
+  box-shadow: 0 12px 48px rgba(0, 245, 212, 0.18);
+}
+
+.club-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a0f1f, #2a1a3f);
+}
+
+.club-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.fan-club-card:hover .club-image {
+  transform: scale(1.06);
+}
+
+.club-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #f72585, #b5179e);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(247, 37, 133, 0.4);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.club-info {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.club-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  font-family: 'Unbounded', sans-serif;
+  line-height: 1.3;
+}
+
+.club-description {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.club-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.member-count {
+  font-size: 12px;
+  color: rgba(0, 245, 212, 0.8);
+  font-weight: 600;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.activity-indicator {
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.activity--very-active {
+  color: #00f5d4;
+  background: rgba(0, 245, 212, 0.12);
+}
+
+.activity--active {
+  color: rgba(0, 245, 212, 0.7);
+  background: rgba(0, 245, 212, 0.06);
+}
+
+.activity--quiet {
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.activity--inactive {
+  color: rgba(255, 255, 255, 0.25);
+  background: transparent;
+}
+
+.club-actions {
+  padding: 0 20px 20px;
+}
+
+.btn-status {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+}
+
+.btn-status.follow {
+  background: rgba(0, 245, 212, 0.15);
+  color: #00f5d4;
+  border: 1px solid rgba(0, 245, 212, 0.4);
+}
+
+.btn-status.follow:hover {
+  background: rgba(0, 245, 212, 0.25);
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.25);
+}
+
+.btn-status.following {
+  background: rgba(0, 245, 212, 0.05);
+  color: rgba(0, 245, 212, 0.7);
+  border: 1px solid rgba(0, 245, 212, 0.2);
+}
+
+.btn-status.following:hover {
+  background: rgba(247, 37, 133, 0.1);
+  border-color: rgba(247, 37, 133, 0.3);
+  color: #f72585;
+}
+
+.suggested-section {
+  max-width: 1200px;
+  margin: 48px auto 0;
+  padding-top: 40px;
+  border-top: 1px solid rgba(0, 245, 212, 0.1);
+}
+
+.suggested-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.suggested-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Unbounded', sans-serif;
+  margin: 0;
+}
+
+.suggested-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.suggested-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.btn-add-club-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: linear-gradient(135deg, #00f5d4 0%, #0084ff 100%);
+  color: #000;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0, 245, 212, 0.25);
+  white-space: nowrap;
+  min-height: 48px;
+}
+
+.btn-add-club-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 36px rgba(0, 245, 212, 0.4);
+}
+
+.empty-state {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.loading-state {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(0, 245, 212, 0.6);
+}
+
+.loading-state p {
+  margin: 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 245, 212, 0.2);
+  border-top-color: #00f5d4;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fan-clubs-grid {
+  animation: fadeIn 0.4s ease;
+}
+
+@media (max-width: 1024px) {
+  .fan-clubs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .fan-club-card:hover {
+    transform: none;
+    border-color: rgba(0, 245, 212, 0.15);
+    box-shadow: none;
+  }
+
+  .fan-club-card:hover .club-image {
+    transform: none;
+  }
+
+  .btn-add-club-fab:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .fan-clubs-header h1 {
+    font-size: 34px;
+  }
+
+  .club-image-wrap {
+    height: 180px;
+  }
+
+  .club-info {
+    padding: 16px;
+  }
+
+  .club-actions {
+    padding: 0 16px 16px;
+  }
+
+  .suggested-section {
+    margin-top: 40px;
+    padding-top: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fan-clubs-list-container {
+    padding: 20px 16px 140px;
+  }
+
+  .fan-clubs-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+  }
+
+  .fan-clubs-header h1 {
+    font-size: 28px;
+  }
+
+  .fan-clubs-header p {
+    font-size: 13px;
+  }
+
+  .fan-clubs-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .club-info {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .club-info h3 {
+    font-size: 16px;
+  }
+
+  .club-description {
+    -webkit-line-clamp: 2;
+  }
+
+  .club-meta {
+    gap: 8px;
+  }
+
+  .club-actions {
+    padding: 0 14px 14px;
+  }
+
+  .club-image-wrap {
+    height: 180px;
+  }
+
+  .club-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    top: 8px;
+    left: 8px;
+  }
+
+  .suggested-section {
+    margin-top: 36px;
+    padding-top: 28px;
+  }
+
+  .suggested-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .suggested-header h2 {
+    font-size: 18px;
+  }
+
+  .suggested-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-add-club-fab {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .fan-clubs-list-container {
+    padding: 16px 12px 140px;
+  }
+
+  .fan-clubs-header h1 {
+    font-size: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .fan-clubs-header p {
+    font-size: 12px;
+  }
+
+  .club-info {
+    padding: 12px;
+  }
+
+  .club-info h3 {
+    font-size: 15px;
+  }
+
+  .club-description {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  .member-count {
+    font-size: 11px;
+  }
+
+  .activity-indicator {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+
+  .club-actions {
+    padding: 0 12px 12px;
+  }
+
+  .btn-status {
+    font-size: 12px;
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+
+  .club-image-wrap {
+    height: 160px;
+  }
+}

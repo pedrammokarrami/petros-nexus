@@ -1,0 +1,128 @@
+/* ============================================================
+   AUDIOVIDO · COLOR TOKENS
+   The palette is built for after-dark interfaces. Everything sits
+   on a true-black "void" base; accents glow.
+   ============================================================ */
+
+:root {
+  /* — Base / Void ————————————————————————————————————— */
+  --void-900: #050509;          /* deepest base, beneath the page */
+  --void-800: #08080f;          /* page background */
+  --void-700: #0d0d18;          /* recessed surface */
+  --void-600: #12121f;          /* card surface */
+  --void-500: #1a1a2a;          /* raised surface / hover */
+  --void-400: #242438;          /* border on dark */
+
+  /* — Smoke / Neutral text on dark ——————————————————————— */
+  --smoke-100: #f5f4ff;         /* hi-emphasis text */
+  --smoke-200: #d8d5ea;         /* body text */
+  --smoke-300: #9a96b8;         /* secondary text */
+  --smoke-400: #6b6788;         /* muted / metadata */
+  --smoke-500: #45425c;         /* disabled / faint border */
+
+  /* — Accent 1 · MUSIC · Electric cyan ——————————————————— */
+  --cyan-300: #6ffce7;
+  --cyan-400: #00f5d4;          /* primary music accent */
+  --cyan-500: #00c2a8;
+  --cyan-600: #008f7d;
+  --cyan-glow: 0 0 24px rgba(0, 245, 212, 0.55),
+               0 0 56px rgba(0, 245, 212, 0.25);
+
+  /* — Accent 2 · CINEMA · Hot coral ——————————————————————— */
+  --coral-300: #ff7ab0;
+  --coral-400: #f72585;         /* primary cinema accent */
+  --coral-500: #c41868;
+  --coral-600: #8a0e48;
+  --coral-glow: 0 0 24px rgba(247, 37, 133, 0.55),
+                0 0 56px rgba(247, 37, 133, 0.25);
+
+  /* — Accent 3 · Mood family (used in gradients) —————————— */
+  --mood-chill: #3a86ff;        /* deep blue — introspective */
+  --mood-mellow: #8338ec;       /* violet — neutral chill */
+  --mood-balanced: #b5179e;     /* magenta — engaged */
+  --mood-hype: #f72585;         /* coral — excited */
+  --mood-euphoric: #ff8500;     /* amber — peak */
+
+  /* — Semantic ———————————————————————————————————————————— */
+  --success: #2ec27e;
+  --warning: #f5a524;
+  --danger: #ff4d6d;
+
+  /* — Surfaces / semantic aliases ————————————————————————— */
+  --bg-page: var(--void-800);
+  --bg-stage: var(--void-900);       /* behind the TV */
+  --bg-surface: var(--void-600);
+  --bg-surface-raised: var(--void-500);
+  --bg-overlay: rgba(8, 8, 15, 0.72);
+
+  --border-faint: rgba(245, 244, 255, 0.06);
+  --border-soft: rgba(245, 244, 255, 0.12);
+  --border-strong: rgba(245, 244, 255, 0.22);
+
+  --text-hi: var(--smoke-100);
+  --text-body: var(--smoke-200);
+  --text-dim: var(--smoke-300);
+  --text-muted: var(--smoke-400);
+
+  --accent: var(--cyan-400);
+  --accent-glow: var(--cyan-glow);
+
+  /* Mood gradient — used as a stage backdrop. Override --mood-a/b/c
+     on a club scope to shift the room. */
+  --mood-a: var(--mood-mellow);
+  --mood-b: var(--mood-balanced);
+  --mood-c: var(--mood-hype);
+  --mood-gradient:
+    radial-gradient(80% 60% at 20% 20%, color-mix(in oklab, var(--mood-a) 70%, transparent), transparent 60%),
+    radial-gradient(70% 60% at 80% 30%, color-mix(in oklab, var(--mood-b) 60%, transparent), transparent 60%),
+    radial-gradient(90% 70% at 50% 100%, color-mix(in oklab, var(--mood-c) 70%, transparent), transparent 65%),
+    var(--void-800);
+}
+
+/* —————————————————————————————————————————————————————————
+   CLUB SCOPES — apply to a wrapper to retune the room.
+   ————————————————————————————————————————————————————————— */
+
+.club-music {
+  --accent: var(--cyan-400);
+  --accent-glow: var(--cyan-glow);
+  --mood-a: #0a4f6b;
+  --mood-b: #1f8a8a;
+  --mood-c: var(--cyan-400);
+}
+
+.club-cinema {
+  --accent: var(--coral-400);
+  --accent-glow: var(--coral-glow);
+  --mood-a: #2a0a3a;
+  --mood-b: #6b1a4a;
+  --mood-c: var(--coral-400);
+}
+
+.club-rock {
+  --accent: #ff6a3d;
+  --accent-glow: 0 0 24px rgba(255, 106, 61, 0.55),
+                 0 0 56px rgba(255, 106, 61, 0.25);
+  --mood-a: #4a0a0a;
+  --mood-b: #7a1f1f;
+  --mood-c: #ff6a3d;
+}
+
+.club-jazz {
+  --accent: #f5a524;
+  --accent-glow: 0 0 24px rgba(245, 165, 36, 0.55),
+                 0 0 56px rgba(245, 165, 36, 0.25);
+  --mood-a: #1a0f2a;
+  --mood-b: #4a2a1f;
+  --mood-c: #f5a524;
+}
+
+/* —————————————————————————————————————————————————————————
+   MOOD STATES — apply to the same wrapper to shift temperature.
+   ————————————————————————————————————————————————————————— */
+
+.mood-chill   { --mood-a: #0a1a3a; --mood-b: #1a2a5a; --mood-c: #3a86ff; }
+.mood-mellow  { --mood-a: #1a0a3a; --mood-b: #3a1a5a; --mood-c: #8338ec; }
+.mood-engaged { --mood-a: #2a0a3a; --mood-b: #6b1a4a; --mood-c: #b5179e; }
+.mood-hype    { --mood-a: #3a0a1a; --mood-b: #8a1840; --mood-c: var(--mood-hype); }
+.mood-euphoric{ --mood-a: #3a1a0a; --mood-b: #8a4a18; --mood-c: var(--mood-euphoric); }

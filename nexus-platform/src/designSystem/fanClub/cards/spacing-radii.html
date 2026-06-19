@@ -1,0 +1,26 @@
+<!-- @dsCard group="Spacing" viewport="700x170" name="Radii" subtitle="Cards sit at md (10px). The CRT gets its own larger radius." -->
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; background: var(--bg-page); padding: 24px; font-family: var(--font-mono); color: var(--text-dim); }
+  .row { display: flex; gap: 16px; align-items: flex-end; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .box { width: 72px; height: 72px; background: var(--bg-surface-raised); border: 1px solid var(--border-soft); }
+  .lbl { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+  .val { font-size: 11px; color: var(--text-hi); font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col"><div class="box" style="border-radius:2px"></div><div class="lbl">xs</div><div class="val">2px</div></div>
+    <div class="col"><div class="box" style="border-radius:6px"></div><div class="lbl">sm</div><div class="val">6px</div></div>
+    <div class="col"><div class="box" style="border-radius:10px"></div><div class="lbl">md</div><div class="val">10px</div></div>
+    <div class="col"><div class="box" style="border-radius:16px"></div><div class="lbl">lg</div><div class="val">16px</div></div>
+    <div class="col"><div class="box" style="border-radius:24px"></div><div class="lbl">xl</div><div class="val">24px</div></div>
+    <div class="col"><div class="box" style="border-radius:28px"></div><div class="lbl">tv</div><div class="val">28px</div></div>
+    <div class="col"><div class="box" style="border-radius:999px"></div><div class="lbl">pill</div><div class="val">∞</div></div>
+  </div>
+</body>
+</html>
