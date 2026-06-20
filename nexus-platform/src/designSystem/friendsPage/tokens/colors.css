@@ -1,0 +1,57 @@
+:root {
+  --fnd-void-900: #050509;
+  --fnd-void-800: #08080f;
+  --fnd-void-700: #0d0d18;
+  --fnd-void-600: #12121f;
+  --fnd-void-500: #1a1a2a;
+  --fnd-void-400: #242438;
+
+  --fnd-smoke-100: #f5f4ff;
+  --fnd-smoke-200: #d8d5ea;
+  --fnd-smoke-300: #9a96b8;
+  --fnd-smoke-400: #6b6788;
+  --fnd-smoke-500: #45425c;
+
+  --fnd-green-300: #86efac;
+  --fnd-green-400: #4ADE80;
+  --fnd-green-500: #22C55E;
+  --fnd-green-600: #16A34A;
+  --fnd-green-glow: 0 0 24px rgba(74, 222, 128, 0.55),
+                     0 0 56px rgba(74, 222, 128, 0.25);
+
+  --fnd-cyan-300: #67e8f9;
+  --fnd-cyan-400: #22d3ee;
+  --fnd-cyan-500: #06b6d4;
+
+  --fnd-coral-300: #fda4af;
+  --fnd-coral-400: #fb7185;
+
+  --fnd-purple-300: #c4b5fd;
+  --fnd-purple-400: #a78bfa;
+
+  --fnd-amber-300: #fcd34d;
+  --fnd-amber-400: #fbbf24;
+
+  --fnd-success: #2ec27e;
+  --fnd-warning: #f5a524;
+  --fnd-danger: #ff4d6d;
+  --fnd-online: #4ADE80;
+  --fnd-offline: #6b6788;
+
+  --fnd-bg-page: var(--fnd-void-800);
+  --fnd-bg-surface: var(--fnd-void-600);
+  --fnd-bg-surface-raised: var(--fnd-void-500);
+  --fnd-bg-overlay: rgba(8, 8, 15, 0.72);
+
+  --fnd-border-faint: rgba(245, 244, 255, 0.06);
+  --fnd-border-soft: rgba(245, 244, 255, 0.12);
+  --fnd-border-strong: rgba(245, 244, 255, 0.22);
+
+  --fnd-text-hi: var(--fnd-smoke-100);
+  --fnd-text-body: var(--fnd-smoke-200);
+  --fnd-text-dim: var(--fnd-smoke-300);
+  --fnd-text-muted: var(--fnd-smoke-400);
+
+  --fnd-accent: var(--fnd-green-400);
+  --fnd-accent-glow: var(--fnd-green-glow);
+}

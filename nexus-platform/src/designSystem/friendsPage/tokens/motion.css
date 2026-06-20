@@ -1,0 +1,49 @@
+:root {
+  --fnd-dur-instant: 80ms;
+  --fnd-dur-fast: 160ms;
+  --fnd-dur-base: 240ms;
+  --fnd-dur-slow: 420ms;
+  --fnd-dur-slower: 800ms;
+
+  --fnd-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --fnd-ease-in: cubic-bezier(0.55, 0, 0.85, 0.35);
+  --fnd-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --fnd-ease-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --fnd-t-hover: transform var(--fnd-dur-fast) var(--fnd-ease-out),
+                 box-shadow var(--fnd-dur-fast) var(--fnd-ease-out);
+}
+
+@keyframes fnd-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fnd-swipe-left {
+  to { transform: translateX(-150vw) rotateZ(-20deg); opacity: 0; }
+}
+
+@keyframes fnd-swipe-right {
+  to { transform: translateX(150vw) rotateZ(20deg); opacity: 0; }
+}
+
+@keyframes fnd-slide-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fnd-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--fnd-accent) 50%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in oklab, var(--fnd-accent) 0%, transparent),
+                    0 0 24px color-mix(in oklab, var(--fnd-accent) 40%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fnd-dur-instant: 0ms;
+    --fnd-dur-fast: 0ms;
+    --fnd-dur-base: 0ms;
+    --fnd-dur-slow: 0ms;
+    --fnd-dur-slower: 0ms;
+  }
+}

@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap");
+
+:root {
+  --fnd-font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fnd-font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --fnd-fw-regular: 400;
+  --fnd-fw-medium: 500;
+  --fnd-fw-semibold: 600;
+  --fnd-fw-bold: 700;
+  --fnd-fw-black: 800;
+
+  --fnd-fs-12: 0.75rem;
+  --fnd-fs-13: 0.8125rem;
+  --fnd-fs-14: 0.875rem;
+  --fnd-fs-15: 0.9375rem;
+  --fnd-fs-16: 1rem;
+  --fnd-fs-18: 1.125rem;
+  --fnd-fs-20: 1.25rem;
+  --fnd-fs-24: 1.5rem;
+  --fnd-fs-32: 2rem;
+  --fnd-fs-40: 2.5rem;
+
+  --fnd-lh-tight: 1.05;
+  --fnd-lh-snug: 1.2;
+  --fnd-lh-normal: 1.45;
+  --fnd-lh-relaxed: 1.6;
+
+  --fnd-ls-tight: -0.02em;
+  --fnd-ls-normal: 0;
+  --fnd-ls-wide: 0.08em;
+}

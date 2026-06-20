@@ -1,0 +1,29 @@
+:root {
+  --fnd-space-1: 4px;
+  --fnd-space-2: 8px;
+  --fnd-space-3: 12px;
+  --fnd-space-4: 16px;
+  --fnd-space-5: 20px;
+  --fnd-space-6: 24px;
+  --fnd-space-7: 32px;
+  --fnd-space-8: 40px;
+  --fnd-space-9: 48px;
+  --fnd-space-10: 64px;
+
+  --fnd-gutter: var(--fnd-space-4);
+  --fnd-gutter-loose: var(--fnd-space-6);
+  --fnd-section-y: var(--fnd-space-9);
+
+  --fnd-radius-xs: 2px;
+  --fnd-radius-sm: 6px;
+  --fnd-radius-md: 10px;
+  --fnd-radius-lg: 16px;
+  --fnd-radius-xl: 24px;
+  --fnd-radius-pill: 999px;
+
+  --fnd-z-base: 0;
+  --fnd-z-sticky: 10;
+  --fnd-z-overlay: 100;
+  --fnd-z-modal: 1000;
+  --fnd-z-toast: 1200;
+}

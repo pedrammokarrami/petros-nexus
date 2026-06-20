@@ -1,0 +1,73 @@
+.friends-page-outer {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--fnd-bg-page, #08080f);
+  font-family: var(--fnd-font-body, Inter, system-ui, sans-serif);
+  color: var(--fnd-text-hi, #f5f4ff);
+  overflow-x: hidden;
+}
+
+.friends-page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.fnd-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+.fnd-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.fnd-suggestion-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.fnd-discover-card {
+  touch-action: pan-y;
+}
+
+.fnd-discover-card:active {
+  cursor: grabbing;
+}
+
+.fnd-modal-overlay {
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 480px) {
+  .fnd-avatar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 16px 20px;
+  }
+}
+
+@media (min-width: 600px) {
+  .fnd-avatar-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 20px 24px;
+  }
+}
+
+@media (min-width: 900px) {
+  .fnd-avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 24px 32px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .fnd-avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 28px 40px;
+  }
+}

@@ -64,6 +64,7 @@ function OrbitButton({ item, index, buttonDiameter }) {
       onClick={() => {
         if (item.id === 'business') navigate('/business')
         else if (item.id === 'clubs') navigate('/library/fan-club')
+        else if (item.id === 'friends') navigate('/library/friends')
         else openPanel(item.id)
       }}
       initial={{ opacity: 0, scale: 0.3 }}

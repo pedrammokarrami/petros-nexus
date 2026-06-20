@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import AppShell from './components/layout/AppShell'
 import Splash from './pages/Splash'
-import Home from './pages/Home'
+import HomePage from './pages/HomePage'
 import Sound from './pages/Sound'
 import Vision from './pages/Vision'
 import Search from './pages/Search'
@@ -13,6 +13,7 @@ import Settings from './pages/Settings'
 import DJModePage from './pages/DJModePage'
 import FanClubsListPage from './pages/FanClubsListPage'
 import FanClubPage from './pages/FanClubPage'
+import FriendsPage from './pages/FriendsPage'
 import LoginPage from './pages/LoginPage'
 import BusinessList from './pages/BusinessList'
 import BusinessCreate from './pages/BusinessCreate'
@@ -41,7 +42,7 @@ export default function App() {
 
         <Route element={<AuthGuard />}>
           <Route element={<AppShell />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/sound" element={<Sound />} />
             <Route path="/vision" element={<Vision />} />
             <Route path="/search" element={<Search />} />
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/library/playlists" element={<PlaylistsPage />} />
             <Route path="/library/fan-club" element={<FanClubsListPage />} />
             <Route path="/library/fan-club/:clubId" element={<FanClubPage />} />
+            <Route path="/library/friends" element={<FriendsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
