@@ -350,3 +350,153 @@ export function subscribeToUserActivity(userId, callback) {
     )
     .subscribe()
 }
+
+// ─── MIXERS ──────────────────────────────────────────────────────────────────
+
+export async function saveMixer(userId, name, deckState) {
+  const { data, error } = await supabase
+    .from('mixers')
+    .insert({ user_id: userId, name, deck_state: deckState })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getMixers(userId) {
+  const { data, error } = await supabase
+    .from('mixers')
+    .select('*')
+    .eq('user_id', userId)
+    .order('updated_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+export async function getMixerById(mixerId) {
+  const { data, error } = await supabase
+    .from('mixers')
+    .select('*')
+    .eq('id', mixerId)
+    .single()
+  if (error) throw error
+  return data
+}
+
+// ─── CINEMA SESSIONS ──────────────────────────────────────────────────────────
+
+export async function createCinemaSession(hostUserId, videoRef, videoTitle, videoThumbnailUrl, title) {
+  const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase()
+  const { data, error } = await supabase
+    .from('cinema_sessions')
+    .insert({
+      host_user_id: hostUserId,
+      title: title || videoTitle,
+      video_ref: videoRef,
+      video_title: videoTitle,
+      video_thumbnail_url: videoThumbnailUrl,
+      invite_code: inviteCode,
+    })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getCinemaSessionByInviteCode(code) {
+  const { data, error } = await supabase
+    .from('cinema_sessions')
+    .select('*')
+    .eq('invite_code', code)
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function joinCinemaSession(sessionId, userId) {
+  const { error } = await supabase
+    .from('cinema_session_participants')
+    .insert({ session_id: sessionId, user_id: userId })
+  if (error) throw error
+}
+
+export async function updateCinemaPlaybackState(sessionId, positionSeconds, isPlaying) {
+  const { data, error } = await supabase
+    .from('cinema_sessions')
+    .update({ current_position_seconds: positionSeconds, is_playing: isPlaying, updated_at: new Date().toISOString() })
+    .eq('id', sessionId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getActiveCinemaSessions() {
+  const { data, error } = await supabase
+    .from('cinema_sessions')
+    .select('*')
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+export function subscribeToCinemaSession(sessionId, callback) {
+  return supabase
+    .channel(`cinema:${sessionId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'cinema_sessions',
+        filter: `id=eq.${sessionId}`,
+      },
+      payload => callback(payload.new)
+    )
+    .subscribe()
+}
+
+export async function sendCinemaMessage(sessionId, userId, body, type) {
+  const { data, error } = await supabase
+    .from('cinema_messages')
+    .insert({ session_id: sessionId, user_id: userId, body, type: type || 'chat' })
+    .select()
+  if (error) throw error
+  return data
+}
+
+export function subscribeToCinemaMessages(sessionId, callback) {
+  return supabase
+    .channel(`cinema-chat:${sessionId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'cinema_messages',
+        filter: `session_id=eq.${sessionId}`,
+      },
+      payload => callback(payload.new)
+    )
+    .subscribe()
+}
+
+export async function getCinemaSessionParticipants(sessionId) {
+  const { data, error } = await supabase
+    .from('cinema_session_participants')
+    .select('*')
+    .eq('session_id', sessionId)
+  if (error) throw error
+  return data || []
+}
+
+export async function getCinemaSessionsByUser(userId) {
+  const { data, error } = await supabase
+    .from('cinema_sessions')
+    .select('*')
+    .or(`host_user_id.eq.${userId},id.in.(select session_id from cinema_session_participants where user_id.eq.${userId})`)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
