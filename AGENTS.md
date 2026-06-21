@@ -1,11 +1,11 @@
-# Nexus Platform - Agent Instructions
+# AudioVido Platform - Agent Instructions
 
 ## Project Overview
 React + Vite single-page app with DJ console, media library, and AI-driven auto-mix. Runs on mobile portrait; DJ Mode rotates to landscape via CSS transform.
 
 ## Key Commands
 ```bash
-cd nexus-platform
+cd audiovido-platform
 npm run dev      # dev server on port 3000
 npm run build    # production build
 npm run preview  # preview build

@@ -1,3 +1,7 @@
-nexus-platform/.env
-nexus-platform/node_modules
-nexus-platform/dist
+audiovido-platform/.env
+audiovido-platform/node_modules
+audiovido-platform/dist
+audiovido-platform/audiovido-dj-mixer/node_modules
+audiovido-platform/audiovido-dj-mixer/dist
+bg-studio/node_modules
+bg-studio/dist

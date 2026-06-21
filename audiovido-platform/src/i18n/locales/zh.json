@@ -1,0 +1,224 @@
+{
+  "app": {
+    "brand": "AudioVido",
+    "tagline": "Your Universe of Entertainment",
+    "splashSound": "Enter the World of Sound",
+    "splashVision": "Enter the World of Vision"
+  },
+  "common": {
+    "back": "返回",
+    "save": "保存",
+    "cancel": "取消",
+    "search": "搜索",
+    "loading": "加载中...",
+    "error": "错误"
+  },
+  "nav": {
+    "home": "首页",
+    "search": "Search",
+    "hub": "中心",
+    "profile": "个人资料",
+    "sound": "Sound",
+    "vision": "Vision",
+    "friends": "朋友",
+    "settings": "设置"
+  },
+  "header": {
+    "home": "首页",
+    "sound": "Sound",
+    "vision": "Vision",
+    "search": "Search",
+    "hub": "中心",
+    "settings": "设置",
+    "notifications": "通知"
+  },
+  "home": {
+    "welcome": "欢迎",
+    "recommendations": "推荐",
+    "trending": "热门",
+    "continuePlaying": "继续播放",
+    "yourFriends": "你的朋友正在听",
+    "discover": "发现",
+    "continueWatching": "Continue Watching",
+    "newReleases": "New Releases",
+    "byMood": "By Your Mood",
+    "noMoodResults": "No results for this mood",
+    "speciallyForYou": "Specially For You",
+    "popularInYourArea": "Popular In Your Area",
+    "new": "New",
+    "aiSuggestion": "AI Suggestion",
+    "popular": "Popular",
+    "moods": {
+      "aramesh": "Calm",
+      "pranergi": "Energetic",
+      "tamarkoz": "Focus",
+      "ghamgin": "Sad",
+      "shad": "Happy"
+    }
+  },
+  "search": {
+    "placeholder": "Search music, movies, podcasts...",
+    "browseByGenre": "Browse by Genre",
+    "loading": "Searching...",
+    "error": "Connection error",
+    "noResults": "No results for \"{query}\"",
+    "typeMusic": "Music",
+    "typeMovie": "Movie",
+    "typePodcast": "Podcast",
+    "typeSeries": "Series",
+    "moods": {
+      "aramesh": "Calm",
+      "energy": "Energy",
+      "emotional": "Emotional",
+      "shad": "Happy",
+      "tamarkoz": "Focus"
+    },
+    "tabAudio": "Audio",
+    "tabVideo": "Video",
+    "genres": {
+      "pop": "Pop",
+      "rock": "Rock",
+      "hiphop": "Hip-Hop",
+      "electronic": "Electronic",
+      "classical": "Classical",
+      "jazz": "Jazz",
+      "podcast": "Podcast",
+      "audiobook": "Audiobook"
+    }
+  },
+  "sound": {
+    "music": "Music",
+    "podcast": "Podcast",
+    "radio": "Radio",
+    "audiobook": "Audiobook",
+    "featured": "Featured",
+    "topOfTheWeek": "Top of the Week",
+    "tracksCount": "{count} tracks • Editor's Pick",
+    "mostPopular": "Most Popular",
+    "newest": "Newest",
+    "weeklySuggestion": "Weekly Suggestion",
+    "hotPodcasts": "Hot Podcasts",
+    "suggested": "Suggested",
+    "popularStations": "Popular Stations",
+    "popularBooks": "Most Popular Books"
+  },
+  "vision": {
+    "movie": "Movie",
+    "series": "Series",
+    "anime": "Anime",
+    "searchPlaceholder": "Search movies...",
+    "searchSeries": "Search series...",
+    "searchAnime": "Search anime...",
+    "searchResults": "Search Results",
+    "noResults": "No results found",
+    "popular": "Popular",
+    "newest": "Newest",
+    "topRated": "Top Rated",
+    "mostVoted": "Most Voted",
+    "action": "Action",
+    "comedy": "Comedy",
+    "worldCinema": "World Cinema",
+    "seriesTitle": "Popular Series",
+    "animeTitle": "Popular Anime",
+    "animeAiring": "Airing Now"
+  },
+  "library": {
+    "playlist": "Playlist",
+    "saved": "Saved",
+    "history": "History",
+    "defaultPlaylist1": "Favorite Tracks",
+    "defaultPlaylist2": "Good Vibes",
+    "defaultPlaylist3": "Driving",
+    "emptyPlaylist": "No playlists yet!",
+    "createPlaylist": "Create Playlist",
+    "createdAt": "Created on {date}",
+    "newPlaylist": "New Playlist",
+    "playlistNamePlaceholder": "Playlist name...",
+    "create": "Create",
+    "newPlaylistBtn": "Create New Playlist"
+  },
+  "settings": {
+    "title": "设置",
+    "back": "返回",
+    "general": "常规",
+    "account": "账户",
+    "privacy": "隐私",
+    "language": "语言",
+    "theme": "深色模式",
+    "notifications": "通知",
+    "about": "About",
+    "selectLanguage": "选择语言",
+    "searchLanguage": "搜索语言...",
+    "allLanguages": "所有语言",
+    "currentLanguage": "当前语言",
+    "noResults": "未找到语言",
+    "notificationsEnabled": "通知已启用",
+    "changePassword": "更改密码",
+    "deleteAccount": "删除账户"
+  },
+  "languages": {
+    "en": "English",
+    "fa": "فارسی",
+    "ar": "العربية",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "中文"
+  },
+  "profile": {
+    "title": "个人资料",
+    "editProfile": "编辑个人资料",
+    "followers": "粉丝",
+    "following": "关注",
+    "listeningHours": "收听时数",
+    "playlists": "播放列表"
+  },
+  "friends": {
+    "title": "朋友",
+    "discover": "发现",
+    "suggestions": "朋友建议",
+    "addFriend": "添加朋友",
+    "removeFriend": "移除朋友",
+    "message": "消息",
+    "referrals": "我的推荐"
+  },
+  "player": {
+    "nowPlaying": "NOW PLAYING",
+    "queue": "Queue",
+    "queueCount": "Queue — {count} tracks",
+    "lyrics": "Lyrics",
+    "tabLyrics": "Lyrics",
+    "tabQueue": "Queue",
+    "qualityAuto": "Auto",
+    "quality4k": "4K",
+    "quality1080": "1080p",
+    "quality720": "720p",
+    "quality480": "480p",
+    "subtitleActive": "Persian subtitles activated"
+  },
+  "mediaCard": {
+    "sample": "Sample",
+    "new": "New"
+  },
+  "hero": {
+    "play": "Play",
+    "added": "Added",
+    "add": "Add"
+  },
+  "sectionRow": {
+    "viewAll": "View All"
+  },
+  "modal": {
+    "directors": "Director",
+    "cast": "Cast",
+    "metacritic": "Metacritic",
+    "watchTrailer": "Watch Trailer",
+    "download": "Download",
+    "streamOnline": "Stream Online",
+    "notAvailable": "Not currently available",
+    "unmute": "Unmute",
+    "mute": "Mute",
+    "h": "h",
+    "m": "m"
+  }
+}
