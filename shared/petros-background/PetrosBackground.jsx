@@ -27,7 +27,40 @@ export default function PetrosBackground({ enabled = true, config }) {
   const [biome, setBiome] = useState('urban')
   const [hour, setHour] = useState(new Date().getHours() + new Date().getMinutes() / 60)
   const [loaded, setLoaded] = useState(false)
+  const [showTiltBtn, setShowTiltBtn] = useState(false)
   const mountedRef = useRef(true)
+  const biomeRef = useRef(null)
+  const particleRef = useRef(null)
+  const avatarRef = useRef(null)
+  const pointerRef = useRef({ x: 0, y: 0 })
+  const currentRef = useRef({ x: 0, y: 0 })
+  const tiltListenerRef = useRef(null)
+
+  function onOrientation(e) {
+    if (e.gamma == null || e.beta == null) return
+    const nx = Math.max(-1, Math.min(1, e.gamma / 30))
+    const ny = Math.max(-1, Math.min(1, (e.beta - 45) / 30))
+    pointerRef.current = { x: nx, y: ny }
+  }
+
+  async function enableTilt() {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const result = await DeviceOrientationEvent.requestPermission()
+        if (result === 'granted') {
+          tiltListenerRef.current = onOrientation
+          window.addEventListener('deviceorientation', onOrientation)
+          localStorage.setItem('petros_tilt_granted', '1')
+          setShowTiltBtn(false)
+        }
+      } catch (e) {}
+    } else {
+      tiltListenerRef.current = onOrientation
+      window.addEventListener('deviceorientation', onOrientation)
+      localStorage.setItem('petros_tilt_granted', '1')
+      setShowTiltBtn(false)
+    }
+  }
 
   const updateHour = useCallback(() => {
     const now = new Date()
@@ -54,6 +87,61 @@ export default function PetrosBackground({ enabled = true, config }) {
     })
   }, [config])
 
+  useEffect(() => {
+    if (!loaded) return
+
+    const isTouch = 'ontouchstart' in window
+    const tiltGranted = localStorage.getItem('petros_tilt_granted') === '1'
+
+    if (isTouch && !tiltGranted) {
+      setShowTiltBtn(true)
+    }
+
+    function onMouseMove(e) {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1
+      const ny = (e.clientY / window.innerHeight) * 2 - 1
+      pointerRef.current = { x: nx, y: ny }
+    }
+
+    if (tiltGranted) {
+      enableTilt()
+    }
+
+    let raf
+    function tick() {
+      const ease = 0.08
+      currentRef.current.x += (pointerRef.current.x - currentRef.current.x) * ease
+      currentRef.current.y += (pointerRef.current.y - currentRef.current.y) * ease
+      const { x, y } = currentRef.current
+
+      if (biomeRef.current) {
+        biomeRef.current.style.transform = `translate3d(${x * 4}px, ${y * 4}px, 0)`
+      }
+      if (particleRef.current) {
+        particleRef.current.style.transform = `translate3d(${x * 9}px, ${y * 9}px, 0)`
+      }
+      if (avatarRef.current) {
+        avatarRef.current.style.transform = `translate3d(${x * 16}px, ${y * 16}px, 0)`
+      }
+
+      raf = requestAnimationFrame(tick)
+    }
+
+    tick()
+
+    if (!isTouch) {
+      window.addEventListener('mousemove', onMouseMove)
+    }
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('mousemove', onMouseMove)
+      if (tiltListenerRef.current) {
+        window.removeEventListener('deviceorientation', tiltListenerRef.current)
+      }
+    }
+  }, [loaded])
+
   if (!config || config.live !== true) return null
   if (!enabled || !loaded) return null
 
@@ -73,21 +161,41 @@ export default function PetrosBackground({ enabled = true, config }) {
       }}
     >
       {biomeData.image && (
-        <img
-          src={biomeData.image}
-          alt=""
+        <div
+          ref={biomeRef}
           style={{
             position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 1
+            left: '-5%',
+            top: '-5%',
+            width: '110%',
+            height: '110%',
+            zIndex: 1,
+            willChange: 'transform'
           }}
-        />
+        >
+          <img
+            src={biomeData.image}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
       )}
 
-      <ParticleLayer type={particleType} />
+      <div
+        ref={particleRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 2,
+          willChange: 'transform'
+        }}
+      >
+        <ParticleLayer type={particleType} />
+      </div>
 
       <div
         style={{
@@ -114,21 +222,51 @@ export default function PetrosBackground({ enabled = true, config }) {
       />
 
       {config.avatar && config.avatar.image && (
-        <img
-          src={config.avatar.image}
-          alt=""
+        <div
+          ref={avatarRef}
           style={{
             position: 'absolute',
             bottom: '8%',
             right: '5%',
             zIndex: 5,
-            width: 120,
-            height: 120,
-            objectFit: 'contain',
-            animation: 'petrosFloat 3s ease-in-out infinite',
-            pointerEvents: 'none'
+            willChange: 'transform'
           }}
-        />
+        >
+          <img
+            src={config.avatar.image}
+            alt=""
+            style={{
+              width: 120,
+              height: 120,
+              objectFit: 'contain',
+              animation: 'petrosFloat 3s ease-in-out infinite',
+              pointerEvents: 'none'
+            }}
+          />
+        </div>
+      )}
+
+      {showTiltBtn && (
+        <button
+          onClick={enableTilt}
+          style={{
+            position: 'fixed',
+            bottom: 20,
+            left: 20,
+            zIndex: 9999,
+            padding: '8px 16px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: 8,
+            background: 'rgba(0,0,0,0.6)',
+            color: '#ccc',
+            fontSize: 13,
+            cursor: 'pointer',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
+          }}
+        >
+          فعال کردن جلوه‌ی عمق
+        </button>
       )}
 
       <style>{`
