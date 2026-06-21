@@ -19,6 +19,8 @@ import FanClubsListPage from './pages/FanClubsListPage'
 import FanClubPage from './pages/FanClubPage'
 import FriendsPage from './pages/FriendsPage'
 import LoginPage from './pages/LoginPage'
+import CinemaSessionPage from './pages/CinemaSessionPage'
+import CinemaCreatePage from './pages/CinemaCreatePage'
 import BusinessList from './pages/BusinessList'
 import BusinessCreate from './pages/BusinessCreate'
 import BusinessSite from './pages/BusinessSite'
@@ -80,6 +82,8 @@ export default function App() {
             <Route path="/hub/fan-club" element={<FanClubsListPage />} />
             <Route path="/hub/fan-club/:clubId" element={<FanClubPage />} />
             <Route path="/hub/friends" element={<FriendsPage />} />
+            <Route path="/cinema/create" element={<CinemaCreatePage />} />
+            <Route path="/cinema/:inviteCode" element={<CinemaSessionPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/library" element={<Navigate to="/hub" replace />} />
