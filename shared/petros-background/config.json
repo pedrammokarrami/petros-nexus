@@ -1,24 +1,25 @@
 {
+  "live": false,
   "forceBiome": null,
   "biomes": {
     "urban": {
       "image": "petros-assets/urban.png",
-      "particle": "rain"
+      "particle": "snow"
     },
     "forest": {
-      "image": "petros-assets/forest.jpg",
-      "particle": "leaves"
+      "image": null,
+      "particle": "fireflies"
     },
     "rural": {
-      "image": "petros-assets/rural.jpg",
+      "image": null,
       "particle": "none"
     },
     "beach": {
-      "image": "petros-assets/beach.jpg",
+      "image": null,
       "particle": "none"
     }
   },
   "avatar": {
-    "image": "petros-assets/avatar.gif"
+    "image": null
   }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Upload, Image, Clock, Save } from 'lucide-react'
+import ParticleLayer from '../../shared/petros-background/ParticleLayer'
 
 const biomes = [
   { id: 'urban', label: 'شهری' },
@@ -35,7 +36,7 @@ function getTimeOfDay(hour) {
   return { dark, golden }
 }
 
-function PetrosPreview({ biomeData, avatarImage, hour }) {
+function PetrosPreview({ biomeData, avatarImage, hour, particleType }) {
   const { dark, golden } = getTimeOfDay(hour)
 
   return (
@@ -63,6 +64,7 @@ function PetrosPreview({ biomeData, avatarImage, hour }) {
           }}
         />
       )}
+      <ParticleLayer type={particleType || 'none'} />
       <div
         style={{
           position: 'absolute',
@@ -470,6 +472,7 @@ export default function App() {
             biomeData={activeBiomeData}
             avatarImage={avatarImage}
             hour={hour}
+            particleType={activeBiomeData?.particle}
           />
         </div>
       </div>

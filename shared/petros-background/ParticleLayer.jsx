@@ -125,23 +125,13 @@ export default function ParticleLayer({ type = 'none' }) {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let w = 0
+    let h = 0
     let particles = []
     let running = true
-    let lastTime = 0
 
-    function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const w = window.innerWidth
-      const h = window.innerHeight
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      canvas.style.width = w + 'px'
-      canvas.style.height = h + 'px'
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      return { w, h }
-    }
-
-    function initParticles(w, h) {
+    function initParticles() {
       particles = []
       for (let i = 0; i < config.count; i++) {
         const p = {}
@@ -150,13 +140,27 @@ export default function ParticleLayer({ type = 'none' }) {
       }
     }
 
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      const newW = Math.round(entry.contentRect.width * dpr)
+      const newH = Math.round(entry.contentRect.height * dpr)
+      if (newW === 0 || newH === 0) return
+      canvas.width = w = newW
+      canvas.height = h = newH
+      canvas.style.width = entry.contentRect.width + 'px'
+      canvas.style.height = entry.contentRect.height + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      if (particles.length === 0) initParticles()
+    })
+    ro.observe(canvas.parentElement)
+
     function frame(time) {
       if (!running) return
-      const { w, h } = resize()
       ctx.clearRect(0, 0, w, h)
 
       if (particles.length !== config.count) {
-        initParticles(w, h)
+        initParticles()
       }
 
       for (const p of particles) {
@@ -166,26 +170,12 @@ export default function ParticleLayer({ type = 'none' }) {
 
       animRef.current = requestAnimationFrame(frame)
     }
-
-    const { w, h } = resize()
-    initParticles(w, h)
     animRef.current = requestAnimationFrame(frame)
-
-    const handleResize = () => {
-      if (particles.length > 0) {
-        const { w, h } = resize()
-        for (const p of particles) {
-          p.x = Math.min(p.x, w)
-          p.y = Math.min(p.y, h)
-        }
-      }
-    }
-    window.addEventListener('resize', handleResize)
 
     return () => {
       running = false
       if (animRef.current) cancelAnimationFrame(animRef.current)
-      window.removeEventListener('resize', handleResize)
+      ro.disconnect()
     }
   }, [type])
 

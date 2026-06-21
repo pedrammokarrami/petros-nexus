@@ -54,7 +54,8 @@ export default function PetrosBackground({ enabled = true, config }) {
     })
   }, [config])
 
-  if (!enabled || !loaded || !config) return null
+  if (!config || config.live !== true) return null
+  if (!enabled || !loaded) return null
 
   const { dark, golden } = getTimeOfDay(hour)
   const biomeData = config.biomes[biome] || config.biomes.urban
