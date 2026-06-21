@@ -1,0 +1,224 @@
+{
+  "app": {
+    "brand": "NEXUS",
+    "tagline": "Your Universe of Entertainment",
+    "splashSound": "ورود به دنیای صدا",
+    "splashVision": "ورود به دنیای تصویر"
+  },
+  "common": {
+    "back": "بازگشت",
+    "save": "ذخیره",
+    "cancel": "انصراف",
+    "search": "جستجو",
+    "loading": "درحال بارگذاری...",
+    "error": "خطا"
+  },
+  "nav": {
+    "home": "خانه",
+    "search": "جستجو",
+    "hub": "هاب",
+    "profile": "من",
+    "sound": "صدا",
+    "vision": "تصویر",
+    "friends": "دوستان",
+    "settings": "تنظیمات"
+  },
+  "header": {
+    "home": "خانه",
+    "sound": "صدا",
+    "vision": "تصویر",
+    "search": "جستجو",
+    "hub": "هاب",
+    "settings": "تنظیمات",
+    "notifications": "اعلان‌ها"
+  },
+  "home": {
+    "welcome": "خوش‌آمدی",
+    "recommendations": "پیشنهادات",
+    "trending": "ترندها",
+    "continuePlaying": "ادامه پخش",
+    "yourFriends": "دوستان‌ات در حال پخش",
+    "discover": "کشف کن",
+    "continueWatching": "ادامه پخش",
+    "newReleases": "جدیدترین آهنگ‌ها",
+    "byMood": "بر اساس حال‌وهوای شما",
+    "noMoodResults": "نتیجه‌ای برای این حالت یافت نشد",
+    "speciallyForYou": "پیشنهاد ویژه برای شما",
+    "popularInYourArea": "محبوب در منطقه شما",
+    "new": "تازه‌ها",
+    "aiSuggestion": "پیشنهاد AI",
+    "popular": "پرطرفدار",
+    "moods": {
+      "aramesh": "آرام",
+      "pranergi": "پرانرژی",
+      "tamarkoz": "تمرکز",
+      "ghamgin": "غمگین",
+      "shad": "شاد"
+    }
+  },
+  "search": {
+    "placeholder": "جستجوی موسیقی، فیلم، پادکست...",
+    "browseByGenre": "مرور بر اساس ژانر",
+    "loading": "در حال جستجو...",
+    "error": "خطا در ارتباط با سرور",
+    "noResults": "نتیجه‌ای برای \"{query}\" یافت نشد",
+    "typeMusic": "موسیقی",
+    "typeMovie": "فیلم",
+    "typePodcast": "پادکست",
+    "typeSeries": "سریال",
+    "moods": {
+      "aramesh": "آرامش",
+      "energy": "انرژی",
+      "emotional": "احساسی",
+      "shad": "شاد",
+      "tamarkoz": "تمرکز"
+    },
+    "tabAudio": "صوتی",
+    "tabVideo": "تصویری",
+    "genres": {
+      "pop": "پاپ",
+      "rock": "راک",
+      "hiphop": "هیپ‌هاپ",
+      "electronic": "الکترونیک",
+      "classical": "کلاسیک",
+      "jazz": "جاز",
+      "podcast": "پادکست",
+      "audiobook": "کتاب صوتی"
+    }
+  },
+  "sound": {
+    "music": "موسیقی",
+    "podcast": "پادکست",
+    "radio": "رادیو",
+    "audiobook": "کتاب صوتی",
+    "featured": "ویژه",
+    "topOfTheWeek": "برترین‌های هفته",
+    "tracksCount": "{count} قطعه • منتخب ویراستاران",
+    "mostPopular": "محبوب‌ترین",
+    "newest": "جدیدترین",
+    "weeklySuggestion": "پیشنهاد هفته",
+    "hotPodcasts": "پادکست‌های داغ",
+    "suggested": "پیشنهادی",
+    "popularStations": "ایستگاه‌های پرطرفدار",
+    "popularBooks": "محبوب‌ترین کتاب‌ها"
+  },
+  "vision": {
+    "movie": "فیلم",
+    "series": "سریال",
+    "anime": "انیمه",
+    "searchPlaceholder": "جستجوی فیلم...",
+    "searchSeries": "جستجوی سریال...",
+    "searchAnime": "جستجوی انیمه...",
+    "searchResults": "نتایج جستجو",
+    "noResults": "نتیجه‌ای یافت نشد",
+    "popular": "پرطرفدار",
+    "newest": "جدیدترین",
+    "topRated": "برترین امتیازها",
+    "mostVoted": "پررای‌ترین",
+    "action": "اکشن",
+    "comedy": "کمدی",
+    "worldCinema": "سینمای جهان",
+    "seriesTitle": "سریال‌های محبوب",
+    "animeTitle": "انیمه‌های محبوب",
+    "animeAiring": "در حال پخش"
+  },
+  "library": {
+    "playlist": "پلی‌لیست",
+    "saved": "ذخیره‌شده",
+    "history": "تاریخچه",
+    "defaultPlaylist1": "قطعات مورد علاقه",
+    "defaultPlaylist2": "حالت خوب",
+    "defaultPlaylist3": "رانندگی",
+    "emptyPlaylist": "هنوز پلی‌لیستی نداری!",
+    "createPlaylist": "ساخت پلی‌لیست",
+    "createdAt": "ساخته شده در {date}",
+    "newPlaylist": "پلی‌لیست جدید",
+    "playlistNamePlaceholder": "نام پلی‌لیست...",
+    "create": "ایجاد",
+    "newPlaylistBtn": "ساخت پلی‌لیست جدید"
+  },
+  "settings": {
+    "title": "تنظیمات",
+    "back": "بازگشت",
+    "general": "عمومی",
+    "account": "حساب کاربری",
+    "privacy": "حریم خصوصی",
+    "language": "زبان",
+    "theme": "حالت تاریک",
+    "notifications": "اعلان‌ها",
+    "about": "درباره",
+    "selectLanguage": "انتخاب زبان",
+    "searchLanguage": "جستجوی زبان‌ها...",
+    "allLanguages": "تمام زبان‌ها",
+    "currentLanguage": "زبان فعلی",
+    "noResults": "زبانی یافت نشد",
+    "notificationsEnabled": "اعلان‌ها فعال",
+    "changePassword": "تغییر رمز عبور",
+    "deleteAccount": "حذف حساب"
+  },
+  "languages": {
+    "en": "English",
+    "fa": "فارسی",
+    "ar": "العربية",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "中文"
+  },
+  "profile": {
+    "title": "پروفایل",
+    "editProfile": "ویرایش پروفایل",
+    "followers": "دنبال‌کنندگان",
+    "following": "دنبال می‌کند",
+    "listeningHours": "ساعت‌های شنیداری",
+    "playlists": "لیست‌های پخش"
+  },
+  "friends": {
+    "title": "دوستان",
+    "discover": "کشف",
+    "suggestions": "پیشنهادات دوستی",
+    "addFriend": "افزودن دوست",
+    "removeFriend": "حذف دوست",
+    "message": "پیام",
+    "referrals": "دعوت‌های من"
+  },
+  "player": {
+    "nowPlaying": "NOW PLAYING",
+    "queue": "صف پخش",
+    "queueCount": "صف پخش — {count} قطعه",
+    "lyrics": "متن آهنگ",
+    "tabLyrics": "متن",
+    "tabQueue": "صف",
+    "qualityAuto": "Auto",
+    "quality4k": "4K",
+    "quality1080": "1080p",
+    "quality720": "720p",
+    "quality480": "480p",
+    "subtitleActive": "زیرنویس فارسی فعال شد"
+  },
+  "mediaCard": {
+    "sample": "نمونه",
+    "new": "جدید"
+  },
+  "hero": {
+    "play": "پخش",
+    "added": "افزوده شد",
+    "add": "افزودن"
+  },
+  "sectionRow": {
+    "viewAll": "همه"
+  },
+  "modal": {
+    "directors": "کارگردان",
+    "cast": "بازیگران",
+    "metacritic": "Metacritic",
+    "watchTrailer": "تریلر را تماشا کنید",
+    "download": "دانلود",
+    "streamOnline": "پخش آنلاین",
+    "notAvailable": "این امکان در حال حاضر فعال نیست",
+    "unmute": "رفع سکوت",
+    "mute": "بی‌صدا",
+    "h": "h",
+    "m": "m"
+  }
+}

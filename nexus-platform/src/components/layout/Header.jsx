@@ -10,7 +10,7 @@ const pageTitleKeys = {
   '/sound': 'header.sound',
   '/vision': 'header.vision',
   '/search': 'header.search',
-  '/library': 'header.library',
+  '/hub': 'header.hub',
   '/settings': 'header.settings'
 }
 

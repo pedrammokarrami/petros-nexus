@@ -1,0 +1,224 @@
+{
+  "app": {
+    "brand": "NEXUS",
+    "tagline": "Your Universe of Entertainment",
+    "splashSound": "Enter the World of Sound",
+    "splashVision": "Enter the World of Vision"
+  },
+  "common": {
+    "back": "رجوع",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "error": "خطأ"
+  },
+  "nav": {
+    "home": "الصفحة الرئيسية",
+    "search": "Search",
+    "hub": "هاب",
+    "profile": "الملف الشخصي",
+    "sound": "Sound",
+    "vision": "Vision",
+    "friends": "الأصدقاء",
+    "settings": "الإعدادات"
+  },
+  "header": {
+    "home": "الصفحة الرئيسية",
+    "sound": "Sound",
+    "vision": "Vision",
+    "search": "Search",
+    "hub": "هاب",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات"
+  },
+  "home": {
+    "welcome": "أهلا وسهلا",
+    "recommendations": "التوصيات",
+    "trending": "الاتجاهات الآن",
+    "continuePlaying": "مواصلة التشغيل",
+    "yourFriends": "أصدقاؤك يستمعون",
+    "discover": "اكتشف",
+    "continueWatching": "Continue Watching",
+    "newReleases": "New Releases",
+    "byMood": "By Your Mood",
+    "noMoodResults": "No results for this mood",
+    "speciallyForYou": "Specially For You",
+    "popularInYourArea": "Popular In Your Area",
+    "new": "New",
+    "aiSuggestion": "AI Suggestion",
+    "popular": "Popular",
+    "moods": {
+      "aramesh": "Calm",
+      "pranergi": "Energetic",
+      "tamarkoz": "Focus",
+      "ghamgin": "Sad",
+      "shad": "Happy"
+    }
+  },
+  "search": {
+    "placeholder": "Search music, movies, podcasts...",
+    "browseByGenre": "Browse by Genre",
+    "loading": "Searching...",
+    "error": "Connection error",
+    "noResults": "No results for \"{query}\"",
+    "typeMusic": "Music",
+    "typeMovie": "Movie",
+    "typePodcast": "Podcast",
+    "typeSeries": "Series",
+    "moods": {
+      "aramesh": "Calm",
+      "energy": "Energy",
+      "emotional": "Emotional",
+      "shad": "Happy",
+      "tamarkoz": "Focus"
+    },
+    "tabAudio": "Audio",
+    "tabVideo": "Video",
+    "genres": {
+      "pop": "Pop",
+      "rock": "Rock",
+      "hiphop": "Hip-Hop",
+      "electronic": "Electronic",
+      "classical": "Classical",
+      "jazz": "Jazz",
+      "podcast": "Podcast",
+      "audiobook": "Audiobook"
+    }
+  },
+  "sound": {
+    "music": "Music",
+    "podcast": "Podcast",
+    "radio": "Radio",
+    "audiobook": "Audiobook",
+    "featured": "Featured",
+    "topOfTheWeek": "Top of the Week",
+    "tracksCount": "{count} tracks • Editor's Pick",
+    "mostPopular": "Most Popular",
+    "newest": "Newest",
+    "weeklySuggestion": "Weekly Suggestion",
+    "hotPodcasts": "Hot Podcasts",
+    "suggested": "Suggested",
+    "popularStations": "Popular Stations",
+    "popularBooks": "Most Popular Books"
+  },
+  "vision": {
+    "movie": "Movie",
+    "series": "Series",
+    "anime": "Anime",
+    "searchPlaceholder": "Search movies...",
+    "searchSeries": "Search series...",
+    "searchAnime": "Search anime...",
+    "searchResults": "Search Results",
+    "noResults": "No results found",
+    "popular": "Popular",
+    "newest": "Newest",
+    "topRated": "Top Rated",
+    "mostVoted": "Most Voted",
+    "action": "Action",
+    "comedy": "Comedy",
+    "worldCinema": "World Cinema",
+    "seriesTitle": "Popular Series",
+    "animeTitle": "Popular Anime",
+    "animeAiring": "Airing Now"
+  },
+  "library": {
+    "playlist": "Playlist",
+    "saved": "Saved",
+    "history": "History",
+    "defaultPlaylist1": "Favorite Tracks",
+    "defaultPlaylist2": "Good Vibes",
+    "defaultPlaylist3": "Driving",
+    "emptyPlaylist": "No playlists yet!",
+    "createPlaylist": "Create Playlist",
+    "createdAt": "Created on {date}",
+    "newPlaylist": "New Playlist",
+    "playlistNamePlaceholder": "Playlist name...",
+    "create": "Create",
+    "newPlaylistBtn": "Create New Playlist"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "back": "رجوع",
+    "general": "عام",
+    "account": "الحساب",
+    "privacy": "الخصوصية",
+    "language": "اللغة",
+    "theme": "الوضع الليلي",
+    "notifications": "الإشعارات",
+    "about": "About",
+    "selectLanguage": "اختر اللغة",
+    "searchLanguage": "البحث عن اللغات...",
+    "allLanguages": "جميع اللغات",
+    "currentLanguage": "اللغة الحالية",
+    "noResults": "لم يتم العثور على لغات",
+    "notificationsEnabled": "الإشعارات مفعلة",
+    "changePassword": "تغيير كلمة المرور",
+    "deleteAccount": "حذف الحساب"
+  },
+  "languages": {
+    "en": "English",
+    "fa": "فارسی",
+    "ar": "العربية",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "中文"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "editProfile": "تعديل الملف الشخصي",
+    "followers": "المتابعون",
+    "following": "يتابع",
+    "listeningHours": "ساعات الاستماع",
+    "playlists": "قوائم التشغيل"
+  },
+  "friends": {
+    "title": "الأصدقاء",
+    "discover": "اكتشف",
+    "suggestions": "اقتراحات الأصدقاء",
+    "addFriend": "إضافة صديق",
+    "removeFriend": "إزالة صديق",
+    "message": "رسالة",
+    "referrals": "الإحالات الخاصة بي"
+  },
+  "player": {
+    "nowPlaying": "NOW PLAYING",
+    "queue": "Queue",
+    "queueCount": "Queue — {count} tracks",
+    "lyrics": "Lyrics",
+    "tabLyrics": "Lyrics",
+    "tabQueue": "Queue",
+    "qualityAuto": "Auto",
+    "quality4k": "4K",
+    "quality1080": "1080p",
+    "quality720": "720p",
+    "quality480": "480p",
+    "subtitleActive": "Persian subtitles activated"
+  },
+  "mediaCard": {
+    "sample": "Sample",
+    "new": "New"
+  },
+  "hero": {
+    "play": "Play",
+    "added": "Added",
+    "add": "Add"
+  },
+  "sectionRow": {
+    "viewAll": "View All"
+  },
+  "modal": {
+    "directors": "Director",
+    "cast": "Cast",
+    "metacritic": "Metacritic",
+    "watchTrailer": "Watch Trailer",
+    "download": "Download",
+    "streamOnline": "Stream Online",
+    "notAvailable": "Not currently available",
+    "unmute": "Unmute",
+    "mute": "Mute",
+    "h": "h",
+    "m": "m"
+  }
+}

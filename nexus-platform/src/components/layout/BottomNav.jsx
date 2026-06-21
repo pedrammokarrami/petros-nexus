@@ -1,16 +1,24 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Home, Search, Library, User, Music, Film } from 'lucide-react'
 import usePlayerStore from '../../store/usePlayerStore'
+import './BottomNav.css'
 
 const tabs = [
   { path: '/home', icon: Home, labelKey: 'nav.home' },
   { path: '/search', icon: Search, labelKey: 'nav.search' },
   { path: null, icon: null, label: null, isModeSwitch: true },
-  { path: '/library', icon: Library, labelKey: 'nav.library' },
-  { path: '/profile', icon: User, labelKey: 'nav.profile' }
+  { path: '/hub', icon: Library, labelKey: 'nav.hub' },
+  { path: '/profile', icon: User, labelKey: 'nav.profile' },
 ]
+
+const tabColors = {
+  '/home': '#00f5d4',
+  '/search': '#a0a0b0',
+  '/hub': '#00f5d4',
+  '/profile': '#f72585',
+}
 
 export default function BottomNav() {
   const navigate = useNavigate()
@@ -19,106 +27,66 @@ export default function BottomNav() {
   const { mode, toggleMode } = usePlayerStore()
 
   return (
-    <nav
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: `calc(var(--bottomnav-height) + var(--safe-bottom))`,
-        paddingBottom: 'var(--safe-bottom)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        zIndex: 100,
-        background: 'rgba(8, 8, 16, 0.9)',
-        backdropFilter: 'blur(40px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(40px) saturate(200%)',
-        borderTop: '1px solid var(--glass-border)'
-      }}
-    >
+    <nav className="bottom-nav">
       {tabs.map((tab, index) => {
         if (tab.isModeSwitch) {
+          const isSoundMode = mode === 'sound'
           return (
             <button
               key={`mode-switch-${index}`}
+              className={`mode-switch-btn ${isSoundMode ? 'sound-mode' : 'vision-mode'}`}
               onClick={() => {
                 const newMode = mode === 'sound' ? 'vision' : 'sound'
                 toggleMode()
                 navigate(newMode === 'sound' ? '/sound' : '/vision')
               }}
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-                position: 'relative',
-                background: 'var(--accent-gradient)',
-                color: '#fff',
-                marginTop: -20,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-                border: '2px solid var(--bg-primary)'
-              }}
             >
               <motion.div
                 key={mode}
+                className="mode-switch-icon"
                 initial={{ rotate: -180, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 20 }}
               >
-                {mode === 'sound' ? <Music size={22} /> : <Film size={22} />}
+                {isSoundMode ? <Music size={20} /> : <Film size={20} />}
               </motion.div>
-              <span style={{ fontSize: 9, fontWeight: 600, opacity: 0.8 }}>
-                {mode === 'sound' ? t('nav.sound') : t('nav.vision')}
+              <span className="mode-switch-label">
+                {isSoundMode ? t('nav.sound') : t('nav.vision')}
               </span>
             </button>
           )
         }
 
         const isActive = location.pathname === tab.path
+        const color = tabColors[tab.path]
 
         return (
           <button
             key={`tab-${index}`}
+            className="bottom-nav-tab"
             onClick={() => navigate(tab.path)}
-            style={{
-              width: 64,
-              height: 48,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              position: 'relative'
-            }}
           >
-            {isActive && (
-              <motion.div
-                layoutId="nav-bubble"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            <div className={`tab-icon-wrapper ${isActive ? 'active' : ''}`}>
+              <div
+                className="tab-icon-glow"
                 style={{
-                  position: 'absolute',
-                  top: -2,
-                  width: 24,
-                  height: 3,
-                  borderRadius: 2,
-                  background: 'var(--accent-gradient)'
+                  background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
+                  boxShadow: isActive ? `0 0 12px ${color}` : 'none',
                 }}
               />
-            )}
-            <tab.icon
-              size={22}
-              color={isActive ? 'var(--accent-primary)' : 'var(--text-muted)'}
-            />
+              <tab.icon
+                size={22}
+                className="tab-icon"
+                style={{
+                  color: isActive ? color : 'rgba(255, 255, 255, 0.4)',
+                }}
+              />
+            </div>
             <span
+              className="tab-label"
               style={{
-                fontSize: 10,
+                color: isActive ? color : 'rgba(255, 255, 255, 0.35)',
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)'
               }}
             >
               {t(tab.labelKey)}

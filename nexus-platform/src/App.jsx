@@ -1,15 +1,18 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import './i18n/index'
 import AppShell from './components/layout/AppShell'
 import Splash from './pages/Splash'
 import HomePage from './pages/HomePage'
 import Sound from './pages/Sound'
 import Vision from './pages/Vision'
 import Search from './pages/Search'
-import NexusHubPage from './pages/NexusHubPage'
+import LibraryPage from './pages/LibraryPage'
 import PlaylistsPage from './pages/PlaylistsPage'
 import ProfilePage from './pages/ProfilePage'
-import Settings from './pages/Settings'
+import SettingsPage from './pages/SettingsPage'
 import DJModePage from './pages/DJModePage'
 import FanClubsListPage from './pages/FanClubsListPage'
 import FanClubPage from './pages/FanClubPage'
@@ -33,6 +36,19 @@ function AuthGuard() {
 
 export default function App() {
   const { isPlayerOpen, playbackType, currentMedia } = usePlayerStore()
+  const { i18n } = useTranslation()
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferredLanguage')
+    if (savedLanguage && savedLanguage !== i18n.language) {
+      i18n.changeLanguage(savedLanguage)
+    }
+  }, [i18n])
+
+  useEffect(() => {
+    const dir = i18n.language === 'fa' || i18n.language === 'ar' ? 'rtl' : 'ltr'
+    document.documentElement.dir = dir
+  }, [i18n.language])
 
   return (
     <>
@@ -46,13 +62,15 @@ export default function App() {
             <Route path="/sound" element={<Sound />} />
             <Route path="/vision" element={<Vision />} />
             <Route path="/search" element={<Search />} />
-            <Route path="/library" element={<NexusHubPage />} />
-            <Route path="/library/playlists" element={<PlaylistsPage />} />
-            <Route path="/library/fan-club" element={<FanClubsListPage />} />
-            <Route path="/library/fan-club/:clubId" element={<FanClubPage />} />
-            <Route path="/library/friends" element={<FriendsPage />} />
+            <Route path="/hub" element={<LibraryPage />} />
+            <Route path="/hub/playlists" element={<PlaylistsPage />} />
+            <Route path="/hub/fan-club" element={<FanClubsListPage />} />
+            <Route path="/hub/fan-club/:clubId" element={<FanClubPage />} />
+            <Route path="/hub/friends" element={<FriendsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/library" element={<Navigate to="/hub" replace />} />
+            <Route path="/library/*" element={<Navigate to="/hub" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
           <Route path="/dj" element={<DJModePage />} />

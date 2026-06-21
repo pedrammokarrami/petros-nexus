@@ -1,0 +1,177 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--bottomnav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  background: rgba(8, 8, 16, 0.85);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.bottom-nav-tab {
+  flex: 1;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tab-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-icon-wrapper.active {
+  transform: scale(1.1);
+}
+
+.tab-icon-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-icon-wrapper.active .tab-icon-glow {
+  opacity: 0.25;
+  transform: scale(1);
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.1);
+  }
+}
+
+.tab-icon {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-icon-wrapper.active .tab-icon {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.tab-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  transition: all 0.3s ease;
+}
+
+/* Mode switch (center button) */
+.mode-switch-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  margin-top: -18px;
+  color: #fff;
+  border: 2.5px solid rgba(8, 8, 16, 0.95);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mode-switch-btn.sound-mode {
+  background: linear-gradient(135deg, #9B5DE5, #7c3aed);
+  box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4);
+}
+
+.mode-switch-btn.vision-mode {
+  background: linear-gradient(135deg, #F72585, #d61c6e);
+  box-shadow: 0 4px 20px rgba(247, 37, 133, 0.4);
+}
+
+.mode-switch-btn:active {
+  transform: scale(0.92);
+}
+
+.mode-switch-icon {
+  transition: all 0.3s ease;
+}
+
+.mode-switch-label {
+  font-size: 8px;
+  font-weight: 600;
+  opacity: 0.85;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 480px) {
+  .bottom-nav-tab {
+    height: 44px;
+  }
+
+  .tab-icon-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tab-label {
+    font-size: 8px;
+  }
+
+  .mode-switch-btn {
+    width: 48px;
+    height: 48px;
+    margin-top: -16px;
+  }
+
+  .mode-switch-label {
+    font-size: 7px;
+  }
+}
+
+@media (min-width: 768px) {
+  .bottom-nav-tab {
+    height: 52px;
+  }
+
+  .tab-label {
+    font-size: 10px;
+  }
+
+  .mode-switch-btn {
+    width: 56px;
+    height: 56px;
+    margin-top: -20px;
+  }
+}

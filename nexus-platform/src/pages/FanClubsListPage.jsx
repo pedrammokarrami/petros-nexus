@@ -72,7 +72,7 @@ export default function FanClubsListPage() {
         <FanClubCard
           key={club.id}
           club={club}
-          onJoin={() => navigate(`/library/fan-club/${club.id}`)}
+          onJoin={() => navigate(`/hub/fan-club/${club.id}`)}
           onToggleFollow={toggleFollow}
         />
       )),
@@ -86,7 +86,7 @@ export default function FanClubsListPage() {
         key={club.id}
         club={club}
         badgeLabel={club.badgeLabel}
-        onJoin={() => navigate(`/library/fan-club/${club.id}`)}
+        onJoin={() => navigate(`/hub/fan-club/${club.id}`)}
         onToggleFollow={toggleSuggestionFollow}
       />
     ))
@@ -173,7 +173,7 @@ export default function FanClubsListPage() {
 
       <button
         className="btn-add-club-fab"
-        onClick={() => navigate('/library/fan-club/create')}
+        onClick={() => navigate('/hub/fan-club/create')}
       >
         <Plus size={20} />
         <span>Create New Club</span>

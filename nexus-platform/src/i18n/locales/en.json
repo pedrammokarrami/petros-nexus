@@ -1,0 +1,225 @@
+{
+  "app": {
+    "brand": "NEXUS",
+    "tagline": "Your Universe of Entertainment",
+    "splashSound": "Enter the World of Sound",
+    "splashVision": "Enter the World of Vision"
+  },
+  "common": {
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "hub": "Hub",
+    "profile": "Profile",
+    "sound": "Sound",
+    "vision": "Vision",
+    "friends": "Friends",
+    "settings": "Settings"
+  },
+  "header": {
+    "home": "Home",
+    "sound": "Sound",
+    "vision": "Vision",
+    "search": "Search",
+    "hub": "Hub",
+    "settings": "Settings",
+    "notifications": "Notifications"
+  },
+  "home": {
+    "welcome": "Welcome back",
+    "recommendations": "Recommendations",
+    "trending": "Trending",
+    "continuePlaying": "Continue Playing",
+    "yourFriends": "Your Friends Are Playing",
+    "discover": "Discover",
+    "continueWatching": "Continue Watching",
+    "newReleases": "New Releases",
+    "byMood": "By Your Mood",
+    "noMoodResults": "No results for this mood",
+    "speciallyForYou": "Specially For You",
+    "popularInYourArea": "Popular In Your Area",
+    "new": "New",
+    "aiSuggestion": "AI Suggestion",
+    "popular": "Popular",
+    "moods": {
+      "aramesh": "Calm",
+      "pranergi": "Energetic",
+      "tamarkoz": "Focus",
+      "ghamgin": "Sad",
+      "shad": "Happy"
+    }
+  },
+  "search": {
+    "placeholder": "Search music, movies, podcasts...",
+    "browseByGenre": "Browse by Genre",
+    "loading": "Searching...",
+    "error": "Connection error",
+    "noResults": "No results for \"{query}\"",
+    "typeMusic": "Music",
+    "typeMovie": "Movie",
+    "typePodcast": "Podcast",
+    "typeSeries": "Series",
+    "moods": {
+      "aramesh": "Calm",
+      "energy": "Energy",
+      "emotional": "Emotional",
+      "shad": "Happy",
+      "tamarkoz": "Focus"
+    },
+    "tabAudio": "Audio",
+    "tabVideo": "Video",
+    "genres": {
+      "pop": "Pop",
+      "rock": "Rock",
+      "hiphop": "Hip-Hop",
+      "electronic": "Electronic",
+      "classical": "Classical",
+      "jazz": "Jazz",
+      "podcast": "Podcast",
+      "audiobook": "Audiobook"
+    }
+  },
+  "sound": {
+    "music": "Music",
+    "podcast": "Podcast",
+    "radio": "Radio",
+    "audiobook": "Audiobook",
+    "featured": "Featured",
+    "topOfTheWeek": "Top of the Week",
+    "tracksCount": "{count} tracks • Editor's Pick",
+    "mostPopular": "Most Popular",
+    "newest": "Newest",
+    "weeklySuggestion": "Weekly Suggestion",
+    "hotPodcasts": "Hot Podcasts",
+    "suggested": "Suggested",
+    "popularStations": "Popular Stations",
+    "popularBooks": "Most Popular Books"
+  },
+  "vision": {
+    "movie": "Movie",
+    "series": "Series",
+    "anime": "Anime",
+    "searchPlaceholder": "Search movies...",
+    "searchSeries": "Search series...",
+    "searchAnime": "Search anime...",
+    "searchResults": "Search Results",
+    "noResults": "No results found",
+    "popular": "Popular",
+    "newest": "Newest",
+    "topRated": "Top Rated",
+    "mostVoted": "Most Voted",
+    "action": "Action",
+    "comedy": "Comedy",
+    "worldCinema": "World Cinema",
+    "seriesTitle": "Popular Series",
+    "animeTitle": "Popular Anime",
+    "animeAiring": "Airing Now"
+  },
+  "library": {
+    "playlist": "Playlist",
+    "saved": "Saved",
+    "history": "History",
+    "defaultPlaylist1": "Favorite Tracks",
+    "defaultPlaylist2": "Good Vibes",
+    "defaultPlaylist3": "Driving",
+    "emptyPlaylist": "No playlists yet!",
+    "createPlaylist": "Create Playlist",
+    "createdAt": "Created on {date}",
+    "newPlaylist": "New Playlist",
+    "playlistNamePlaceholder": "Playlist name...",
+    "create": "Create",
+    "newPlaylistBtn": "Create New Playlist"
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back",
+    "general": "General",
+    "account": "Account",
+    "privacy": "Privacy",
+    "language": "Language",
+    "theme": "Dark Mode",
+    "notifications": "Notifications",
+    "about": "About",
+    "selectLanguage": "Select Language",
+    "searchLanguage": "Search languages...",
+    "allLanguages": "All Languages",
+    "currentLanguage": "Current Language",
+    "noResults": "No languages found",
+    "notificationsEnabled": "Notifications Enabled",
+    "changePassword": "Change Password",
+    "privacy": "Privacy Settings",
+    "deleteAccount": "Delete Account"
+  },
+  "languages": {
+    "en": "English",
+    "fa": "فارسی",
+    "ar": "العربية",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "中文"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "followers": "Followers",
+    "following": "Following",
+    "listeningHours": "Listening Hours",
+    "playlists": "Playlists"
+  },
+  "friends": {
+    "title": "Friends",
+    "discover": "Discover",
+    "suggestions": "Friend Suggestions",
+    "addFriend": "Add Friend",
+    "removeFriend": "Remove Friend",
+    "message": "Message",
+    "referrals": "My Referrals"
+  },
+  "player": {
+    "nowPlaying": "NOW PLAYING",
+    "queue": "Queue",
+    "queueCount": "Queue — {count} tracks",
+    "lyrics": "Lyrics",
+    "tabLyrics": "Lyrics",
+    "tabQueue": "Queue",
+    "qualityAuto": "Auto",
+    "quality4k": "4K",
+    "quality1080": "1080p",
+    "quality720": "720p",
+    "quality480": "480p",
+    "subtitleActive": "Persian subtitles activated"
+  },
+  "mediaCard": {
+    "sample": "Sample",
+    "new": "New"
+  },
+  "hero": {
+    "play": "Play",
+    "added": "Added",
+    "add": "Add"
+  },
+  "sectionRow": {
+    "viewAll": "View All"
+  },
+  "modal": {
+    "directors": "Director",
+    "cast": "Cast",
+    "metacritic": "Metacritic",
+    "watchTrailer": "Watch Trailer",
+    "download": "Download",
+    "streamOnline": "Stream Online",
+    "notAvailable": "Not currently available",
+    "unmute": "Unmute",
+    "mute": "Mute",
+    "h": "h",
+    "m": "m"
+  }
+}
