@@ -1,0 +1,24 @@
+{
+  "forceBiome": null,
+  "biomes": {
+    "urban": {
+      "image": "petros-assets/urban.png",
+      "particle": "rain"
+    },
+    "forest": {
+      "image": "petros-assets/forest.jpg",
+      "particle": "leaves"
+    },
+    "rural": {
+      "image": "petros-assets/rural.jpg",
+      "particle": "none"
+    },
+    "beach": {
+      "image": "petros-assets/beach.jpg",
+      "particle": "none"
+    }
+  },
+  "avatar": {
+    "image": "petros-assets/avatar.gif"
+  }
+}

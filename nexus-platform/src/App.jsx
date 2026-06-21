@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import './i18n/index'
+import PetrosBackground from '@petros-background/PetrosBackground'
 import AppShell from './components/layout/AppShell'
 import Splash from './pages/Splash'
 import HomePage from './pages/HomePage'
@@ -37,6 +38,10 @@ function AuthGuard() {
 export default function App() {
   const { isPlayerOpen, playbackType, currentMedia } = usePlayerStore()
   const { i18n } = useTranslation()
+  const location = useLocation()
+  const [petrosConfig, setPetrosConfig] = useState(null)
+
+  const isDJRoute = location.pathname === '/dj'
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('preferredLanguage')
@@ -50,8 +55,16 @@ export default function App() {
     document.documentElement.dir = dir
   }, [i18n.language])
 
+  useEffect(() => {
+    fetch('/petros-config.json')
+      .then((r) => r.json())
+      .then(setPetrosConfig)
+      .catch(() => {})
+  }, [])
+
   return (
     <>
+      <PetrosBackground enabled={!isDJRoute} config={petrosConfig} />
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<LoginPage />} />
