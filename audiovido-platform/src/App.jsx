@@ -94,8 +94,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
           <Route path="/dj" element={<DJModePage />} />
-          <Route path="/live/cinema/:mode" element={<LiveScreen />} />
-          <Route path="/live/music/:mode" element={<LiveScreen />} />
+          <Route path="/live/:category/:mode" element={<LiveScreen />} />
           <Route path="/business" element={<BusinessList />} />
           <Route path="/business/create" element={<BusinessCreate />} />
           <Route path="/business/:businessId" element={<BusinessSite />} />

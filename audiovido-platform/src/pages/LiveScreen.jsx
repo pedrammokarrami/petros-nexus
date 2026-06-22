@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Maximize2, Minimize2, ArrowLeft } from 'lucide-react'
 import LiveChat from '../components/live/LiveChat'
 import VisualFX from '../components/live/VisualFX'
@@ -64,9 +64,8 @@ const modeConfig = {
 }
 
 export default function LiveScreen() {
-  const location = useLocation()
-  const pathParts = location.pathname.split('/')
-  const fullMode = `${pathParts[2]}-${pathParts[3]}`
+  const { category, mode } = useParams()
+  const fullMode = `${category}-${mode}`
   const navigate = useNavigate()
   const config = modeConfig[fullMode]
   const [isFullscreen, setIsFullscreen] = useState(false)
