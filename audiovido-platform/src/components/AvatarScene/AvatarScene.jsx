@@ -70,7 +70,8 @@ function SceneContent({ stateRef }) {
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
-  const spineRef = useRef(null)
+  const boneRefs = useRef({})
+  const morphRef = useRef({})
 
   useEffect(() => {
     let cancelled = false
@@ -92,11 +93,21 @@ function SceneContent({ stateRef }) {
           if (child.isMesh) {
             child.castShadow = true
             child.receiveShadow = true
+            if (child.morphTargetDictionary) {
+              morphRef.current.mesh = child
+              console.log('[Sophie morphs]', Object.keys(child.morphTargetDictionary))
+            }
           }
         })
 
-        const spineBone = model.getObjectByName('mixamorig:Spine') || model.getObjectByName('Spine')
-        if (spineBone) spineRef.current = spineBone
+        const boneNames = ['mixamorig:Hips', 'Hips', 'mixamorig:Spine', 'Spine',
+          'mixamorig:Spine1', 'Spine1', 'mixamorig:Spine2', 'Spine2',
+          'mixamorig:LeftArm', 'LeftArm', 'mixamorig:RightArm', 'RightArm',
+          'mixamorig:Head', 'Head']
+        boneNames.forEach(name => {
+          const bone = model.getObjectByName(name)
+          if (bone) boneRefs.current[name] = bone
+        })
 
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
@@ -150,17 +161,71 @@ function SceneContent({ stateRef }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  function animateIdle(model, time) {
+    const hips = boneRefs.current['mixamorig:Hips'] || boneRefs.current['Hips']
+    const spine1 = boneRefs.current['mixamorig:Spine1'] || boneRefs.current['Spine1']
+    const spine = boneRefs.current['mixamorig:Spine'] || boneRefs.current['Spine']
+    const lArm = boneRefs.current['mixamorig:LeftArm'] || boneRefs.current['LeftArm']
+    const rArm = boneRefs.current['mixamorig:RightArm'] || boneRefs.current['RightArm']
+
+    if (hips) {
+      hips.position.y += Math.sin(time * 0.8) * 0.0003
+      hips.rotation.z = Math.sin(time * 0.5) * 0.008
+    }
+    if (spine1) {
+      spine1.rotation.z = Math.sin(time * 0.6 + 0.5) * 0.012
+      spine1.rotation.x = Math.sin(time * 0.4) * 0.008
+    }
+    if (spine) {
+      spine.rotation.z = Math.sin(time * 0.8) * 0.012
+      spine.rotation.x = Math.sin(time * 0.6) * 0.008
+    }
+    if (lArm) {
+      lArm.rotation.z = -1.4 + Math.sin(time * 0.7) * 0.04
+    }
+    if (rArm) {
+      rArm.rotation.z = 1.4 + Math.sin(time * 0.7 + 1) * 0.04
+    }
+  }
+
+  function animateTalking(model, time) {
+    const jawBone = boneRefs.current['mixamorig:Head'] || boneRefs.current['Head']
+    if (jawBone) {
+      jawBone.rotation.x = Math.abs(Math.sin(time * 8)) * 0.1
+    }
+
+    const mesh = morphRef.current.mesh
+    if (mesh && mesh.morphTargetDictionary) {
+      const jawOpen = mesh.morphTargetDictionary['jawOpen']
+        ?? mesh.morphTargetDictionary['JawOpen']
+        ?? mesh.morphTargetDictionary['mouth_open']
+      if (jawOpen !== undefined) {
+        const speed = 8
+        const openAmount = Math.abs(Math.sin(time * speed)) * 0.6
+          + Math.abs(Math.sin(time * speed * 1.3)) * 0.3
+        mesh.morphTargetInfluences[jawOpen] = openAmount
+      }
+    }
+  }
+
+  function resetMouth(model) {
+    const mesh = morphRef.current.mesh
+    if (mesh && mesh.morphTargetInfluences) {
+      mesh.morphTargetInfluences.fill(0)
+    }
+    const jawBone = boneRefs.current['mixamorig:Head'] || boneRefs.current['Head']
+    if (jawBone) {
+      jawBone.rotation.x = 0
+    }
+  }
+
   useFrame((state, delta) => {
     if (mixerRef.current) mixerRef.current.update(delta)
 
-    // Procedural idle breathing
-    if (currentAnimRef.current === 'idle' && spineRef.current) {
-      const t = state.clock.elapsedTime
-      spineRef.current.rotation.z = Math.sin(t * 0.8) * 0.012
-      spineRef.current.rotation.x = Math.sin(t * 0.6) * 0.008
-    }
-
+    const t = state.clock.elapsedTime
     const wanted = stateRef.current
+
+    // Handle animation state transitions
     if (wanted !== currentAnimRef.current) {
       const prev = actionsRef.current[currentAnimRef.current]
       const next = actionsRef.current[wanted]
@@ -179,6 +244,9 @@ function SceneContent({ stateRef }) {
         next.timeScale = 1.0
         next.play()
         prev.crossFadeTo(next, 0.3, true)
+      } else if (prev && !next) {
+        prev.fadeOut(0.3)
+        setTimeout(() => prev.stop(), 300)
       } else if (next && !prev) {
         next.reset().play()
       }
@@ -199,18 +267,28 @@ function SceneContent({ stateRef }) {
         }
       }
 
-      if (spineRef.current) {
-        spineRef.current.rotation.z = 0
-        spineRef.current.rotation.x = 0
+      if (wanted === 'idle' && prev) {
+        resetMouth(modelRef.current)
       }
 
       currentAnimRef.current = wanted
     }
 
+    // Procedural idle animation (breathing + arm sway)
+    if (wanted === 'idle' && modelRef.current) {
+      animateIdle(modelRef.current, t)
+    }
+
+    // Lip sync during talking
+    if (wanted === 'talking' && modelRef.current) {
+      animateTalking(modelRef.current, t)
+    }
+
+    // Position animation for walking/returning
     if (animPosRef.current && modelRef.current) {
       const ap = animPosRef.current
       const progress = Math.min(
-        (state.clock.elapsedTime - ap.startTime) / ap.duration,
+        (t - ap.startTime) / ap.duration,
         1
       )
       const eased = 1 - Math.pow(1 - progress, 3)
@@ -219,7 +297,6 @@ function SceneContent({ stateRef }) {
     }
 
     if (pulseLightRef.current) {
-      const t = state.clock.elapsedTime
       pulseLightRef.current.intensity = 0.4 + Math.sin(t * 2) * 0.15
     }
   })
