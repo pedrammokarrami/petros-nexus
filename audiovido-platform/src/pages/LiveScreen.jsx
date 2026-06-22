@@ -8,7 +8,7 @@ import usePlayerStore from '../store/usePlayerStore'
 
 const modeConfig = {
   'cinema-modern': {
-    bg: '/images/live/cinema-modern.svg',
+    bg: '/images/live/cinema-modern.png',
     theme: 'modern',
     accent: '#60a5fa',
     inputStyle: {
@@ -17,7 +17,7 @@ const modeConfig = {
     },
   },
   'cinema-negative': {
-    bg: '/images/live/cinema-negative.svg',
+    bg: '/images/live/cinema-negative.png',
     theme: 'negative',
     accent: '#a78b5a',
     inputStyle: {
@@ -26,7 +26,7 @@ const modeConfig = {
     },
   },
   'cinema-tv': {
-    bg: '/images/live/cinema-tv.svg',
+    bg: '/images/live/cinema-tv.png',
     theme: 'tv',
     accent: '#38bdf8',
     inputStyle: {
@@ -35,7 +35,7 @@ const modeConfig = {
     },
   },
   'music-bar': {
-    bg: '/images/live/music-bar.svg',
+    bg: '/images/live/music-bar.png',
     theme: 'bar',
     accent: '#f59e0b',
     inputStyle: {
@@ -44,7 +44,7 @@ const modeConfig = {
     },
   },
   'music-club': {
-    bg: '/images/live/music-club.svg',
+    bg: '/images/live/music-club.png',
     theme: 'club',
     accent: '#a855f7',
     inputStyle: {
@@ -53,7 +53,7 @@ const modeConfig = {
     },
   },
   'music-concert': {
-    bg: '/images/live/music-concert.svg',
+    bg: '/images/live/music-concert.png',
     theme: 'concert',
     accent: '#f43f5e',
     inputStyle: {
