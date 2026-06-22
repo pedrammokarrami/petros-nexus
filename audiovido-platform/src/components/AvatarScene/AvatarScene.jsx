@@ -70,6 +70,7 @@ function SceneContent({ stateRef }) {
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
+  const spineRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
@@ -94,6 +95,9 @@ function SceneContent({ stateRef }) {
           }
         })
 
+        const spineBone = model.getObjectByName('mixamorig:Spine') || model.getObjectByName('Spine')
+        if (spineBone) spineRef.current = spineBone
+
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const height = size.y || 1
@@ -101,11 +105,8 @@ function SceneContent({ stateRef }) {
         const targetHeight = 2.0
         const scale = targetHeight / height
 
-        console.log(`[AvatarScene] Model height: ${height.toFixed(2)}, scale: ${scale.toFixed(4)}`)
-
         model.scale.setScalar(scale)
 
-        // Center model so feet are near y=0
         box.setFromObject(model)
         const center = box.getCenter(new THREE.Vector3())
         model.position.set(0, -center.y, 0)
@@ -116,20 +117,11 @@ function SceneContent({ stateRef }) {
         mixerRef.current = mixer
 
         const clips = {
-          idle: baseModel.animations[0],
           talking: talkingFbx.animations[0],
           walking: walkingFbx.animations[0],
           returning: stopWalkingFbx.animations[0],
         }
 
-        if (clips.idle) {
-          const a = mixer.clipAction(clips.idle)
-          a.setLoop(THREE.LoopRepeat)
-          a.timeScale = 0.2
-          a.setEffectiveWeight(0.3)
-          a.play()
-          actionsRef.current.idle = a
-        }
         if (clips.talking) {
           const a = mixer.clipAction(clips.talking)
           a.setLoop(THREE.LoopRepeat)
@@ -161,6 +153,13 @@ function SceneContent({ stateRef }) {
   useFrame((state, delta) => {
     if (mixerRef.current) mixerRef.current.update(delta)
 
+    // Procedural idle breathing
+    if (currentAnimRef.current === 'idle' && spineRef.current) {
+      const t = state.clock.elapsedTime
+      spineRef.current.rotation.z = Math.sin(t * 0.8) * 0.012
+      spineRef.current.rotation.x = Math.sin(t * 0.6) * 0.008
+    }
+
     const wanted = stateRef.current
     if (wanted !== currentAnimRef.current) {
       const prev = actionsRef.current[currentAnimRef.current]
@@ -176,13 +175,8 @@ function SceneContent({ stateRef }) {
         if (wanted === 'walking_out' || wanted === 'returning') {
           next.clampWhenFinished = true
         }
-        if (wanted === 'idle') {
-          next.setEffectiveWeight(0.3)
-          next.timeScale = 0.2
-        } else if (wanted === 'talking') {
-          next.timeScale = 1.0
-          next.setEffectiveWeight(1.0)
-        }
+        next.setEffectiveWeight(1.0)
+        next.timeScale = 1.0
         next.play()
         prev.crossFadeTo(next, 0.3, true)
       } else if (next && !prev) {
@@ -193,16 +187,21 @@ function SceneContent({ stateRef }) {
         animPosRef.current = {
           startTime: state.clock.elapsedTime,
           from: modelRef.current?.position.x || 0,
-          to: 2,
+          to: -0.8,
           duration: 1.2,
         }
       } else if (wanted === 'returning') {
         animPosRef.current = {
           startTime: state.clock.elapsedTime,
-          from: modelRef.current?.position.x || 2,
+          from: modelRef.current?.position.x || -0.8,
           to: 0,
           duration: 1.0,
         }
+      }
+
+      if (spineRef.current) {
+        spineRef.current.rotation.z = 0
+        spineRef.current.rotation.x = 0
       }
 
       currentAnimRef.current = wanted

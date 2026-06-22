@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, ArrowUp } from 'lucide-react'
 import AvatarScene from '../components/AvatarScene/AvatarScene'
 import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
-import LiquidChoices from '../components/LiquidChoices/LiquidChoices'
 
 const MOCK_RESPONSES = [
   { text: "Hi! 👋 What kind of music are you looking for?", choices: ["Pop", "Rock", "Hip-Hop", "Electronic"] },
@@ -171,14 +170,57 @@ function ThinkingDots() {
   return <>Sophie is thinking{dots}</>
 }
 
+function ChoiceCard({ choice, index, dismissed, selected, onSelect }) {
+  const isSelected = selected === index
+  const isDismissed = dismissed && !isSelected
+
+  return (
+    <motion.button
+      key={`choice-${index}-${choice}`}
+      initial={false}
+      animate={{
+        opacity: isDismissed ? 0 : isSelected ? 0 : 1,
+        scale: isSelected ? [1, 1.15, 0] : isDismissed ? 0.8 : 1,
+        y: isDismissed ? 8 : 0,
+      }}
+      transition={{
+        duration: isSelected ? 0.35 : 0.3,
+        ease: 'easeOut',
+      }}
+      onClick={() => !dismissed && onSelect(choice, index)}
+      style={{
+        padding: '16px 20px',
+        borderRadius: 20,
+        border: '1px solid rgba(255,255,255,0.15)',
+        background: 'rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'Inter, system-ui, sans-serif',
+        cursor: dismissed ? 'default' : 'pointer',
+        textAlign: 'center',
+        outline: 'none',
+        WebkitTapHighlightColor: 'transparent',
+        width: '100%',
+        borderColor: isSelected ? '#00e5ff' : 'rgba(255,255,255,0.15)',
+      }}
+    >
+      {choice}
+    </motion.button>
+  )
+}
+
 export default function Search() {
   const { avatarRef, setTalking, setIdle, setWalkingOut, setReturning } = useAvatarAnimations()
   const [chatState, setChatState] = useState('idle')
   const [lastMessage, setLastMessage] = useState(null)
   const [currentChoices, setCurrentChoices] = useState(null)
+  const [selectedChoice, setSelectedChoice] = useState(null)
+  const [dismissed, setDismissed] = useState(false)
   const mockIndexRef = useRef(0)
 
-  // Cleanup timeouts on unmount
   const timersRef = useRef([])
   useEffect(() => {
     return () => {
@@ -198,6 +240,8 @@ export default function Search() {
     setChatState('thinking')
     setCurrentChoices(null)
     setLastMessage(null)
+    setSelectedChoice(null)
+    setDismissed(false)
 
     setTimer(() => {
       const responses = MOCK_RESPONSES
@@ -228,16 +272,23 @@ export default function Search() {
     }, 800)
   }, [chatState, setTalking, setIdle, setWalkingOut, setReturning, setTimer])
 
-  const handleChoiceSelected = useCallback((value) => {
-    setCurrentChoices(null)
-    setChatState('returning')
-    setReturning()
+  const handleChoiceSelect = useCallback((value, index) => {
+    setSelectedChoice(index)
+    setDismissed(true)
 
     setTimer(() => {
-      setChatState('idle')
-      setLastMessage(null)
-      setIdle()
-    }, 1000)
+      setCurrentChoices(null)
+      setSelectedChoice(null)
+      setDismissed(false)
+      setChatState('returning')
+      setReturning()
+
+      setTimer(() => {
+        setChatState('idle')
+        setLastMessage(null)
+        setIdle()
+      }, 1000)
+    }, 400)
   }, [setReturning, setIdle, setTimer])
 
   return (
@@ -259,8 +310,18 @@ export default function Search() {
         }}
       />
 
-      {/* Avatar Scene */}
-      <AvatarScene ref={avatarRef} />
+      {/* Avatar Scene — sized down when choices shown */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: chatState === 'choosing' ? '40%' : '100%',
+          transition: 'width 0.5s ease',
+          zIndex: 1,
+        }}
+      >
+        <AvatarScene ref={avatarRef} />
+      </div>
 
       {/* Gradient overlay for readability */}
       <div
@@ -310,11 +371,32 @@ export default function Search() {
         )}
       </AnimatePresence>
 
-      {/* Liquid glass choices */}
-      <LiquidChoices
-        choices={currentChoices}
-        onChoiceSelected={handleChoiceSelected}
-      />
+      {/* Choices — right side when choosing, bottom when returning */}
+      {chatState === 'choosing' && currentChoices && (
+        <div
+          style={{
+            position: 'absolute',
+            right: '5%',
+            top: '20%',
+            width: '50%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            zIndex: 10,
+          }}
+        >
+          {currentChoices.map((choice, i) => (
+            <ChoiceCard
+              key={i}
+              choice={choice}
+              index={i}
+              dismissed={dismissed}
+              selected={selectedChoice}
+              onSelect={handleChoiceSelect}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Input bar */}
       <InputBar
