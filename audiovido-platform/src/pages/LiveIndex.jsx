@@ -10,7 +10,6 @@ const modes = [
     icon: Monitor,
     labelKey: 'live.mode.modern',
     descKey: 'live.mode.modernDesc',
-    bg: '/images/live/cinema-modern.png',
     gradient: 'linear-gradient(135deg, #0a0a2e, #1a1a4e)',
     color: '#60a5fa',
   },
@@ -20,7 +19,6 @@ const modes = [
     icon: Film,
     labelKey: 'live.mode.negative',
     descKey: 'live.mode.negativeDesc',
-    bg: '/images/live/cinema-negative.png',
     gradient: 'linear-gradient(135deg, #1a1a0a, #3a2a18)',
     color: '#a78b5a',
   },
@@ -30,7 +28,6 @@ const modes = [
     icon: Tv,
     labelKey: 'live.mode.tv',
     descKey: 'live.mode.tvDesc',
-    bg: '/images/live/cinema-tv.png',
     gradient: 'linear-gradient(135deg, #0a0a14, #1a1a2e)',
     color: '#38bdf8',
   },
@@ -40,7 +37,6 @@ const modes = [
     icon: Wine,
     labelKey: 'live.mode.bar',
     descKey: 'live.mode.barDesc',
-    bg: '/images/live/music-bar.png',
     gradient: 'linear-gradient(135deg, #1a0e06, #3a2010)',
     color: '#f59e0b',
   },
@@ -50,7 +46,6 @@ const modes = [
     icon: Music,
     labelKey: 'live.mode.club',
     descKey: 'live.mode.clubDesc',
-    bg: '/images/live/music-club.png',
     gradient: 'linear-gradient(135deg, #1a0520, #2a1050)',
     color: '#a855f7',
   },
@@ -60,7 +55,6 @@ const modes = [
     icon: Mic2,
     labelKey: 'live.mode.concert',
     descKey: 'live.mode.concertDesc',
-    bg: '/images/live/music-concert.png',
     gradient: 'linear-gradient(135deg, #0e0818, #1a1030)',
     color: '#f43f5e',
   },
@@ -102,16 +96,6 @@ export default function LiveIndex() {
               position: 'absolute', inset: 0,
               background: mode.gradient,
             }} />
-            <img
-              src={mode.bg}
-              alt=""
-              style={{
-                position: 'absolute', inset: 0,
-                width: '100%', height: '100%',
-                objectFit: 'cover',
-                opacity: 0.4,
-              }}
-            />
             <div style={{
               position: 'absolute', inset: 0,
               background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
