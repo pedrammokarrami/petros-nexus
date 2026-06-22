@@ -22,8 +22,31 @@ function loadFbx(url) {
   })
 }
 
+function CameraController() {
+  const { camera } = useThree()
+  useEffect(() => {
+    camera.lookAt(0, 0.8, 0)
+  }, [camera])
+  return null
+}
+
+function LoadingPlaceholder() {
+  const meshRef = useRef()
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.elapsedTime * 0.5
+    }
+  })
+  return (
+    <mesh ref={meshRef} position={[0, 0.8, 0]}>
+      <sphereGeometry args={[0.3, 16, 16]} />
+      <meshStandardMaterial color="#7c3aed" emissive="#4c1d95" emissiveIntensity={0.3} />
+    </mesh>
+  )
+}
+
 function SceneContent({ stateRef }) {
-  const { gl } = useThree()
+  const { gl, camera } = useThree()
   const groupRef = useRef(null)
   const mixerRef = useRef(null)
   const actionsRef = useRef({})
@@ -31,6 +54,7 @@ function SceneContent({ stateRef }) {
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
+  const loadedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -48,13 +72,26 @@ function SceneContent({ stateRef }) {
         modelRef.current = model
         groupRef.current.add(model)
 
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true
+            child.receiveShadow = true
+          }
+        })
+
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
-        const height = size.y
-        const vh = gl.domElement.clientHeight
-        const scale = Math.min((vh * 0.8) / height, 2.5)
+        const center = box.getCenter(new THREE.Vector3())
+        const height = size.y || 1
+
+        const vh = gl.domElement.clientHeight || window.innerHeight
+        const targetHeight = vh * 0.7
+        const scale = Math.min(targetHeight / height, 3.0)
+
         model.scale.setScalar(scale)
-        model.position.y = -(height * 0.5) * scale * 0.35
+        model.position.set(0, -center.y * scale, 0)
+
+        camera.lookAt(0, 0.8, 0)
 
         const mixer = new THREE.AnimationMixer(model)
         mixerRef.current = mixer
@@ -92,17 +129,19 @@ function SceneContent({ stateRef }) {
           a.clampWhenFinished = true
           actionsRef.current.returning = a
         }
+
+        loadedRef.current = true
       } catch (err) {
         console.error('[AvatarScene] FBX load failed:', err)
       }
     })()
     return () => { cancelled = true }
-  }, [gl])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useFrame((state, delta) => {
     if (mixerRef.current) mixerRef.current.update(delta)
 
-    // State transition handling
     const wanted = stateRef.current
     if (wanted !== currentAnimRef.current) {
       const prev = actionsRef.current[currentAnimRef.current]
@@ -150,7 +189,6 @@ function SceneContent({ stateRef }) {
       currentAnimRef.current = wanted
     }
 
-    // Position animation
     if (animPosRef.current && modelRef.current) {
       const ap = animPosRef.current
       const progress = Math.min(
@@ -162,7 +200,6 @@ function SceneContent({ stateRef }) {
       if (progress >= 1) animPosRef.current = null
     }
 
-    // Pulsing glow
     if (pulseLightRef.current) {
       const t = state.clock.elapsedTime
       pulseLightRef.current.intensity = 0.4 + Math.sin(t * 2) * 0.15
@@ -171,6 +208,7 @@ function SceneContent({ stateRef }) {
 
   return (
     <>
+      <CameraController />
       <ambientLight intensity={0.6} />
       <directionalLight position={[2, 3, 2]} intensity={0.8} />
       <pointLight
@@ -180,6 +218,7 @@ function SceneContent({ stateRef }) {
         color="#00e5ff"
       />
       <group ref={groupRef} />
+      {!loadedRef.current && <LoadingPlaceholder />}
     </>
   )
 }
@@ -206,7 +245,7 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
       }}
     >
       <Canvas
-        camera={{ fov: 45, position: [0, 0, 3], near: 0.1, far: 100 }}
+        camera={{ fov: 45, position: [0, 0.5, 3.5], near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true }}
         onCreated={({ gl }) => {
           gl.setClearAlpha(0)
