@@ -10,7 +10,7 @@ const modeConfig = {
     theme: 'modern',
     type: 'cinema',
     accent: '#60a5fa',
-    frame: { top: '15%', left: '11%', width: '78%', height: '40%' },
+    frame: { top: '28%', left: '8%', width: '84%', height: '37%' },
     inputStyle: {
       background: 'rgba(96, 165, 250, 0.15)',
       borderColor: 'rgba(96, 165, 250, 0.3)',
@@ -21,7 +21,7 @@ const modeConfig = {
     theme: 'negative',
     type: 'cinema',
     accent: '#a78b5a',
-    frame: { top: '14%', left: '10%', width: '80%', height: '44%' },
+    frame: { top: '32%', left: '9%', width: '83%', height: '32%' },
     inputStyle: {
       background: 'rgba(167, 139, 90, 0.15)',
       borderColor: 'rgba(167, 139, 90, 0.3)',
@@ -32,7 +32,7 @@ const modeConfig = {
     theme: 'tv',
     type: 'cinema',
     accent: '#38bdf8',
-    frame: { top: '14%', left: '18%', width: '64%', height: '40%' },
+    frame: { top: '21%', left: '16%', width: '68%', height: '45%' },
     inputStyle: {
       background: 'rgba(56, 189, 248, 0.1)',
       borderColor: 'rgba(56, 189, 248, 0.25)',
