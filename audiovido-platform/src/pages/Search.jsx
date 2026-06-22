@@ -1,943 +1,326 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
-import { Search as SearchIcon, ArrowUp, Volume2, VolumeX } from 'lucide-react'
-import usePlayerStore from '../store/usePlayerStore'
-import MediaModal from '../components/ui/MediaModal'
-import Live2DAvatar from '../components/avatar/Live2DAvatar'
-import { getCompletion } from '../services/ai'
-import { searchTracks } from '../services/jamendo'
-import { searchTitles } from '../services/imdbapi'
-import { searchSeries } from '../services/tvmaze'
-import { searchAnime } from '../services/jikan'
+import { Mic, ArrowUp } from 'lucide-react'
+import AvatarScene from '../components/AvatarScene/AvatarScene'
+import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
+import LiquidChoices from '../components/LiquidChoices/LiquidChoices'
 
-const SEARCH_SYSTEM_PROMPT = `You are AudioVido, a warm, knowledgeable film-and-music-buff friend. The conversation language is {lang}. The current search mode is {mode}.
+const MOCK_RESPONSES = [
+  { text: "Hi! 👋 What kind of music are you looking for?", choices: ["Pop", "Rock", "Hip-Hop", "Electronic"] },
+  { text: "Great choice! Here are some tracks for you 🎵", choices: null },
+  { text: "Want me to create a playlist?", choices: ["Yes please!", "Maybe later"] },
+]
 
-RULES:
-- Default response language is ENGLISH.
-- If the user writes in another language (Persian, French, Spanish, etc.), switch to that language and stay in it for all future responses (do NOT bounce back to English unless the user writes in English again).
-- Respond with ONLY valid JSON. No markdown, no code fences, no extra text. Use this structure:
-{
-  "reply": "your casual, warm response text",
-  "mood": "action|horror|comedy|romance|drama|scifi|fantasy|music-energetic|music-chill|music-sad|music-happy|neutral",
-  "searchTerms": ["term1", "term2"],
-  "sources": ["jamendo"] or ["imdbapi","tvmaze","jikan"] or a subset,
-  "category": "movie|series|anime|music|unscoped"
+const CHAT_STATES = {
+  IDLE: 'idle',
+  THINKING: 'thinking',
+  TALKING: 'talking',
+  CHOOSING: 'choosing',
+  RETURNING: 'returning',
 }
 
-STYLE:
-- Friendly, casual, like a film/music buff friend. Use contractions, light humor, enthusiasm.
-- Keep "reply" short (1-2 sentences max).
-- When the user searches a SPECIFIC well-known movie/show/song, creatively weave in a famous quote, line, or lyric from it.
-- When the user searches a GENRE or MOOD: match the vibe (horror → mysterious, comedy → playful, romance → warm, action → energetic).
-- Set "mood" to match the vibe of the query for background theming.
-
-SEARCH RULES:
-- For audio mode, sources must always be ["jamendo"].
-- For video mode:
-  - EXPLICIT movie keywords → only use ["imdbapi"]
-  - EXPLICIT series keywords → only use ["tvmaze"]
-  - EXPLICIT anime keywords → only use ["jikan"]
-  - Title WITHOUT type → use ALL THREE: ["imdbapi","tvmaze","jikan"]
-  - General category → use all three
-- searchTerms should be effective queries for the APIs (genre names, artist names, titles, etc).
-- "category" should describe the result type.
-
-LANGUAGE:
-- Default: English.
-- If user writes in Persian, switch to Persian and stay in Persian.
-- If user writes in another language, switch to that language.`
-
-function stripCJK(text) {
-  return text.replace(/[\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]/g, '')
+function ResponseBubble({ message }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 4 }}
+      transition={{ duration: 0.4 }}
+      style={{
+        position: 'absolute',
+        top: '25%',
+        left: '5%',
+        right: '5%',
+        zIndex: 3,
+        padding: '20px 24px',
+        borderRadius: 24,
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderLeft: '3px solid #00e5ff',
+        background: 'rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'Inter, system-ui, sans-serif',
+        lineHeight: 1.6,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+      }}
+    >
+      {message}
+    </motion.div>
+  )
 }
 
-function deduplicate(arr) {
-  const seen = new Set()
-  return arr.filter((item) => {
-    if (seen.has(item.id)) return false
-    seen.add(item.id)
-    return true
-  })
+function InputBar({ onSend, disabled }) {
+  const [text, setText] = useState('')
+  const inputRef = useRef(null)
+
+  const handleSend = useCallback(() => {
+    const trimmed = text.trim()
+    if (!trimmed || disabled) return
+    onSend(trimmed)
+    setText('')
+  }, [text, disabled, onSend])
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        bottom: 16,
+        left: '5%',
+        right: '5%',
+        zIndex: 4,
+        display: 'flex',
+        gap: 8,
+        padding: '8px 8px 8px 20px',
+        borderRadius: 100,
+        border: '1px solid rgba(255,255,255,0.12)',
+        background: 'rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+        alignItems: 'center',
+      }}
+    >
+      <input
+        ref={inputRef}
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask Sophie anything..."
+        disabled={disabled}
+        style={{
+          flex: 1,
+          background: 'transparent',
+          border: 'none',
+          outline: 'none',
+          color: '#fff',
+          fontSize: 15,
+          fontFamily: 'Inter, system-ui, sans-serif',
+          lineHeight: 1.5,
+          padding: '4px 0',
+        }}
+      />
+      <button
+        onClick={() => {}}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: '50%',
+          border: '1px solid rgba(0, 229, 255, 0.3)',
+          background: 'rgba(0, 229, 255, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          color: '#00e5ff',
+          flexShrink: 0,
+          WebkitTapHighlightColor: 'transparent',
+        }}
+      >
+        <Mic size={18} />
+      </button>
+      <button
+        onClick={handleSend}
+        disabled={!text.trim() || disabled}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: '50%',
+          border: '1px solid rgba(255, 107, 107, 0.3)',
+          background: !text.trim() || disabled
+            ? 'rgba(255,107,107,0.05)'
+            : 'rgba(255,107,107,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: !text.trim() || disabled ? 'not-allowed' : 'pointer',
+          color: !text.trim() || disabled
+            ? 'rgba(255,107,107,0.3)'
+            : '#ff6b6b',
+          flexShrink: 0,
+          transition: 'all 0.2s ease',
+          opacity: !text.trim() || disabled ? 0.5 : 1,
+          WebkitTapHighlightColor: 'transparent',
+        }}
+      >
+        <ArrowUp size={18} />
+      </button>
+    </div>
+  )
 }
 
-const messageVar = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 22 } },
-}
-
-const exitVar = {
-  exit: { opacity: 0, y: -8, transition: { duration: 0.3 } },
-}
-
-function TypingDots() {
+function ThinkingDots() {
   const [dots, setDots] = useState('')
   useEffect(() => {
     const id = setInterval(() => setDots((p) => (p.length >= 3 ? '' : p + '.')), 400)
     return () => clearInterval(id)
   }, [])
-  return (
-    <span className="search-typing-dots">Searching{dots}</span>
-  )
-}
-
-function CircularResultCard({ item, onClick }) {
-  const image = item.cover || item.poster || item.thumbnail || ''
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.08 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => onClick(item)}
-      className="search-result-card"
-    >
-      <div className="search-result-card-img">
-        {image ? (
-          <img
-            src={image}
-            alt={item.title || ''}
-            loading="lazy"
-          />
-        ) : (
-          <div className="search-result-card-fallback">
-            <SearchIcon size={18} />
-          </div>
-        )}
-      </div>
-      <div className="search-result-card-title">
-        {item.title || item.name || item.show || ''}
-      </div>
-    </motion.div>
-  )
-}
-
-const MODE_MAP = {
-  sound: 'audio',
-  vision: 'video',
-}
-
-const MOOD_GRADIENTS = {
-  action: 'radial-gradient(circle at 50% 50%, #ff4d00 0%, #8b0000 100%)',
-  horror: 'radial-gradient(circle at 50% 50%, #1a0033 0%, #0a1a0a 100%)',
-  comedy: 'radial-gradient(circle at 50% 50%, #ffd700 0%, #ff6b9d 100%)',
-  romance: 'radial-gradient(circle at 50% 50%, #ff6b9d 0%, #c44569 100%)',
-  drama: 'radial-gradient(circle at 50% 50%, #2c3e50 0%, #34495e 100%)',
-  scifi: 'radial-gradient(circle at 50% 50%, #00d4ff 0%, #0066ff 100%)',
-  fantasy: 'radial-gradient(circle at 50% 50%, #7c3aed 0%, #4c1d95 100%)',
-  'music-energetic': 'radial-gradient(circle at 50% 50%, #ff006e 0%, #fb5607 100%)',
-  'music-chill': 'radial-gradient(circle at 50% 50%, #06ffa5 0%, #1b9aaa 100%)',
-  'music-sad': 'radial-gradient(circle at 50% 50%, #4a5568 0%, #2d3748 100%)',
-  'music-happy': 'radial-gradient(circle at 50% 50%, #ffbe0b 0%, #fb5607 100%)',
-  neutral: 'radial-gradient(circle at 50% 50%, rgba(139,92,246,0.4) 0%, transparent 70%)',
-}
-
-const VOICE_PROFILES = {
-  action: { rate: 1.15, pitch: 0.85 },
-  horror: { rate: 0.85, pitch: 0.7 },
-  comedy: { rate: 1.2, pitch: 1.3 },
-  romance: { rate: 0.9, pitch: 1.1 },
-  drama: { rate: 0.95, pitch: 0.95 },
-  scifi: { rate: 1.0, pitch: 0.9 },
-  fantasy: { rate: 1.0, pitch: 1.05 },
-  'music-energetic': { rate: 1.2, pitch: 1.2 },
-  'music-chill': { rate: 0.9, pitch: 1.0 },
-  'music-sad': { rate: 0.85, pitch: 0.85 },
-  'music-happy': { rate: 1.15, pitch: 1.25 },
-  neutral: { rate: 1.0, pitch: 1.0 },
-}
-
-function MoodBackground({ mood }) {
-  const gradient = MOOD_GRADIENTS[mood] || MOOD_GRADIENTS.neutral
-  return (
-    <motion.div
-      key={mood}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1.5, ease: 'easeInOut' }}
-      style={{
-        position: 'absolute',
-        inset: -40,
-        borderRadius: '50%',
-        background: gradient,
-        filter: 'blur(60px)',
-        opacity: 0.5,
-        zIndex: 0,
-        pointerEvents: 'none',
-      }}
-    />
-  )
-}
-
-function useTTS() {
-  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null)
-  const [muted, setMuted] = useState(false)
-
-  const speak = useCallback((text, profileOverrides) => {
-    const synth = synthRef.current
-    if (!synth || !text) return null
-    synth.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    const profile = { ...profileOverrides }
-    utterance.lang = profile.lang || 'en-US'
-    utterance.rate = profile.rate ?? 1.0
-    utterance.pitch = profile.pitch ?? 1.0
-    utterance.volume = 1
-    const voices = synth.getVoices()
-    if (voices.length > 0) {
-      const cloud = voices.filter((v) => !v.localService)
-      const preferred = cloud.length > 0
-        ? cloud.find((v) => {
-            const n = v.name.toLowerCase()
-            if (profile.isMale) return n.includes('daniel') || n.includes('male') || n.includes('alex')
-            return n.includes('samantha') || n.includes('female') || n.includes('zira')
-          }) || cloud[0]
-        : voices.find((v) => {
-            const n = v.name.toLowerCase()
-            if (profile.isMale) return n.includes('daniel') || n.includes('male') || n.includes('alex')
-            return n.includes('samantha') || n.includes('female') || n.includes('zira')
-          }) || voices[0]
-      if (preferred) utterance.voice = preferred
-    }
-    if (!muted) synth.speak(utterance)
-    return utterance
-  }, [muted])
-
-  const stopSpeech = useCallback(() => {
-    const synth = synthRef.current
-    if (synth) synth.cancel()
-  }, [])
-
-  return { speak, stopSpeech, muted, setMuted }
-}
-
-let msgIdCounter = 0
-function nextMsgId() {
-  return ++msgIdCounter
+  return <>Sophie is thinking{dots}</>
 }
 
 export default function Search() {
-  const { t, i18n } = useTranslation()
-  const storeMode = usePlayerStore((s) => s.mode)
-  const storePlay = usePlayerStore((s) => s.play)
+  const { avatarRef, setTalking, setIdle, setWalkingOut, setReturning } = useAvatarAnimations()
+  const [chatState, setChatState] = useState('idle')
+  const [lastMessage, setLastMessage] = useState(null)
+  const [currentChoices, setCurrentChoices] = useState(null)
+  const mockIndexRef = useRef(0)
 
-  const avatarRef = useRef(null)
-  const mode = MODE_MAP[storeMode] || 'video'
-
-  const [messages, setMessages] = useState([])
-  const [inputText, setInputText] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [modalItem, setModalItem] = useState(null)
-  const [orbState, setOrbState] = useState('idle')
-  const [currentMood, setCurrentMood] = useState('neutral')
-  const [conversationLang, setConversationLang] = useState('en')
-
-  const { speak, stopSpeech, muted, setMuted } = useTTS()
-
-  const inputRef = useRef(null)
-
-  const lang = i18n.language
-
+  // Cleanup timeouts on unmount
+  const timersRef = useRef([])
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        const voices = window.speechSynthesis.getVoices()
-        console.log('[TTS] Available voices:', voices.map((v) => `${v.name} (${v.lang}) ${v.localService ? '[local]' : '[cloud]'}`))
-      }
-      if (window.speechSynthesis.getVoices().length > 0) {
-        const voices = window.speechSynthesis.getVoices()
-        console.log('[TTS] Available voices:', voices.map((v) => `${v.name} (${v.lang}) ${v.localService ? '[local]' : '[cloud]'}`))
-      }
+    return () => {
+      timersRef.current.forEach(clearTimeout)
     }
   }, [])
 
-  useEffect(() => {
-    if (isLoading) {
-      setOrbState('thinking')
-    } else if (messages.length > 0) {
-      const lastMsg = messages[messages.length - 1]
-      if (lastMsg.role === 'assistant') {
-        setOrbState(lastMsg.results?.length ? 'results' : 'idle')
+  const setTimer = useCallback((fn, delay) => {
+    const id = setTimeout(fn, delay)
+    timersRef.current.push(id)
+    return id
+  }, [])
+
+  const handleSend = useCallback((text) => {
+    if (chatState !== 'idle') return
+
+    setChatState('thinking')
+    setCurrentChoices(null)
+    setLastMessage(null)
+
+    setTimer(() => {
+      const responses = MOCK_RESPONSES
+      const idx = mockIndexRef.current % responses.length
+      mockIndexRef.current += 1
+      const response = responses[idx]
+
+      setChatState('talking')
+      setLastMessage(response.text)
+      setTalking()
+
+      if (response.choices) {
+        setTimer(() => {
+          setChatState('choosing')
+          setWalkingOut()
+
+          setTimer(() => {
+            setCurrentChoices(response.choices)
+          }, 1200)
+        }, 500)
       } else {
-        setOrbState('idle')
+        setTimer(() => {
+          setChatState('idle')
+          setLastMessage(null)
+          setIdle()
+        }, 3000)
       }
-    } else {
-      setOrbState('idle')
-    }
-  }, [isLoading, messages])
+    }, 800)
+  }, [chatState, setTalking, setIdle, setWalkingOut, setReturning, setTimer])
 
-  const handleResultClick = useCallback(
-    (item) => {
-      if (item.source === 'jamendo' || item.type === 'music') {
-        storePlay(item)
-      } else {
-        setModalItem(item)
-      }
-    },
-    [storePlay],
-  )
+  const handleChoiceSelected = useCallback((value) => {
+    setCurrentChoices(null)
+    setChatState('returning')
+    setReturning()
 
-  const lastResults = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].results?.length) return messages[i].results
-    }
-    return null
-  }, [messages])
-
-  const lastUserMessage = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === 'user') return messages[i]
-    }
-    return null
-  }, [messages])
-
-  const lastAssistantMessage = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === 'assistant') return messages[i]
-    }
-    return null
-  }, [messages])
-
-  const sendMessage = useCallback(async () => {
-    const text = inputText.trim()
-    if (!text || isLoading) return
-
-    const userMsg = { role: 'user', content: text, _id: nextMsgId() }
-    setMessages((prev) => [...prev, userMsg])
-    setInputText('')
-    setOrbState('thinking')
-    setIsLoading(true)
-
-    if (avatarRef.current) {
-      avatarRef.current.playMotion('TapBody')
-    }
-
-    const newLang = /[\u0600-\u06FF]/.test(text) ? 'fa' : 'en'
-    if (newLang !== conversationLang) {
-      setConversationLang(newLang)
-    }
-
-    try {
-      const systemPrompt = SEARCH_SYSTEM_PROMPT
-        .replace('{mode}', mode)
-        .replace('{lang}', conversationLang)
-
-      const history = messages
-        .slice(-6)
-        .map((m) => ({ role: m.role, content: m.content }))
-
-      const aiRaw = await getCompletion([...history, userMsg], systemPrompt)
-
-      let searchTerms = [text]
-      let sources = mode === 'audio' ? ['jamendo'] : ['imdbapi', 'tvmaze', 'jikan']
-      let reply = ''
-      let mood = 'neutral'
-      let category = 'unscoped'
-
-      if (aiRaw) {
-        try {
-          const cleaned = aiRaw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
-          const parsed = JSON.parse(cleaned)
-          if (parsed.searchTerms?.length) searchTerms = parsed.searchTerms
-          if (parsed.sources?.length) sources = parsed.sources
-          if (parsed.reply) reply = parsed.reply
-          if (parsed.mood) mood = parsed.mood
-          if (parsed.category) category = parsed.category
-        } catch {
-          searchTerms = [text]
-        }
-      }
-
-      if (mode === 'video' && sources.length < 3) {
-        const typeKeywords = ['movie', 'movies', 'film', 'فیلم', 'سینمایی', 'series', 'سریال', 'show', 'shows', 'انیمه', 'anime', 'animes']
-        const hasExplicitType = typeKeywords.some(kw => text.toLowerCase().includes(kw))
-        if (!hasExplicitType) {
-          sources = ['imdbapi', 'tvmaze', 'jikan']
-        }
-      }
-
-      let results = []
-
-      if (mode === 'audio') {
-        const allTracks = []
-        for (const term of searchTerms.slice(0, 3)) {
-          try {
-            const tracks = await searchTracks(term, 5)
-            allTracks.push(...tracks)
-          } catch {}
-        }
-        results = deduplicate(allTracks).slice(0, 10)
-      } else {
-        for (const source of sources) {
-          for (const term of searchTerms.slice(0, 2)) {
-            try {
-              if (source === 'imdbapi') {
-                const movies = await searchTitles(term, 5)
-                results.push(...movies)
-              } else if (source === 'tvmaze') {
-                const shows = await searchSeries(term, 5)
-                results.push(...shows)
-              } else if (source === 'jikan') {
-                const anime = await searchAnime(term, 5)
-                results.push(...anime)
-              }
-            } catch {}
-          }
-        }
-        results = deduplicate(results).slice(0, 12)
-      }
-
-      const assistantContent =
-        stripCJK(reply) ||
-        (results.length > 0
-          ? lang === 'fa'
-            ? 'اینا چیزایی هستن که پیدا کردم 👇'
-            : "Here's what I found 👇"
-          : lang === 'fa'
-            ? 'چیزی پیدا نکردم. یه چیز دیگه رو امتحان کن.'
-            : "Nothing found. Try something else.")
-
-      setCurrentMood(mood)
-
-      const assistantMsg = { role: 'assistant', content: assistantContent, _id: nextMsgId() }
-      if (results.length > 0) {
-        assistantMsg.results = results
-      }
-      setMessages((prev) => [...prev, assistantMsg])
-
-      if (avatarRef.current) {
-        avatarRef.current.reactToMood(mood)
-      }
-
-      const voiceProfile = VOICE_PROFILES[mood] || VOICE_PROFILES.neutral
-
-      if (!muted) {
-        const synth = window.speechSynthesis
-        if (synth) {
-          synth.cancel()
-          const utterance = new SpeechSynthesisUtterance(assistantContent)
-          utterance.lang = conversationLang === 'fa' ? 'fa-IR' : 'en-US'
-          utterance.rate = voiceProfile.rate
-          utterance.pitch = voiceProfile.pitch
-          utterance.volume = 1
-
-          const voices = synth.getVoices()
-          if (voices.length > 0) {
-            const cloud = voices.filter((v) => !v.localService)
-            const preferred = cloud.length > 0
-              ? cloud.find((v) => {
-                  const n = v.name.toLowerCase()
-                  if (mode === 'video') return n.includes('daniel') || n.includes('male') || n.includes('alex')
-                  return n.includes('samantha') || n.includes('female') || n.includes('zira')
-                }) || cloud[0]
-              : voices.find((v) => {
-                  const n = v.name.toLowerCase()
-                  if (mode === 'video') return n.includes('daniel') || n.includes('male') || n.includes('alex')
-                  return n.includes('samantha') || n.includes('female') || n.includes('zira')
-                }) || voices[0]
-            if (preferred) utterance.voice = preferred
-          }
-
-          let pollInterval
-          let chromeFix
-
-          utterance.onstart = () => {
-            avatarRef.current?.startLipSync()
-          }
-
-          pollInterval = setInterval(() => {
-            if (!synth.speaking && !synth.pending) {
-              clearInterval(pollInterval)
-              clearInterval(chromeFix)
-              avatarRef.current?.stopLipSync()
-            }
-          }, 200)
-
-          utterance.onend = () => {
-            setTimeout(() => {
-              if (!synth.speaking) {
-                clearInterval(pollInterval)
-                clearInterval(chromeFix)
-                avatarRef.current?.stopLipSync()
-              }
-            }, 300)
-          }
-
-          utterance.onerror = () => {
-            clearInterval(pollInterval)
-            clearInterval(chromeFix)
-            avatarRef.current?.stopLipSync()
-          }
-
-          synth.speak(utterance)
-
-          chromeFix = setInterval(() => {
-            if (synth.speaking) {
-              synth.pause()
-              synth.resume()
-            } else {
-              clearInterval(chromeFix)
-            }
-          }, 10000)
-        }
-      }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: lang === 'fa' ? 'خطایی رخ داد. دوباره تلاش کن.' : 'Something went wrong. Please try again.', _id: nextMsgId() },
-      ])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [inputText, isLoading, mode, messages, lang, conversationLang, speak, muted])
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
-    }
-  }
-
-  const toggleMute = () => {
-    stopSpeech()
-    setMuted((m) => !m)
-    if (avatarRef.current) avatarRef.current.stopLipSync()
-  }
+    setTimer(() => {
+      setChatState('idle')
+      setLastMessage(null)
+      setIdle()
+    }, 1000)
+  }, [setReturning, setIdle, setTimer])
 
   return (
-    <>
-      <style>{`
-        .search-bg {
-          position: fixed;
-          inset: 0;
-          background: #0a0a0f;
-          overflow: hidden;
-        }
-        .search-bg-glow {
-          position: fixed;
-          width: 600px;
-          height: 600px;
-          border-radius: 50%;
-          top: -200px;
-          left: -200px;
-          filter: blur(120px);
-          opacity: 0.4;
-          transition: background 1.5s ease;
-          will-change: transform;
-        }
-        .search-bg-glow.idle { background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%); }
-        .search-bg-glow.thinking { background: radial-gradient(circle, rgba(56,189,248,0.5) 0%, transparent 70%); }
-        .search-bg-glow.results { background: radial-gradient(circle, rgba(20,184,166,0.5) 0%, transparent 70%); }
-        .search-bg-glow-2 {
-          position: fixed;
-          width: 500px;
-          height: 500px;
-          border-radius: 50%;
-          bottom: -150px;
-          right: -150px;
-          filter: blur(100px);
-          opacity: 0.3;
-          transition: background 1.5s ease;
-          will-change: transform;
-        }
-        .search-bg-glow-2.idle { background: radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 70%); }
-        .search-bg-glow-2.thinking { background: radial-gradient(circle, rgba(14,165,233,0.4) 0%, transparent 70%); }
-        .search-bg-glow-2.results { background: radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 70%); }
-
-        .search-panel {
-          position: relative;
-          width: min(92vw, 520px);
-          max-height: min(90vh, 700px);
-          display: flex;
-          flex-direction: column;
-          background: rgba(255,255,255,0.05);
-          backdrop-filter: blur(40px) saturate(180%);
-          -webkit-backdrop-filter: blur(40px) saturate(180%);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 32px;
-          box-shadow: 0 8px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.08);
-          overflow: hidden;
-        }
-
-        .search-panel-header {
-          flex-shrink: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 32px 20px 8px;
-          position: relative;
-        }
-
-        .search-panel-messages {
-          flex: 1;
-          overflow-y: auto;
-          padding: 4px 24px 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-        .search-panel-messages::-webkit-scrollbar { display: none; }
-        .search-panel-messages { scrollbar-width: none; }
-
-        .search-panel-footer {
-          flex-shrink: 0;
-          padding: 8px 16px 20px;
-        }
-
-        @keyframes orb-glow {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        @keyframes orb-glow-results {
-          0% { transform: scale(1); opacity: 1; }
-          20% { transform: scale(1.25); opacity: 0.8; }
-          40% { transform: scale(0.95); opacity: 1; }
-          60% { transform: scale(1.1); opacity: 0.9; }
-          80% { transform: scale(1); opacity: 1; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-
-        .search-message {
-          font-size: 14px;
-          line-height: 1.6;
-          white-space: pre-wrap;
-          padding: 2px 0;
-          max-width: 100%;
-        }
-        .search-message.user {
-          color: rgba(200, 180, 255, 0.9);
-          text-shadow: 0 2px 16px rgba(0,0,0,0.6);
-          text-align: right;
-        }
-        .search-message.assistant {
-          color: rgba(255, 255, 255, 0.8);
-          text-shadow: 0 2px 16px rgba(0,0,0,0.6);
-          text-align: left;
-        }
-        .search-message-role {
-          font-size: 9px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          opacity: 0.4;
-          margin-bottom: 1px;
-        }
-        .search-message.user .search-message-role {
-          text-align: right;
-        }
-
-        .search-typing-dots {
-          font-size: 14px;
-          color: rgba(255,255,255,0.5);
-          text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-          text-align: left;
-          display: block;
-        }
-
-        .search-input-bar {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(255,255,255,0.07);
-          border: 1px solid rgba(255,255,255,0.15);
-          border-radius: 100px;
-          padding: 8px 8px 8px 20px;
-          transition: all 0.3s ease;
-        }
-        .search-input-bar:focus-within {
-          border-color: rgba(167,139,250,0.4);
-          box-shadow: 0 0 20px rgba(167,139,250,0.08);
-        }
-
-        .search-input {
-          flex: 1;
-          background: transparent;
-          color: #fff;
-          font-size: 14px;
-          border: none;
-          outline: none;
-          resize: none;
-          padding: 4px 0;
-          max-height: 80px;
-          line-height: 1.5;
-          font-family: inherit;
-        }
-        .search-input::placeholder { color: rgba(255,255,255,0.3); }
-
-        .search-send-btn {
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.15);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255,255,255,0.07);
-          color: rgba(255,255,255,0.4);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          flex-shrink: 0;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-        }
-        .search-send-btn.active {
-          background: rgba(167,139,250,0.2);
-          border-color: rgba(167,139,250,0.4);
-          color: rgba(167,139,250,0.9);
-        }
-        .search-send-btn.active:hover {
-          background: rgba(167,139,250,0.35);
-          box-shadow: 0 0 24px rgba(167,139,250,0.3);
-        }
-        .search-send-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .search-greeting {
-          text-align: center;
-          color: rgba(255,255,255,0.5);
-          font-size: 14px;
-          line-height: 1.6;
-          text-shadow: 0 2px 20px rgba(0,0,0,0.8);
-          pointer-events: none;
-          padding: 20px 0;
-        }
-
-        .search-results-row {
-          display: flex;
-          gap: 16px;
-          overflow-x: auto;
-          padding: 8px 0 4px;
-          scroll-behavior: smooth;
-          -webkit-overflow-scrolling: touch;
-        }
-        .search-results-row::-webkit-scrollbar { display: none; }
-        .search-results-row { scrollbar-width: none; }
-
-        .search-result-card {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-          flex-shrink: 0;
-          width: 80px;
-          cursor: pointer;
-        }
-        .search-result-card-img {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 1px solid rgba(255,255,255,0.2);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 15px rgba(167,139,250,0.08);
-          flex-shrink: 0;
-          transition: box-shadow 0.3s ease, transform 0.3s ease;
-        }
-        .search-result-card:hover .search-result-card-img {
-          box-shadow: 0 4px 30px rgba(0,0,0,0.6), 0 0 30px rgba(167,139,250,0.2);
-        }
-        .search-result-card-img img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .search-result-card-fallback {
-          width: 100%;
-          height: 100%;
-          background: rgba(167,139,250,0.12);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(167,139,250,0.4);
-        }
-        .search-result-card-title {
-          font-size: 10px;
-          font-weight: 600;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          color: #fff;
-          text-shadow: 0 1px 8px rgba(0,0,0,0.8);
-          max-width: 80px;
-          text-align: center;
-        }
-
-        .search-mute-btn {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255,255,255,0.05);
-          color: rgba(255,255,255,0.4);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          z-index: 5;
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-        }
-        .search-mute-btn:hover {
-          background: rgba(255,255,255,0.12);
-          color: rgba(255,255,255,0.8);
-        }
-      `}</style>
-
-      <div className="search-bg">
-        <div className={`search-bg-glow ${orbState}`} />
-        <div className={`search-bg-glow-2 ${orbState}`} />
-      </div>
-
+    <div
+      style={{
+        height: '100dvh',
+        position: 'relative',
+        overflow: 'hidden',
+        background: '#0a0a0f',
+      }}
+    >
+      {/* Background gradient */}
       <div
         style={{
-          position: 'fixed',
+          position: 'absolute',
           inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10,
-          padding: 16,
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(100,0,200,0.15) 0%, transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(0,229,255,0.08) 0%, transparent 50%)',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Avatar Scene */}
+      <AvatarScene ref={avatarRef} />
+
+      {/* Gradient overlay for readability */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '40%',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
+          zIndex: 2,
           pointerEvents: 'none',
         }}
-      >
-        <div className="search-panel" style={{ pointerEvents: 'auto' }}>
-          <div className="search-panel-header">
-            <div style={{
-              width: 180,
-              height: 180,
-              borderRadius: '50%',
-              position: 'relative',
-              overflow: 'hidden',
-              flexShrink: 0,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              animation: orbState === 'thinking' ? 'orb-glow 1s ease-in-out infinite' : orbState === 'results' ? 'orb-glow-results 1.2s ease-out forwards' : 'orb-glow 3s ease-in-out infinite',
-              boxShadow: orbState === 'thinking'
-                ? '0 0 50px rgba(56,189,248,0.5), 0 0 100px rgba(56,189,248,0.2), inset 0 0 50px rgba(255,255,255,0.08)'
-                : orbState === 'results'
-                ? '0 0 40px rgba(20,184,166,0.4), 0 0 80px rgba(20,184,166,0.15), inset 0 0 40px rgba(255,255,255,0.05)'
-                : '0 0 40px rgba(167,139,250,0.4), 0 0 80px rgba(167,139,250,0.15), inset 0 0 40px rgba(255,255,255,0.05)',
-            }}>
-              <MoodBackground mood={currentMood} />
-              <Live2DAvatar
-                ref={avatarRef}
-                modelPath={mode === 'audio' ? '/live2d/hiyori/Hiyori.model3.json' : '/live2d/mark/Mark.model3.json'}
-                orbState={orbState}
-              />
-            </div>
+      />
 
-            <button
-              className="search-mute-btn"
-              onClick={toggleMute}
-              title={muted ? 'Unmute' : 'Mute'}
-            >
-              {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-            </button>
-          </div>
-
-          {messages.length === 0 && !isLoading && (
-            <div className="search-greeting">
-              {conversationLang === 'fa'
-                ? 'سلام 👋 چه چیزی می‌خواهی جستجو کنی؟'
-                : 'Hi 👋 What do you want to search for?'}
-            </div>
-          )}
-
-          {messages.length > 0 && (
-            <div className="search-panel-messages">
-              {lastResults && (
-                <div className="search-results-row">
-                  {lastResults.slice(0, 8).map((item) => (
-                    <CircularResultCard key={item.id} item={item} onClick={handleResultClick} />
-                  ))}
-                </div>
-              )}
-
-              <AnimatePresence mode="popLayout">
-                {lastUserMessage && (
-                  <motion.div
-                    key={`user-${lastUserMessage._id}`}
-                    layout
-                    variants={{ ...messageVar, ...exitVar }}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="search-message user"
-                  >
-                    <div className="search-message-role">
-                      {lang === 'fa' ? 'شما' : 'You'}
-                    </div>
-                    {lastUserMessage.content}
-                  </motion.div>
-                )}
-
-                {isLoading && (
-                  <motion.div
-                    key="typing"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    style={{ paddingTop: 4 }}
-                  >
-                    <TypingDots />
-                  </motion.div>
-                )}
-
-                {lastAssistantMessage && (
-                  <motion.div
-                    key={`assistant-${lastAssistantMessage._id}`}
-                    layout
-                    variants={{ ...messageVar, ...exitVar }}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="search-message assistant"
-                  >
-                    <div className="search-message-role">AudioVido</div>
-                    {lastAssistantMessage.content}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-
-          <div className="search-panel-footer">
-            <div className="search-input-bar">
-              <textarea
-                ref={inputRef}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={1}
-                placeholder={conversationLang === 'fa' ? 'پیام خود را بنویسید...' : 'Type your message...'}
-                className="search-input"
-              />
-              <button
-                onClick={sendMessage}
-                disabled={!inputText.trim() || isLoading}
-                className={`search-send-btn ${inputText.trim() && !isLoading ? 'active' : ''}`}
-              >
-                <ArrowUp size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {modalItem && (
-          <MediaModal
-            key={modalItem.id}
-            item={modalItem}
-            onClose={() => setModalItem(null)}
-          />
+      {/* Response bubble */}
+      <AnimatePresence mode="wait">
+        {chatState === 'thinking' && (
+          <motion.div
+            key="thinking"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: 'absolute',
+              top: '25%',
+              left: '5%',
+              right: '5%',
+              zIndex: 3,
+              padding: '20px 24px',
+              borderRadius: 24,
+              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.04)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: 15,
+              fontFamily: 'Inter, system-ui, sans-serif',
+            }}
+          >
+            <ThinkingDots />
+          </motion.div>
+        )}
+        {chatState === 'talking' && lastMessage && (
+          <ResponseBubble key="response" message={lastMessage} />
         )}
       </AnimatePresence>
-    </>
+
+      {/* Liquid glass choices */}
+      <LiquidChoices
+        choices={currentChoices}
+        onChoiceSelected={handleChoiceSelected}
+      />
+
+      {/* Input bar */}
+      <InputBar
+        onSend={handleSend}
+        disabled={chatState !== 'idle'}
+      />
+    </div>
   )
 }
