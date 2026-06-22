@@ -246,6 +246,7 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
 
   useImperativeHandle(ref, () => ({
     setAnimationState(state) {
+      console.log(`[Avatar] setAnimationState: ${state}`)
       if (ANIM_STATES[state.toUpperCase()]) {
         stateRef.current = state
       }

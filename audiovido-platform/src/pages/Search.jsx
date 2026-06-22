@@ -3,20 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, ArrowUp } from 'lucide-react'
 import AvatarScene from '../components/AvatarScene/AvatarScene'
 import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
+import { getCompletion } from '../services/ai'
 
-const MOCK_RESPONSES = [
-  { text: "Hi! 👋 What kind of music are you looking for?", choices: ["Pop", "Rock", "Hip-Hop", "Electronic"] },
-  { text: "Great choice! Here are some tracks for you 🎵", choices: null },
-  { text: "Want me to create a playlist?", choices: ["Yes please!", "Maybe later"] },
-]
-
-const CHAT_STATES = {
-  IDLE: 'idle',
-  THINKING: 'thinking',
-  TALKING: 'talking',
-  CHOOSING: 'choosing',
-  RETURNING: 'returning',
-}
+const SOPHIE_SYSTEM_PROMPT = `You are Sophie, an AI music assistant for AudioVido. 
+Be friendly, concise (max 2 sentences).
+When you want to offer choices, end your response with:
+CHOICES: ["Option1", "Option2", "Option3"]
+Only add CHOICES when it makes sense to offer options.`
 
 function ResponseBubble({ message }) {
   return (
@@ -27,9 +20,9 @@ function ResponseBubble({ message }) {
       transition={{ duration: 0.4 }}
       style={{
         position: 'absolute',
-        top: '25%',
-        left: '5%',
-        right: '5%',
+        top: '20%',
+        left: 16,
+        right: 16,
         zIndex: 3,
         padding: '20px 24px',
         borderRadius: 24,
@@ -76,9 +69,9 @@ function InputBar({ onSend, disabled }) {
     <div
       style={{
         position: 'absolute',
-        bottom: 16,
-        left: '5%',
-        right: '5%',
+        bottom: 70,
+        left: 16,
+        right: 16,
         zIndex: 4,
         display: 'flex',
         gap: 8,
@@ -176,14 +169,16 @@ function ChoiceCard({ choice, index, dismissed, selected, onSelect }) {
 
   return (
     <motion.button
-      key={`choice-${index}-${choice}`}
-      initial={false}
+      key={`choice-${index}`}
+      initial={{ opacity: 0, x: 20 }}
       animate={{
         opacity: isDismissed ? 0 : isSelected ? 0 : 1,
         scale: isSelected ? [1, 1.15, 0] : isDismissed ? 0.8 : 1,
+        x: isDismissed ? 10 : 0,
         y: isDismissed ? 8 : 0,
       }}
       transition={{
+        delay: index * 0.06,
         duration: isSelected ? 0.35 : 0.3,
         ease: 'easeOut',
       }}
@@ -204,7 +199,7 @@ function ChoiceCard({ choice, index, dismissed, selected, onSelect }) {
         outline: 'none',
         WebkitTapHighlightColor: 'transparent',
         width: '100%',
-        borderColor: isSelected ? '#00e5ff' : 'rgba(255,255,255,0.15)',
+        maxWidth: 280,
       }}
     >
       {choice}
@@ -219,13 +214,11 @@ export default function Search() {
   const [currentChoices, setCurrentChoices] = useState(null)
   const [selectedChoice, setSelectedChoice] = useState(null)
   const [dismissed, setDismissed] = useState(false)
-  const mockIndexRef = useRef(0)
+  const conversationRef = useRef([])
 
   const timersRef = useRef([])
   useEffect(() => {
-    return () => {
-      timersRef.current.forEach(clearTimeout)
-    }
+    return () => timersRef.current.forEach(clearTimeout)
   }, [])
 
   const setTimer = useCallback((fn, delay) => {
@@ -234,8 +227,29 @@ export default function Search() {
     return id
   }, [])
 
-  const handleSend = useCallback((text) => {
-    if (chatState !== 'idle') return
+  const handleAIResponse = useCallback((text, choices) => {
+    setLastMessage(text)
+    setChatState('talking')
+    console.log('[Search] handleAIResponse -> setTalking')
+    setTalking()
+
+    if (choices && choices.length > 0) {
+      setTimer(() => {
+        setChatState('choosing')
+        console.log('[Search] setWalkingOut')
+        setWalkingOut()
+        setCurrentChoices(choices)
+      }, 1500)
+    } else {
+      setTimer(() => {
+        setChatState('idle')
+        setIdle()
+      }, 3000)
+    }
+  }, [setTalking, setWalkingOut, setIdle, setTimer])
+
+  const sendMessage = useCallback(async (userText) => {
+    if (!userText.trim()) return
 
     setChatState('thinking')
     setCurrentChoices(null)
@@ -243,64 +257,57 @@ export default function Search() {
     setSelectedChoice(null)
     setDismissed(false)
 
-    setTimer(() => {
-      const responses = MOCK_RESPONSES
-      const idx = mockIndexRef.current % responses.length
-      mockIndexRef.current += 1
-      const response = responses[idx]
+    conversationRef.current.push({ role: 'user', content: userText })
 
-      setChatState('talking')
-      setLastMessage(response.text)
-      setTalking()
+    try {
+      const history = conversationRef.current.slice(-6)
+      const raw = await getCompletion(history, SOPHIE_SYSTEM_PROMPT)
 
-      if (response.choices) {
-        setTimer(() => {
-          setChatState('choosing')
-          setWalkingOut()
+      if (raw) {
+        const choicesMatch = raw.match(/CHOICES:\s*(\[.*?\])/s)
+        const messageText = raw.replace(/CHOICES:.*$/s, '').trim()
+        const choices = choicesMatch ? JSON.parse(choicesMatch[1]) : null
 
-          setTimer(() => {
-            setCurrentChoices(response.choices)
-          }, 1200)
-        }, 500)
+        conversationRef.current.push({ role: 'assistant', content: messageText })
+        handleAIResponse(messageText, choices)
       } else {
-        setTimer(() => {
-          setChatState('idle')
-          setLastMessage(null)
-          setIdle()
-        }, 3000)
+        handleAIResponse("I'm having trouble connecting. Please try again.", null)
       }
-    }, 800)
-  }, [chatState, setTalking, setIdle, setWalkingOut, setReturning, setTimer])
+    } catch (err) {
+      console.error('AI error:', err)
+      handleAIResponse("I'm having trouble connecting. Please try again.", null)
+    }
+  }, [handleAIResponse])
 
-  const handleChoiceSelect = useCallback((value, index) => {
-    setSelectedChoice(index)
-    setDismissed(true)
+  const handleChoiceSelected = useCallback((choice) => {
+    setCurrentChoices(null)
+    setSelectedChoice(null)
+    setDismissed(false)
+    setChatState('returning')
+    setReturning()
 
     setTimer(() => {
-      setCurrentChoices(null)
-      setSelectedChoice(null)
-      setDismissed(false)
-      setChatState('returning')
-      setReturning()
-
-      setTimer(() => {
-        setChatState('idle')
-        setLastMessage(null)
-        setIdle()
-      }, 1000)
-    }, 400)
-  }, [setReturning, setIdle, setTimer])
+      setChatState('idle')
+      setIdle()
+      sendMessage(choice)
+    }, 1200)
+  }, [setReturning, setIdle, setTimer, sendMessage])
 
   return (
     <div
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         height: '100dvh',
-        position: 'relative',
         overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
         background: '#0a0a0f',
       }}
     >
-      {/* Background gradient */}
       <div
         style={{
           position: 'absolute',
@@ -310,12 +317,11 @@ export default function Search() {
         }}
       />
 
-      {/* Avatar Scene — sized down when choices shown */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          width: chatState === 'choosing' ? '40%' : '100%',
+          width: chatState === 'choosing' ? '45%' : '100%',
           transition: 'width 0.5s ease',
           zIndex: 1,
         }}
@@ -323,7 +329,6 @@ export default function Search() {
         <AvatarScene ref={avatarRef} />
       </div>
 
-      {/* Gradient overlay for readability */}
       <div
         style={{
           position: 'absolute',
@@ -337,7 +342,6 @@ export default function Search() {
         }}
       />
 
-      {/* Response bubble */}
       <AnimatePresence mode="wait">
         {chatState === 'thinking' && (
           <motion.div
@@ -348,9 +352,9 @@ export default function Search() {
             transition={{ duration: 0.3 }}
             style={{
               position: 'absolute',
-              top: '25%',
-              left: '5%',
-              right: '5%',
+              top: '20%',
+              left: 16,
+              right: 16,
               zIndex: 3,
               padding: '20px 24px',
               borderRadius: 24,
@@ -371,18 +375,19 @@ export default function Search() {
         )}
       </AnimatePresence>
 
-      {/* Choices — right side when choosing, bottom when returning */}
       {chatState === 'choosing' && currentChoices && (
         <div
           style={{
             position: 'absolute',
-            right: '5%',
+            right: 16,
             top: '20%',
             width: '50%',
+            maxWidth: 300,
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
             zIndex: 10,
+            alignItems: 'flex-end',
           }}
         >
           {currentChoices.map((choice, i) => (
@@ -392,17 +397,17 @@ export default function Search() {
               index={i}
               dismissed={dismissed}
               selected={selectedChoice}
-              onSelect={handleChoiceSelect}
+              onSelect={(value, idx) => {
+                setSelectedChoice(idx)
+                setDismissed(true)
+                setTimer(() => handleChoiceSelected(value), 400)
+              }}
             />
           ))}
         </div>
       )}
 
-      {/* Input bar */}
-      <InputBar
-        onSend={handleSend}
-        disabled={chatState !== 'idle'}
-      />
+      <InputBar onSend={sendMessage} disabled={chatState !== 'idle'} />
     </div>
   )
 }
