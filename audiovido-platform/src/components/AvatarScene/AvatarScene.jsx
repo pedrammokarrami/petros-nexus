@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useEffect } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
@@ -18,7 +18,22 @@ const ANIM_STATES = {
 function loadFbx(url) {
   return new Promise((resolve, reject) => {
     const loader = new FBXLoader()
-    loader.load(url, resolve, undefined, reject)
+    const originalWarn = console.warn
+    console.warn = (...args) => {
+      if (typeof args[0] === 'string' && args[0].includes('FBXLoader')) return
+      originalWarn(...args)
+    }
+    loader.load(url,
+      (result) => {
+        console.warn = originalWarn
+        resolve(result)
+      },
+      undefined,
+      (err) => {
+        console.warn = originalWarn
+        reject(err)
+      }
+    )
   })
 }
 
@@ -46,7 +61,8 @@ function LoadingPlaceholder() {
 }
 
 function SceneContent({ stateRef }) {
-  const { gl, camera } = useThree()
+  const { camera } = useThree()
+  const [loaded, setLoaded] = useState(false)
   const groupRef = useRef(null)
   const mixerRef = useRef(null)
   const actionsRef = useRef({})
@@ -54,7 +70,6 @@ function SceneContent({ stateRef }) {
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
-  const loadedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -81,15 +96,19 @@ function SceneContent({ stateRef }) {
 
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
-        const center = box.getCenter(new THREE.Vector3())
         const height = size.y || 1
 
-        const vh = gl.domElement.clientHeight || window.innerHeight
-        const targetHeight = vh * 0.7
-        const scale = Math.min(targetHeight / height, 3.0)
+        const targetHeight = 2.0
+        const scale = targetHeight / height
+
+        console.log(`[AvatarScene] Model height: ${height.toFixed(2)}, scale: ${scale.toFixed(4)}`)
 
         model.scale.setScalar(scale)
-        model.position.set(0, -center.y * scale, 0)
+
+        // Center model so feet are near y=0
+        box.setFromObject(model)
+        const center = box.getCenter(new THREE.Vector3())
+        model.position.set(0, -center.y, 0)
 
         camera.lookAt(0, 0.8, 0)
 
@@ -130,7 +149,7 @@ function SceneContent({ stateRef }) {
           actionsRef.current.returning = a
         }
 
-        loadedRef.current = true
+        setLoaded(true)
       } catch (err) {
         console.error('[AvatarScene] FBX load failed:', err)
       }
@@ -217,8 +236,8 @@ function SceneContent({ stateRef }) {
         intensity={0.4}
         color="#00e5ff"
       />
+      {!loaded && <LoadingPlaceholder />}
       <group ref={groupRef} />
-      {!loadedRef.current && <LoadingPlaceholder />}
     </>
   )
 }
