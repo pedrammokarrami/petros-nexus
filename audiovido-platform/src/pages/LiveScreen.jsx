@@ -134,9 +134,9 @@ export default function LiveScreen() {
         }}
       />
 
-      <VisualFX theme={config.theme} beatData={beatData} />
+      {!isFullscreen && <VisualFX theme={config.theme} beatData={beatData} />}
 
-      {audioContext && currentMedia && (
+      {!isFullscreen && audioContext && currentMedia && (
         <AudioEngine
           audioContext={audioContext}
           theme={config.theme}
