@@ -44,18 +44,20 @@ function detectGreenRegion(img) {
   const key = img.src
   if (greenCache.has(key)) return greenCache.get(key)
 
+  const iw = img.naturalWidth
+  const ih = img.naturalHeight
   const c = document.createElement('canvas')
-  c.width = img.naturalWidth
-  c.height = img.naturalHeight
+  c.width = iw
+  c.height = ih
   const ctx = c.getContext('2d')
   ctx.drawImage(img, 0, 0)
-  const data = ctx.getImageData(0, 0, c.width, c.height).data
+  const data = ctx.getImageData(0, 0, iw, ih).data
 
-  let minX = Infinity, minY = Infinity, maxX = -1, maxY = -1
+  let minX = iw, minY = ih, maxX = -1, maxY = -1
 
-  for (let y = 0; y < c.height; y++) {
-    for (let x = 0; x < c.width; x++) {
-      const i = (y * c.width + x) * 4
+  for (let y = 0; y < ih; y++) {
+    for (let x = 0; x < iw; x++) {
+      const i = (y * iw + x) * 4
       const R = data[i], G = data[i + 1], B = data[i + 2]
       if (G > R * 1.4 && G > B * 1.4 && G > 100) {
         if (x < minX) minX = x
@@ -66,18 +68,47 @@ function detectGreenRegion(img) {
     }
   }
 
-  const rect = {
-    top: (minY / c.height) * 100,
-    left: (minX / c.width) * 100,
-    width: ((maxX - minX) / c.width) * 100,
-    height: ((maxY - minY) / c.height) * 100,
+  const result = {
+    top: minY, left: minX,
+    width: maxX - minX, height: maxY - minY,
+    imgWidth: iw, imgHeight: ih,
   }
-  greenCache.set(key, rect)
-  return rect
+  greenCache.set(key, result)
+  return result
+}
+
+function greenToScreen(green, imgWidth, imgHeight) {
+  const sw = window.innerWidth
+  const sh = window.innerHeight
+  const imgAspect = imgWidth / imgHeight
+  const screenAspect = sw / sh
+
+  let dispW, dispH, offsetX, offsetY
+  if (imgAspect > screenAspect) {
+    dispH = sh
+    dispW = dispH * imgAspect
+    offsetX = (dispW - sw) / 2
+    offsetY = 0
+  } else {
+    dispW = sw
+    dispH = dispW / imgAspect
+    offsetY = (dispH - sh) / 2
+    offsetX = 0
+  }
+
+  const scaleX = dispW / imgWidth
+  const scaleY = dispH / imgHeight
+
+  return {
+    top: Math.round(green.top * scaleY - offsetY),
+    left: Math.round(green.left * scaleX - offsetX),
+    width: Math.round(green.width * scaleX),
+    height: Math.round(green.height * scaleY),
+  }
 }
 
 function useGreenFrame(imageSrc) {
-  const [rect, setRect] = useState(null)
+  const [info, setInfo] = useState(null)
   const [imgLoaded, setImgLoaded] = useState(false)
   const mountedRef = useRef(true)
   const frameIdRef = useRef(null)
@@ -89,7 +120,7 @@ function useGreenFrame(imageSrc) {
     img.onload = () => {
       const r = detectGreenRegion(img)
       if (mountedRef.current) {
-        setRect(r)
+        setInfo(r)
         setImgLoaded(true)
       }
     }
@@ -99,10 +130,11 @@ function useGreenFrame(imageSrc) {
   useEffect(() => {
     mountedRef.current = true
     detect()
-
     const onResize = () => {
       if (frameIdRef.current) cancelAnimationFrame(frameIdRef.current)
-      frameIdRef.current = requestAnimationFrame(detect)
+      frameIdRef.current = requestAnimationFrame(() => {
+        if (mountedRef.current) setInfo((prev) => prev ? { ...prev } : prev)
+      })
     }
     window.addEventListener('resize', onResize)
     return () => {
@@ -112,7 +144,7 @@ function useGreenFrame(imageSrc) {
     }
   }, [detect])
 
-  return [rect, imgLoaded]
+  return [info, imgLoaded]
 }
 
 const styles = {
@@ -125,12 +157,6 @@ const styles = {
     width: '100%', height: '100%',
     objectFit: 'cover',
     pointerEvents: 'none',
-  },
-  playOverlay: {
-    position: 'absolute', inset: 0,
-    display: 'grid', placeItems: 'center',
-    background: 'rgba(0,0,0,0.4)',
-    cursor: 'pointer', zIndex: 20,
   },
   playBtn: {
     width: 52, height: 52, borderRadius: '50%',
@@ -167,7 +193,7 @@ const styles = {
   },
 }
 
-function GreenFrameCanvas({ theme, beatData, videoBoxRef }) {
+function GreenFrameCanvas({ theme, beatData }) {
   const ref = useRef(null)
   const frameRef = useRef(null)
   const particlesRef = useRef([])
@@ -314,14 +340,28 @@ function GreenFrameCanvas({ theme, beatData, videoBoxRef }) {
   )
 }
 
-function GreenVideo({ videoRef, toggleMedia, isMediaPlaying, isFullscreen, theme, beatData, gRect }) {
+function GreenVideo({ videoRef, toggleMedia, isMediaPlaying, isFullscreen, theme, beatData, greenInfo }) {
+  const [pos, setPos] = useState(null)
+
+  useEffect(() => {
+    const update = () => {
+      if (!greenInfo) return
+      setPos(greenToScreen(greenInfo, greenInfo.imgWidth, greenInfo.imgHeight))
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [greenInfo])
+
+  if (!pos) return null
+
   return (
     <div style={{
-      position: 'absolute',
-      top: `${gRect.top}%`,
-      left: `${gRect.left}%`,
-      width: `${gRect.width}%`,
-      height: `${gRect.height}%`,
+      position: 'fixed',
+      top: pos.top,
+      left: pos.left,
+      width: pos.width,
+      height: pos.height,
       zIndex: 5,
       overflow: 'hidden',
     }}>
@@ -331,6 +371,7 @@ function GreenVideo({ videoRef, toggleMedia, isMediaPlaying, isFullscreen, theme
         muted
         loop
         playsInline
+        autoPlay
         style={{
           width: '100%',
           height: '100%',
@@ -343,8 +384,18 @@ function GreenVideo({ videoRef, toggleMedia, isMediaPlaying, isFullscreen, theme
         onClick={toggleMedia}
       />
       {!isFullscreen && !isMediaPlaying && (
-        <div onClick={toggleMedia} style={styles.playOverlay}>
-          <div style={styles.playBtn}>
+        <div onClick={toggleMedia} style={{
+          position: 'absolute', inset: 0,
+          display: 'grid', placeItems: 'center',
+          background: 'rgba(0,0,0,0.4)',
+          cursor: 'pointer', zIndex: 20,
+        }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(8px)',
+            display: 'grid', placeItems: 'center',
+          }}>
             <Play size={22} fill="#fff" color="#fff" />
           </div>
         </div>
@@ -664,7 +715,7 @@ export default function LiveScreen() {
   const videoRef = useRef(null)
   const audioRef = useRef(null)
 
-  const [greenRect, bgLoaded] = useGreenFrame(isCinema ? config?.bg : null)
+  const [greenInfo, bgLoaded] = useGreenFrame(isCinema ? config?.bg : null)
 
   useEffect(() => {
     if (!modeConfig[fullMode]) navigate('/live', { replace: true })
@@ -758,8 +809,8 @@ export default function LiveScreen() {
             <img src={config.bg} alt="" style={styles.bgImg} />
           )}
 
-          {/* Cinema modes — video positioned on green region */}
-          {isCinema && greenRect && (
+          {/* Cinema modes — video positioned on detected green region */}
+          {isCinema && greenInfo && (
             <GreenVideo
               videoRef={videoRef}
               toggleMedia={toggleMedia}
@@ -767,7 +818,7 @@ export default function LiveScreen() {
               isFullscreen={isFullscreen}
               theme={config.theme}
               beatData={beatData}
-              gRect={greenRect}
+              greenInfo={greenInfo}
             />
           )}
 
