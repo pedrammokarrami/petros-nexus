@@ -10,7 +10,7 @@ const modeConfig = {
     theme: 'modern',
     type: 'cinema',
     accent: '#60a5fa',
-    frame: { top: '15%', left: '11%', width: '78%', height: '32%' },
+    frame: { top: '15%', left: '11%', width: '78%', height: '40%' },
     inputStyle: {
       background: 'rgba(96, 165, 250, 0.15)',
       borderColor: 'rgba(96, 165, 250, 0.3)',
@@ -21,7 +21,7 @@ const modeConfig = {
     theme: 'negative',
     type: 'cinema',
     accent: '#a78b5a',
-    frame: { top: '14%', left: '10%', width: '80%', height: '34%' },
+    frame: { top: '14%', left: '10%', width: '80%', height: '44%' },
     inputStyle: {
       background: 'rgba(167, 139, 90, 0.15)',
       borderColor: 'rgba(167, 139, 90, 0.3)',
@@ -32,7 +32,7 @@ const modeConfig = {
     theme: 'tv',
     type: 'cinema',
     accent: '#38bdf8',
-    frame: { top: '13%', left: '22%', width: '56%', height: '28%' },
+    frame: { top: '14%', left: '18%', width: '64%', height: '40%' },
     inputStyle: {
       background: 'rgba(56, 189, 248, 0.1)',
       borderColor: 'rgba(56, 189, 248, 0.25)',
@@ -122,13 +122,17 @@ export default function LiveScreen() {
 
   const handleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      screenRef.current?.requestFullscreen()
+      if (isCinema && videoRef.current) {
+        videoRef.current.requestFullscreen()
+      } else {
+        screenRef.current?.requestFullscreen()
+      }
       setIsFullscreen(true)
     } else {
       document.exitFullscreen()
       setIsFullscreen(false)
     }
-  }, [])
+  }, [isCinema])
 
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement)
@@ -199,7 +203,7 @@ export default function LiveScreen() {
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onClick={toggleMedia}
           />
-          {!isMediaPlaying && (
+          {!isFullscreen && !isMediaPlaying && (
             <div
               onClick={toggleMedia}
               style={{
@@ -242,7 +246,7 @@ export default function LiveScreen() {
         />
       )}
 
-      {!isCinema && !isMediaPlaying && (
+      {!isFullscreen && !isCinema && !isMediaPlaying && (
         <div
           onClick={toggleMedia}
           style={{
@@ -264,62 +268,66 @@ export default function LiveScreen() {
         </div>
       )}
 
-      <div style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0,
-        zIndex: 30,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '12px 16px',
-        paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))',
-      }}>
-        <button
-          onClick={() => navigate('/live')}
-          style={{
-            width: 44, height: 44, borderRadius: 14,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            display: 'grid', placeItems: 'center',
-            cursor: 'pointer', color: '#fff',
-          }}
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <button
-          onClick={handleFullscreen}
-          style={{
-            width: 44, height: 44, borderRadius: 14,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            display: 'grid', placeItems: 'center',
-            cursor: 'pointer', color: '#fff',
-          }}
-        >
-          {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-        </button>
-      </div>
+      {!isFullscreen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0,
+          zIndex: 30,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '12px 16px',
+          paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))',
+        }}>
+          <button
+            onClick={() => navigate('/live')}
+            style={{
+              width: 44, height: 44, borderRadius: 14,
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'grid', placeItems: 'center',
+              cursor: 'pointer', color: '#fff',
+            }}
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <button
+            onClick={handleFullscreen}
+            style={{
+              width: 44, height: 44, borderRadius: 14,
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'grid', placeItems: 'center',
+              cursor: 'pointer', color: '#fff',
+            }}
+          >
+            <Maximize2 size={20} />
+          </button>
+        </div>
+      )}
 
-      <div style={{
-        position: 'fixed',
-        top: 0, right: 0, bottom: 0,
-        width: 280,
-        zIndex: 25,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        padding: '80px 12px 20px',
-        pointerEvents: 'none',
-      }}>
-        <div style={{ pointerEvents: 'auto', flex: 1 }} />
-        <LiveChat
-          mode={fullMode}
-          accent={config.accent}
-          inputStyle={config.inputStyle}
-        />
-      </div>
+      {!isFullscreen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, right: 0, bottom: 0,
+          width: 280,
+          zIndex: 25,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '80px 12px 20px',
+          pointerEvents: 'none',
+        }}>
+          <div style={{ pointerEvents: 'auto', flex: 1 }} />
+          <LiveChat
+            mode={fullMode}
+            accent={config.accent}
+            inputStyle={config.inputStyle}
+          />
+        </div>
+      )}
     </div>
   )
 }
