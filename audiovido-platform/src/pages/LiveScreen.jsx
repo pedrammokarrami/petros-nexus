@@ -23,17 +23,17 @@ const modeConfig = {
   },
   'music-bar': {
     theme: 'bar', type: 'music', accent: '#f59e0b',
-    bg: '#1a0e06',
+    bg: '/images/live/music-bar.png',
     inputStyle: { background: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.3)' },
   },
   'music-club': {
     theme: 'club', type: 'music', accent: '#a855f7',
-    bg: '#0a0010',
+    bg: '/images/live/music-club.png',
     inputStyle: { background: 'rgba(168,85,247,0.15)', borderColor: 'rgba(168,85,247,0.3)' },
   },
   'music-concert': {
     theme: 'concert', type: 'music', accent: '#f43f5e',
-    bg: '#0e0818',
+    bg: '/images/live/music-concert.png',
     inputStyle: { background: 'rgba(244,63,94,0.15)', borderColor: 'rgba(244,63,94,0.3)' },
   },
 }
@@ -804,8 +804,8 @@ export default function LiveScreen() {
         </>
       ) : (
         <>
-          {/* Background image for cinema modes */}
-          {isCinema && config.bg && (
+          {/* Background image — cinema shows behind video, music shows full-bleed */}
+          {config.bg && config.bg.startsWith('/images/') && (
             <img src={config.bg} alt="" style={styles.bgImg} />
           )}
 
