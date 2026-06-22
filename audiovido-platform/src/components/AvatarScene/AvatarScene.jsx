@@ -3,10 +3,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 
-import WalkingSophieUrl from '../../assets/avatars/Walking_Sophie.fbx'
-import TalkingSophieUrl from '../../assets/avatars/Talking_Sophie.fbx'
-import WalkingUrl from '../../assets/avatars/Walking.fbx'
-import StopWalkingUrl from '../../assets/avatars/Stop_Walking.fbx'
+const WalkingSophieUrl = '/avatars/Walking_Sophie.fbx'
+const TalkingSophieUrl = '/avatars/Talking_Sophie.fbx'
+const WalkingUrl = '/avatars/Walking.fbx'
+const StopWalkingUrl = '/avatars/Stop_Walking.fbx'
 
 const ANIM_STATES = {
   IDLE: 'idle',
