@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from 'react'
-import usePlayerStore from '../../store/usePlayerStore'
 
 function createNoiseBuffer(ctx, duration, generator) {
   const size = ctx.sampleRate * duration
@@ -9,25 +8,26 @@ function createNoiseBuffer(ctx, duration, generator) {
   return buffer
 }
 
-export default function AudioEngine({ audioContext, theme, onBeat }) {
+export default function AudioEngine({ audioContext, theme, onBeat, mediaElement }) {
   const analyserRef = useRef(null)
   const sourceRef = useRef(null)
   const activeNodes = useRef([])
   const sfxTimerRef = useRef(null)
   const beatFrameRef = useRef(null)
   const lastBeatRef = useRef(0)
-  const { currentMedia, isPlaying } = usePlayerStore()
+  const connectedRef = useRef(false)
 
   const cleanupNodes = useCallback(() => {
     activeNodes.current.forEach((n) => {
       try { n?.disconnect?.(); n?.stop?.() } catch {}
     })
     activeNodes.current = []
+    connectedRef.current = false
   }, [])
 
   useEffect(() => {
-    if (!audioContext) return
-
+    if (!audioContext || !mediaElement) return
+    if (connectedRef.current) return
     const ctx = audioContext
 
     const masterGain = ctx.createGain()
@@ -39,14 +39,19 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
     analyser.fftSize = 256
     analyserRef.current = analyser
 
-    let spatialNode = null
-    let eqNode = null
+    let source
+    try {
+      source = ctx.createMediaElementSource(mediaElement)
+    } catch {
+      source = ctx.createMediaStreamSource(mediaElement.captureStream?.() || mediaElement.srcObject)
+    }
+    sourceRef.current = source
+    connectedRef.current = true
 
     if (theme === 'modern') {
       const panner = ctx.createStereoPanner()
       panner.pan.value = 0
 
-      const convolver = ctx.createConvolver()
       const irLen = ctx.sampleRate * 0.8
       const irBuffer = ctx.createBuffer(2, irLen, ctx.sampleRate)
       for (let ch = 0; ch < 2; ch++) {
@@ -55,10 +60,9 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
           data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.15))
         }
       }
+      const convolver = ctx.createConvolver()
       convolver.buffer = irBuffer
       convolver.connect(analyser)
-      panner.connect(convolver)
-      spatialNode = panner
 
       const delay = ctx.createDelay(0.08)
       delay.delayTime.value = 0.035
@@ -66,55 +70,54 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
       delayGain.gain.value = 0.15
       delay.connect(delayGain)
       delayGain.connect(analyser)
-      activeNodes.current.push(delay, delayGain)
-    }
+      activeNodes.current.push(delay, delayGain, convolver)
 
-    if (theme === 'negative') {
-      const filter = ctx.createBiquadFilter()
-      filter.type = 'lowpass'
-      filter.frequency.value = 3000
+      panner.connect(convolver)
+      activeNodes.current.push(panner)
+      source.connect(panner)
+    } else {
+      let lastNode = source
 
-      const distortion = ctx.createWaveShaper()
-      const curve = new Float32Array(256)
-      for (let i = 0; i < 256; i++) {
-        const x = (i - 128) / 128
-        curve[i] = Math.tanh(x * 0.8) * 0.9 + x * 0.1
+      if (theme === 'negative') {
+        const filter = ctx.createBiquadFilter()
+        filter.type = 'lowpass'
+        filter.frequency.value = 3000
+        const distortion = ctx.createWaveShaper()
+        const curve = new Float32Array(256)
+        for (let i = 0; i < 256; i++) {
+          const x = (i - 128) / 128
+          curve[i] = Math.tanh(x * 0.8) * 0.9 + x * 0.1
+        }
+        distortion.curve = curve
+        filter.connect(distortion)
+        lastNode = distortion
+        activeNodes.current.push(filter, distortion)
       }
-      distortion.curve = curve
 
-      filter.connect(distortion)
-      distortion.connect(analyser)
-      eqNode = filter
-    }
+      if (theme === 'tv') {
+        const filter = ctx.createBiquadFilter()
+        filter.type = 'bandpass'
+        filter.frequency.value = 800
+        filter.Q.value = 0.5
+        lastNode.connect(filter)
+        lastNode = filter
+        activeNodes.current.push(filter)
+      }
 
-    if (theme === 'tv') {
-      const filter = ctx.createBiquadFilter()
-      filter.type = 'bandpass'
-      filter.frequency.value = 800
-      filter.Q.value = 0.5
-      filter.connect(analyser)
-      eqNode = filter
-    }
+      if (theme === 'bar') {
+        const filter = ctx.createBiquadFilter()
+        filter.type = 'lowshelf'
+        filter.frequency.value = 200
+        filter.gain.value = -4
+        lastNode.connect(filter)
+        lastNode = filter
+        activeNodes.current.push(filter)
+      }
 
-    if (theme === 'bar') {
-      const filter = ctx.createBiquadFilter()
-      filter.type = 'lowshelf'
-      filter.frequency.value = 200
-      filter.gain.value = -4
-      filter.connect(analyser)
-      eqNode = filter
-    }
-
-    if (spatialNode) {
-      spatialNode.connect(analyser)
-    } else if (eqNode) {
-      eqNode.connect(analyser)
-    }
-
-    if (!spatialNode && !eqNode) {
-      const dryGain = ctx.createGain()
-      dryGain.connect(analyser)
-      activeNodes.current.push(dryGain)
+      lastNode.connect(analyser)
+      if (lastNode === source) {
+        source.connect(analyser)
+      }
     }
 
     analyser.connect(masterGain)
@@ -160,7 +163,6 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
 
     const scheduleSFX = () => {
       if (!audioContext || !['negative', 'tv'].includes(theme)) return
-
       const intervals = { negative: 12000 + Math.random() * 20000, tv: 18000 + Math.random() * 30000 }
       const delay = intervals[theme] || 20000
 
@@ -207,7 +209,6 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
           src.start()
           activeNodes.current.push(src, gain)
         }
-
         scheduleSFX()
       }, delay)
     }
@@ -220,8 +221,10 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
       cleanupNodes()
       clearTimeout(sfxTimerRef.current)
       cancelAnimationFrame(beatFrameRef.current)
+      try { source.disconnect() } catch {}
+      sourceRef.current = null
     }
-  }, [audioContext, theme, cleanupNodes])
+  }, [audioContext, theme, cleanupNodes, mediaElement])
 
   useEffect(() => {
     if (!analyserRef.current || !audioContext) return
@@ -249,7 +252,7 @@ export default function AudioEngine({ audioContext, theme, onBeat }) {
 
     beatFrameRef.current = requestAnimationFrame(detect)
     return () => cancelAnimationFrame(beatFrameRef.current)
-  }, [audioContext, onBeat])
+  }, [audioContext, onBeat, mediaElement])
 
   return null
 }
