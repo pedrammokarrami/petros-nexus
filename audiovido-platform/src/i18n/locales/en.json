@@ -197,6 +197,26 @@
     "quality480": "480p",
     "subtitleActive": "Persian subtitles activated"
   },
+  "live": {
+    "title": "Live Experiences",
+    "subtitle": "Immersive cinema and music rooms with real-time effects",
+    "mode": {
+      "modern": "Modern Cinema",
+      "negative": "Negative Film",
+      "tv": "TV Room",
+      "bar": "Music Bar",
+      "club": "Night Club",
+      "concert": "Concert Hall"
+    },
+    "modeDesc": {
+      "modern": "Premium IMAX cinema experience with Dolby spatial audio",
+      "negative": "Vintage film theater with grain, smoke, and nostalgic vibes",
+      "tv": "Authentic CRT TV room with scanlines and phosphor glow",
+      "bar": "Cozy bar with warm lighting and ambient café murmur",
+      "club": "High-energy nightclub with beat-synced strobe lights",
+      "concert": "Live stage with projector beams synced to the music"
+    }
+  },
   "mediaCard": {
     "sample": "Sample",
     "new": "New"

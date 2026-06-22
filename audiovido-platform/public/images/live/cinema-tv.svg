@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <defs>
+    <filter id="phosphor">
+      <feComponentTransfer>
+        <feFuncR type="gamma" amplitude="1.2" exponent="1.8" offset="0"/>
+        <feFuncG type="gamma" amplitude="0.9" exponent="1.8" offset="0"/>
+        <feFuncB type="gamma" amplitude="0.7" exponent="1.8" offset="0"/>
+      </feComponentTransfer>
+    </filter>
+    <linearGradient id="roomLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a14"/>
+      <stop offset="100%" stop-color="#030308"/>
+    </linearGradient>
+    <radialGradient id="tvGlow" cx="50%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="rgba(80,180,255,0.12)"/>
+      <stop offset="100%" stop-color="rgba(80,180,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#roomLight)"/>
+  <rect width="1080" height="1920" fill="url(#tvGlow)"/>
+  <!-- Wall -->
+  <rect x="0" y="0" width="1080" height="1200" fill="rgba(20,18,30,0.5)"/>
+  <!-- Wooden TV cabinet -->
+  <rect x="200" y="680" width="680" height="60" rx="4" fill="#2a1e12" stroke="#3a2e22" stroke-width="1"/>
+  <rect x="220" y="740" width="640" height="40" rx="2" fill="#1e160e"/>
+  <!-- CRT TV body -->
+  <rect x="240" y="200" width="600" height="480" rx="30" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="3"/>
+  <!-- CRT screen bezel -->
+  <rect x="250" y="210" width="580" height="460" rx="25" fill="#0a0a0a"/>
+  <!-- CRT screen (curved) -->
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="#0f1520"/>
+  <!-- Scanlines via pattern -->
+  <defs>
+    <pattern id="scanlines" width="1" height="3" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="1" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+    </pattern>
+    <pattern id="pixels" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="rgba(100,180,255,0.03)"/>
+      <rect x="2" y="2" width="2" height="2" fill="rgba(100,180,255,0.02)"/>
+    </pattern>
+  </defs>
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="url(#scanlines)"/>
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="url(#pixels)"/>
+  <!-- Screen content glow -->
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="rgba(60,140,240,0.04)"/>
+  <!-- Subtle screen chromatic shift -->
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="rgba(255,0,0,0.01)" transform="translate(-2,0)"/>
+  <rect x="270" y="225" width="540" height="430" rx="20" fill="rgba(0,255,255,0.01)" transform="translate(2,0)"/>
+  <!-- TV brand plate -->
+  <rect x="480" y="650" width="120" height="16" rx="8" fill="#2a2a2a"/>
+  <!-- Room details - carpet -->
+  <rect x="100" y="800" width="880" height="1120" fill="rgba(30,20,40,0.3)"/>
+  <!-- Window with night sky -->
+  <rect x="780" y="100" width="200" height="300" rx="4" fill="#050510" stroke="rgba(50,50,70,0.5)" stroke-width="4"/>
+  <rect x="880" y="100" width="2" height="300" fill="rgba(50,50,70,0.3)"/>
+  <rect x="780" y="250" width="200" height="2" fill="rgba(50,50,70,0.3)"/>
+</svg>
