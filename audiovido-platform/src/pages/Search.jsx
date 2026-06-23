@@ -172,11 +172,14 @@ export default function Search() {
         background: 'radial-gradient(ellipse at 50% 0%, rgba(100,0,200,0.15) 0%, transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(0,229,255,0.08) 0%, transparent 50%)',
       }} />
 
-      {/* Avatar — full screen */}
+      {/* Avatar — full screen when idle/talking, left 38% when choosing */}
       <div style={{
-        position: 'absolute', inset: 0, zIndex: 1,
-        width: chatState === 'choosing' ? '45%' : '100%',
-        transition: 'width 0.5s ease',
+        position: 'absolute',
+        inset: chatState !== 'choosing' ? 0 : undefined,
+        left: 0, top: 0, bottom: 0,
+        width: chatState === 'choosing' ? '38%' : '100%',
+        transition: 'width 0.6s ease',
+        zIndex: 1,
       }}>
         <AvatarScene ref={avatarRef} />
       </div>
@@ -215,7 +218,7 @@ export default function Search() {
       {lastMessage && (
         <div style={{
           position: 'absolute',
-          top: '15%', left: '5%', right: '5%',
+          top: '12%', left: '4%', right: '4%',
           zIndex: 10,
           background: 'rgba(255,255,255,0.06)',
           backdropFilter: 'blur(16px)',
@@ -223,22 +226,25 @@ export default function Search() {
           border: '1px solid rgba(255,255,255,0.12)',
           borderLeft: '3px solid #00e5ff',
           borderRadius: 20,
-          padding: '16px 20px',
+          padding: 'clamp(12px, 2vw, 20px) clamp(14px, 2vw, 20px)',
           color: 'white',
-          fontSize: 15,
+          fontSize: 'clamp(13px, 1.8vw, 15px)',
           lineHeight: 1.6,
+          maxWidth: '100%',
         }}>
           {lastMessage}
         </div>
       )}
 
-      {/* Choices — side by side with Sophie */}
+      {/* Choices — right panel when choosing */}
       {chatState === 'choosing' && currentChoices && currentChoices.length > 0 && (
         <div style={{
           position: 'absolute',
-          right: '4%',
-          top: '25%',
-          width: '52%',
+          right: '3%',
+          top: '20%',
+          width: '55%',
+          maxHeight: '60vh',
+          overflowY: 'auto',
           zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
@@ -249,19 +255,22 @@ export default function Search() {
               key={i}
               onClick={() => handleChoiceSelected(choice)}
               style={{
+                width: '100%',
+                padding: '14px 18px',
+                borderRadius: 16,
                 background: 'rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
                 border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 20,
-                padding: '14px 18px',
                 color: 'white',
-                fontSize: 14,
+                fontSize: 'clamp(13px, 2vw, 15px)',
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'all 0.2s',
                 minHeight: 44,
                 fontFamily: 'Inter, system-ui, sans-serif',
+                opacity: 0,
+                animation: `slideInRight 0.3s ease forwards`,
+                animationDelay: `${i * 0.08}s`,
               }}
             >
               {choice}

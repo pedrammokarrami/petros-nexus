@@ -176,15 +176,7 @@ function SceneContent({ stateRef }) {
           }
         })
 
-        console.log('[Walking FBX clips]:', walkingFbx.animations.map(a =>
-          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s tracks: ${a.tracks.length}`
-        ))
-        console.log('[Idle FBX clips]:', idleFbx.animations.map(a =>
-          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s`
-        ))
-        console.log('[Talking FBX clips]:', talkingFbx.animations.map(a =>
-          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s`
-        ))
+
 
         mixer.stopAllAction()
 
