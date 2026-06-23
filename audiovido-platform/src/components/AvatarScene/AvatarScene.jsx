@@ -3,30 +3,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 
-const WalkingSophieUrl = '/avatars/Walking_Sophie.fbx'
-const TalkingSophieUrl = '/avatars/Talking_Sophie.fbx'
-const WalkingUrl = '/avatars/Walking.fbx'
-const StopWalkingUrl = '/avatars/Stop_Walking.fbx'
-
-function initializePose(model) {
-  const get = (n) => model.getObjectByName(n)
-  const LA = get('mixamorig:LeftArm')
-  const RA = get('mixamorig:RightArm')
-  const LFA = get('mixamorig:LeftForeArm')
-  const RFA = get('mixamorig:RightForeArm')
-  const LS = get('mixamorig:LeftShoulder')
-  const RS = get('mixamorig:RightShoulder')
-
-  if (LA) LA.rotation.set(0.1, 0, -1.5)
-  if (RA) RA.rotation.set(0.1, 0, 1.5)
-  if (LFA) LFA.rotation.set(0, 0, -0.1)
-  if (RFA) RFA.rotation.set(0, 0, 0.1)
-  if (LS) LS.rotation.set(0, 0, -0.25)
-  if (RS) RS.rotation.set(0, 0, 0.25)
-
-  console.log('[Avatar] initializePose applied')
-}
-
 const ANIM_STATES = {
   IDLE: 'idle',
   TALKING: 'talking',
@@ -79,73 +55,50 @@ function LoadingPlaceholder() {
   )
 }
 
-function applyIdleAnimation(model, t) {
-  const get = (n) => model.getObjectByName(n)
-
-  const hips = get('mixamorig:Hips')
-  if (hips) hips.rotation.z += Math.sin(t * 0.4) * 0.003
-
-  const spine1 = get('mixamorig:Spine1')
-  if (spine1) spine1.rotation.z += Math.sin(t * 0.5 + 0.3) * 0.005
-
-  const head = get('mixamorig:Head')
-  if (head) head.rotation.x += Math.sin(t * 0.35) * 0.004
-
-  const LA = get('mixamorig:LeftArm')
-  if (LA) LA.rotation.z += Math.sin(t * 0.6) * 0.015
-
-  const RA = get('mixamorig:RightArm')
-  if (RA) RA.rotation.z += Math.sin(t * 0.6 + 1) * 0.015
-}
-
-function applyLipSync(model, t) {
-  model.traverse(child => {
-    if (child.isMesh && child.morphTargetDictionary) {
-      const idx = child.morphTargetDictionary['jawOpen']
-        ?? child.morphTargetDictionary['JawOpen']
-        ?? child.morphTargetDictionary['mouthOpen']
-      if (idx !== undefined) {
-        child.morphTargetInfluences[idx] =
-          Math.abs(Math.sin(t * 7)) * 0.5 + Math.abs(Math.sin(t * 11)) * 0.2
-      }
-    }
-  })
-  const jaw = model.getObjectByName('mixamorig:Jaw')
-  if (jaw) {
-    jaw.rotation.x = Math.abs(Math.sin(t * 7)) * 0.18
-  }
-}
-
-function resetLipSync(model) {
-  model.traverse(child => {
-    if (child.isMesh && child.morphTargetInfluences) {
-      child.morphTargetInfluences.fill(0)
-    }
-  })
-  const jaw = model.getObjectByName('mixamorig:Jaw')
-  if (jaw) jaw.rotation.x = 0
-}
-
 function SceneContent({ stateRef }) {
   const { camera } = useThree()
   const [loaded, setLoaded] = useState(false)
   const groupRef = useRef(null)
   const mixerRef = useRef(null)
   const actionsRef = useRef({})
-  const currentStateRef = useRef('idle')
+  const currentActionRef = useRef(null)
+  const currentStateNameRef = useRef('idle')
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
+  const talkingTimerRef = useRef(null)
+
+  function playAction(name, loop = false) {
+    const action = actionsRef.current[name]
+    if (!action) return
+
+    const prev = currentActionRef.current
+
+    action.reset()
+    action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce)
+    action.clampWhenFinished = !loop
+    action.fadeIn(0.3)
+    action.play()
+
+    if (prev && prev !== action) {
+      prev.fadeOut(0.3)
+    }
+
+    currentActionRef.current = action
+    currentStateNameRef.current = name
+    console.log('[Avatar] Playing:', name, loop ? 'loop' : 'once')
+  }
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const [baseModel, talkingFbx, walkingFbx, stopWalkingFbx] = await Promise.all([
-          loadFbx(WalkingSophieUrl),
-          loadFbx(TalkingSophieUrl),
-          loadFbx(WalkingUrl),
-          loadFbx(StopWalkingUrl),
+        const [baseModel, idleFbx, talkingFbx, walkingFbx, stopWalkingFbx] = await Promise.all([
+          loadFbx('/avatars/Walking_Sophie.fbx'),
+          loadFbx('/avatars/Idle.fbx'),
+          loadFbx('/avatars/Talking_Sophie.fbx'),
+          loadFbx('/avatars/Walking.fbx'),
+          loadFbx('/avatars/Stop_Walking.fbx'),
         ])
         if (cancelled || !groupRef.current) return
 
@@ -157,19 +110,14 @@ function SceneContent({ stateRef }) {
           if (child.isMesh) {
             child.castShadow = true
             child.receiveShadow = true
-            if (child.morphTargetDictionary) {
-              console.log('[Sophie morphs]', Object.keys(child.morphTargetDictionary))
-            }
           }
         })
 
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const height = size.y || 1
-
         const targetHeight = 2.0
         const scale = targetHeight / height
-
         model.scale.setScalar(scale)
 
         box.setFromObject(model)
@@ -181,41 +129,32 @@ function SceneContent({ stateRef }) {
         const mixer = new THREE.AnimationMixer(model)
         mixerRef.current = mixer
 
-        const clips = {
-          talking: talkingFbx.animations[0],
-          walking: walkingFbx.animations[0],
-          returning: stopWalkingFbx.animations[0],
-        }
+        const animFiles = [
+          { key: 'idle', fbx: idleFbx, loop: true },
+          { key: 'talking', fbx: talkingFbx, loop: true },
+          { key: 'walking_out', fbx: walkingFbx, loop: false },
+          { key: 'returning', fbx: stopWalkingFbx, loop: false },
+        ]
 
-        if (clips.talking) {
-          const a = mixer.clipAction(clips.talking)
-          a.setLoop(THREE.LoopRepeat)
-          a.timeScale = 1.0
-          actionsRef.current.talking = a
-        }
-        if (clips.walking) {
-          const a = mixer.clipAction(clips.walking)
-          a.setLoop(THREE.LoopOnce)
-          a.clampWhenFinished = true
-          actionsRef.current.walking = a
-        }
-        if (clips.returning) {
-          const a = mixer.clipAction(clips.returning)
-          a.setLoop(THREE.LoopOnce)
-          a.clampWhenFinished = true
-          actionsRef.current.returning = a
-        }
+        animFiles.forEach(({ key, fbx, loop }) => {
+          if (fbx.animations.length > 0) {
+            const clip = fbx.animations[0]
+            const action = mixer.clipAction(clip)
+            action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce)
+            action.clampWhenFinished = !loop
+            actionsRef.current[key] = action
+          }
+        })
+
+        console.log('[Animations loaded]',
+          animFiles.map(a => a.key + ': ' + (a.fbx.animations[0]?.name || 'none')))
 
         mixer.stopAllAction()
 
         requestAnimationFrame(() => {
-          initializePose(model)
+          playAction('idle', true)
+          setLoaded(true)
         })
-
-        console.log('[Animations on load]',
-          Object.values(clips).map(c => c ? c.name + ' dur:' + c.duration.toFixed(2) : 'none'))
-
-        setLoaded(true)
       } catch (err) {
         console.error('[AvatarScene] FBX load failed:', err)
       }
@@ -225,80 +164,43 @@ function SceneContent({ stateRef }) {
   }, [])
 
   useFrame((state, delta) => {
+    if (mixerRef.current) mixerRef.current.update(delta)
+
     const t = state.clock.elapsedTime
     const wanted = stateRef.current
 
-    // Handle state transitions
-    if (wanted !== currentStateRef.current) {
-      const prev = actionsRef.current[currentStateRef.current]
-      const next = actionsRef.current[wanted]
-
-      if (prev && next && prev !== next) {
-        next.reset()
-        next.setLoop(
-          wanted === 'walking_out' || wanted === 'returning'
-            ? THREE.LoopOnce
-            : THREE.LoopRepeat
-        )
-        if (wanted === 'walking_out' || wanted === 'returning') {
-          next.clampWhenFinished = true
-        }
-        next.setEffectiveWeight(1.0)
-        next.timeScale = 1.0
-        next.play()
-        prev.crossFadeTo(next, 0.3, true)
-      } else if (prev && !next) {
-        prev.fadeOut(0.3)
-        setTimeout(() => prev.stop(), 300)
-      } else if (next && !prev) {
-        next.reset().play()
-      }
-
-      if (wanted === 'walking_out') {
+    if (wanted !== currentStateNameRef.current) {
+      if (wanted === 'idle') {
+        if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
+        playAction('idle', true)
+      } else if (wanted === 'talking') {
+        playAction('talking', true)
+        if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
+        talkingTimerRef.current = setTimeout(() => {
+          playAction('idle', true)
+        }, 4000)
+      } else if (wanted === 'walking_out') {
+        playAction('walking_out', false)
         animPosRef.current = {
-          startTime: state.clock.elapsedTime,
+          startTime: t,
           from: modelRef.current?.position.x || 0,
           to: -0.8,
           duration: 1.2,
         }
       } else if (wanted === 'returning') {
+        playAction('returning', false)
         animPosRef.current = {
-          startTime: state.clock.elapsedTime,
+          startTime: t,
           from: modelRef.current?.position.x || -0.8,
           to: 0,
           duration: 1.0,
         }
       }
-
-      if (wanted === 'idle') {
-        if (mixerRef.current) {
-          mixerRef.current.stopAllAction()
-        }
-        resetLipSync(modelRef.current)
-      }
-
-      currentStateRef.current = wanted
     }
 
-    if (mixerRef.current) mixerRef.current.update(delta)
-
-    // Procedural idle — runs when no FBX animation is active
-    if (modelRef.current && wanted === 'idle') {
-      applyIdleAnimation(modelRef.current, t)
-    }
-
-    // Lip sync during talking
-    if (modelRef.current && wanted === 'talking') {
-      applyLipSync(modelRef.current, t)
-    }
-
-    // Position interpolation for walking/returning
     if (animPosRef.current && modelRef.current) {
       const ap = animPosRef.current
-      const progress = Math.min(
-        (t - ap.startTime) / ap.duration,
-        1
-      )
+      const progress = Math.min((t - ap.startTime) / ap.duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
       modelRef.current.position.x = ap.from + (ap.to - ap.from) * eased
       if (progress >= 1) animPosRef.current = null
