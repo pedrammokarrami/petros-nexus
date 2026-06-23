@@ -172,14 +172,9 @@ export default function Search() {
         background: 'radial-gradient(ellipse at 50% 0%, rgba(100,0,200,0.15) 0%, transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(0,229,255,0.08) 0%, transparent 50%)',
       }} />
 
-      {/* Avatar — full screen when idle/talking, left 38% when choosing */}
+      {/* Avatar — always full screen, Sophie moves via 3D position */}
       <div style={{
-        position: 'absolute',
-        inset: chatState !== 'choosing' ? 0 : undefined,
-        left: 0, top: 0, bottom: 0,
-        width: chatState === 'choosing' ? '38%' : '100%',
-        transition: 'width 0.6s ease',
-        zIndex: 1,
+        position: 'absolute', inset: 0, zIndex: 1,
       }}>
         <AvatarScene ref={avatarRef} />
       </div>
