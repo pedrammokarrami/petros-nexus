@@ -8,6 +8,23 @@ const TalkingSophieUrl = '/avatars/Talking_Sophie.fbx'
 const WalkingUrl = '/avatars/Walking.fbx'
 const StopWalkingUrl = '/avatars/Stop_Walking.fbx'
 
+function initializePose(model) {
+  const get = (n) => model.getObjectByName(n)
+  const leftArm = get('mixamorig:LeftArm')
+  const rightArm = get('mixamorig:RightArm')
+  const leftForeArm = get('mixamorig:LeftForeArm')
+  const rightForeArm = get('mixamorig:RightForeArm')
+  const leftShoulder = get('mixamorig:LeftShoulder')
+  const rightShoulder = get('mixamorig:RightShoulder')
+
+  if (leftArm) leftArm.rotation.z = -1.55
+  if (rightArm) rightArm.rotation.z = 1.55
+  if (leftForeArm) leftForeArm.rotation.z = -0.1
+  if (rightForeArm) rightForeArm.rotation.z = 0.1
+  if (leftShoulder) leftShoulder.rotation.z = -0.3
+  if (rightShoulder) rightShoulder.rotation.z = 0.3
+}
+
 const ANIM_STATES = {
   IDLE: 'idle',
   TALKING: 'talking',
@@ -68,64 +85,64 @@ function applyIdleAnimation(model, elapsedTime) {
   const hips = get('mixamorig:Hips')
   if (hips) {
     hips.position.y += Math.sin(t * 0.9) * 0.0004
-    hips.rotation.z = Math.sin(t * 0.4) * 0.006
+    hips.rotation.z += Math.sin(t * 0.4) * 0.006
   }
 
   const spine = get('mixamorig:Spine')
   if (spine) {
-    spine.rotation.z = Math.sin(t * 0.5) * 0.010
-    spine.rotation.x = Math.sin(t * 0.35) * 0.006
+    spine.rotation.z += Math.sin(t * 0.5) * 0.010
+    spine.rotation.x += Math.sin(t * 0.35) * 0.006
   }
 
   const spine1 = get('mixamorig:Spine1')
   if (spine1) {
-    spine1.rotation.z = Math.sin(t * 0.55 + 0.3) * 0.012
-    spine1.rotation.x = Math.sin(t * 0.4) * 0.007
+    spine1.rotation.z += Math.sin(t * 0.55 + 0.3) * 0.012
+    spine1.rotation.x += Math.sin(t * 0.4) * 0.007
   }
 
   const spine2 = get('mixamorig:Spine2')
   if (spine2) {
-    spine2.rotation.z = Math.sin(t * 0.5 + 0.6) * 0.008
+    spine2.rotation.z += Math.sin(t * 0.5 + 0.6) * 0.008
   }
 
   const head = get('mixamorig:Head')
   if (head) {
-    head.rotation.x = Math.sin(t * 0.4) * 0.012
-    head.rotation.z = Math.sin(t * 0.3) * 0.008
+    head.rotation.x += Math.sin(t * 0.4) * 0.012
+    head.rotation.z += Math.sin(t * 0.3) * 0.008
   }
 
   const leftShoulder = get('mixamorig:LeftShoulder')
-  if (leftShoulder) leftShoulder.rotation.z = -0.3 + Math.sin(t * 0.5) * 0.02
+  if (leftShoulder) leftShoulder.rotation.z += Math.sin(t * 0.5) * 0.02
 
   const leftArm = get('mixamorig:LeftArm')
   if (leftArm) {
-    leftArm.rotation.z = -1.45 + Math.sin(t * 0.6) * 0.03
-    leftArm.rotation.x = 0.15 + Math.sin(t * 0.4) * 0.02
+    leftArm.rotation.z += Math.sin(t * 0.6) * 0.025
+    leftArm.rotation.x += Math.sin(t * 0.4) * 0.02
   }
 
   const leftForeArm = get('mixamorig:LeftForeArm')
-  if (leftForeArm) leftForeArm.rotation.z = -0.05 + Math.sin(t * 0.5) * 0.015
+  if (leftForeArm) leftForeArm.rotation.z += Math.sin(t * 0.5) * 0.015
 
   const rightShoulder = get('mixamorig:RightShoulder')
-  if (rightShoulder) rightShoulder.rotation.z = 0.3 + Math.sin(t * 0.5 + 1) * 0.02
+  if (rightShoulder) rightShoulder.rotation.z += Math.sin(t * 0.5 + 1) * 0.02
 
   const rightArm = get('mixamorig:RightArm')
   if (rightArm) {
-    rightArm.rotation.z = 1.45 + Math.sin(t * 0.6 + 1) * 0.03
-    rightArm.rotation.x = 0.15 + Math.sin(t * 0.4 + 0.5) * 0.02
+    rightArm.rotation.z += Math.sin(t * 0.6 + 1) * 0.025
+    rightArm.rotation.x += Math.sin(t * 0.4 + 0.5) * 0.02
   }
 
   const rightForeArm = get('mixamorig:RightForeArm')
-  if (rightForeArm) rightForeArm.rotation.z = 0.05 + Math.sin(t * 0.5 + 1) * 0.015
+  if (rightForeArm) rightForeArm.rotation.z += Math.sin(t * 0.5 + 1) * 0.015
 
   const leftUpLeg = get('mixamorig:LeftUpLeg')
   if (leftUpLeg) {
-    leftUpLeg.rotation.z = 0.04 + Math.sin(t * 0.4) * 0.008
+    leftUpLeg.rotation.z += Math.sin(t * 0.4) * 0.008
   }
 
   const rightUpLeg = get('mixamorig:RightUpLeg')
   if (rightUpLeg) {
-    rightUpLeg.rotation.z = -0.04 + Math.sin(t * 0.4 + 1) * 0.008
+    rightUpLeg.rotation.z += Math.sin(t * 0.4 + 1) * 0.008
   }
 }
 
@@ -209,6 +226,14 @@ function SceneContent({ stateRef }) {
 
         camera.lookAt(0, 0.8, 0)
 
+        model.traverse(child => {
+          if (child.isSkinnedMesh && child.skeleton) {
+            child.skeleton.pose()
+          }
+        })
+
+        initializePose(model)
+
         const mixer = new THREE.AnimationMixer(model)
         mixerRef.current = mixer
 
@@ -236,6 +261,12 @@ function SceneContent({ stateRef }) {
           a.clampWhenFinished = true
           actionsRef.current.returning = a
         }
+
+        mixer.stopAllAction()
+        mixer.setTime(0)
+
+        console.log('[Animations on load]',
+          Object.values(clips).map(c => c ? c.name + ' dur:' + c.duration.toFixed(2) : 'none'))
 
         setLoaded(true)
       } catch (err) {
