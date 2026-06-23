@@ -4,27 +4,47 @@ import AvatarScene from '../components/AvatarScene/AvatarScene'
 import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
 import { getCompletion } from '../services/ai'
 
-function speakText(text) {
+function speakText(text, context = 'music') {
   if (!window.speechSynthesis) return
 
   window.speechSynthesis.cancel()
 
-  const utterance = new SpeechSynthesisUtterance(text.replace(/CHOICES:.*$/s, '').trim())
-  utterance.rate = 1.0
-  utterance.pitch = 1.1
-  utterance.volume = 1.0
+  const cleanText = text.replace(/CHOICES:.*$/s, '').trim()
+  const utterance = new SpeechSynthesisUtterance(cleanText)
+
+  if (context === 'music') {
+    utterance.rate = 1.15
+    utterance.pitch = 1.2
+    utterance.volume = 1.0
+  } else if (context === 'film') {
+    utterance.rate = 0.88
+    utterance.pitch = 0.85
+    utterance.volume = 1.0
+  }
 
   const voices = window.speechSynthesis.getVoices()
-  const femaleVoice = voices.find(v =>
-    v.name.includes('Female') ||
-    v.name.includes('Samantha') ||
-    v.name.includes('Victoria') ||
-    v.name.includes('Karen') ||
-    (v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
-  )
-  if (femaleVoice) utterance.voice = femaleVoice
+  const preferred = ['Samantha', 'Karen', 'Moira', 'Tessa', 'Veena']
+  let voice = null
+  for (const name of preferred) {
+    voice = voices.find(v => v.name.includes(name))
+    if (voice) break
+  }
+  if (!voice) {
+    voice = voices.find(v => v.lang.startsWith('en') &&
+      (v.name.toLowerCase().includes('female') ||
+       v.name.includes('f-') ||
+       v.gender === 'female'))
+  }
+  if (voice) utterance.voice = voice
 
   window.speechSynthesis.speak(utterance)
+}
+
+function detectContext(text) {
+  const filmWords = ['film', 'movie', 'cinema', 'director', 'scene',
+    'watch', 'actor', 'series', 'episode', 'visual']
+  const lower = text.toLowerCase()
+  return filmWords.some(w => lower.includes(w)) ? 'film' : 'music'
 }
 
 if (typeof window !== 'undefined' && window.speechSynthesis?.onvoiceschanged !== undefined) {
@@ -62,7 +82,8 @@ export default function Search() {
     setChatState('talking')
     console.log('[Search] handleAIResponse -> setTalking')
     setTalking()
-    speakText(text)
+    const ctx = detectContext(text)
+    speakText(text, ctx)
 
     if (choices && choices.length > 0) {
       setTimer(() => {

@@ -65,28 +65,58 @@ function SceneContent({ stateRef }) {
   const currentStateNameRef = useRef('idle')
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
-  const animPosRef = useRef(null)
   const talkingTimerRef = useRef(null)
+  const isTalkingRef = useRef(false)
+  const animFrameIdRef = useRef(null)
 
   function playAction(name, loop = false) {
-    const action = actionsRef.current[name]
-    if (!action) return
-
-    const prev = currentActionRef.current
-
-    action.reset()
-    action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce)
-    action.clampWhenFinished = !loop
-    action.fadeIn(0.3)
-    action.play()
-
-    if (prev && prev !== action) {
-      prev.fadeOut(0.3)
+    const next = actionsRef.current[name]
+    if (!next) {
+      console.warn('[Avatar] Missing action:', name)
+      return
     }
 
-    currentActionRef.current = action
+    const current = currentActionRef.current
+
+    if (current === next && next.isRunning()) return
+
+    Object.values(actionsRef.current).forEach(a => {
+      if (a && a !== next) {
+        a.fadeOut(0.2)
+        setTimeout(() => a.stop(), 200)
+      }
+    })
+
+    next.reset()
+    next.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce)
+    next.clampWhenFinished = !loop
+    next.fadeIn(0.2)
+    next.play()
+
+    currentActionRef.current = next
     currentStateNameRef.current = name
-    console.log('[Avatar] Playing:', name, loop ? 'loop' : 'once')
+    console.log('[Avatar] → Playing:', name, loop ? 'loop' : 'once')
+  }
+
+  function animatePosition(from, to, duration, onComplete) {
+    if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current)
+    const start = performance.now()
+
+    function tick() {
+      const elapsed = performance.now() - start
+      const t = Math.min(elapsed / duration, 1)
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+      if (modelRef.current) modelRef.current.position.x = from + (to - from) * ease
+      if (t < 1) {
+        animFrameIdRef.current = requestAnimationFrame(tick)
+      } else {
+        if (modelRef.current) modelRef.current.position.x = to
+        animFrameIdRef.current = null
+        if (onComplete) onComplete()
+      }
+    }
+
+    animFrameIdRef.current = requestAnimationFrame(tick)
   }
 
   useEffect(() => {
@@ -174,38 +204,26 @@ function SceneContent({ stateRef }) {
     if (wanted !== currentStateNameRef.current) {
       if (wanted === 'idle') {
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
+        if (isTalkingRef.current) isTalkingRef.current = false
         playAction('idle', true)
       } else if (wanted === 'talking') {
+        if (isTalkingRef.current) return
+        isTalkingRef.current = true
         playAction('idle', true)
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
         talkingTimerRef.current = setTimeout(() => {
+          isTalkingRef.current = false
           playAction('idle', true)
         }, 4000)
       } else if (wanted === 'walking_out') {
         playAction('walking_out', false)
-        animPosRef.current = {
-          startTime: t,
-          from: modelRef.current?.position.x || 0,
-          to: -0.8,
-          duration: 1.2,
-        }
+        const fromX = modelRef.current?.position.x || 0
+        animatePosition(fromX, -0.6, 1000, () => playAction('idle', true))
       } else if (wanted === 'returning') {
         playAction('returning', false)
-        animPosRef.current = {
-          startTime: t,
-          from: modelRef.current?.position.x || -0.8,
-          to: 0,
-          duration: 1.0,
-        }
+        const fromX = modelRef.current?.position.x || -0.6
+        animatePosition(fromX, 0, 900, () => playAction('idle', true))
       }
-    }
-
-    if (animPosRef.current && modelRef.current) {
-      const ap = animPosRef.current
-      const progress = Math.min((t - ap.startTime) / ap.duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      modelRef.current.position.x = ap.from + (ap.to - ap.from) * eased
-      if (progress >= 1) animPosRef.current = null
     }
 
     if (pulseLightRef.current) {
