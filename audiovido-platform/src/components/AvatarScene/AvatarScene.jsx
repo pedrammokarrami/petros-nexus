@@ -176,10 +176,15 @@ function SceneContent({ stateRef }) {
           }
         })
 
-        console.log('[Animations loaded]',
-          animFiles.map(a => a.key + ': ' + (a.fbx.animations[0]?.name || 'none')))
-        console.log('[Talking clips]',
-          talkingFbx.animations.map(a => a.name + ' dur:' + a.duration.toFixed(2)))
+        console.log('[Walking FBX clips]:', walkingFbx.animations.map(a =>
+          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s tracks: ${a.tracks.length}`
+        ))
+        console.log('[Idle FBX clips]:', idleFbx.animations.map(a =>
+          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s`
+        ))
+        console.log('[Talking FBX clips]:', talkingFbx.animations.map(a =>
+          `name: "${a.name}" duration: ${a.duration.toFixed(2)}s`
+        ))
 
         mixer.stopAllAction()
 
