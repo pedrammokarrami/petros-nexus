@@ -60,18 +60,117 @@ function LoadingPlaceholder() {
   )
 }
 
+function applyIdleAnimation(model, elapsedTime) {
+  const t = elapsedTime
+
+  const get = (name) => model.getObjectByName(name)
+
+  const hips = get('mixamorig:Hips')
+  if (hips) {
+    hips.position.y += Math.sin(t * 0.9) * 0.0004
+    hips.rotation.z = Math.sin(t * 0.4) * 0.006
+  }
+
+  const spine = get('mixamorig:Spine')
+  if (spine) {
+    spine.rotation.z = Math.sin(t * 0.5) * 0.010
+    spine.rotation.x = Math.sin(t * 0.35) * 0.006
+  }
+
+  const spine1 = get('mixamorig:Spine1')
+  if (spine1) {
+    spine1.rotation.z = Math.sin(t * 0.55 + 0.3) * 0.012
+    spine1.rotation.x = Math.sin(t * 0.4) * 0.007
+  }
+
+  const spine2 = get('mixamorig:Spine2')
+  if (spine2) {
+    spine2.rotation.z = Math.sin(t * 0.5 + 0.6) * 0.008
+  }
+
+  const head = get('mixamorig:Head')
+  if (head) {
+    head.rotation.x = Math.sin(t * 0.4) * 0.012
+    head.rotation.z = Math.sin(t * 0.3) * 0.008
+  }
+
+  const leftShoulder = get('mixamorig:LeftShoulder')
+  if (leftShoulder) leftShoulder.rotation.z = -0.15 + Math.sin(t * 0.5) * 0.02
+
+  const leftArm = get('mixamorig:LeftArm')
+  if (leftArm) {
+    leftArm.rotation.z = -0.8 + Math.sin(t * 0.6) * 0.03
+    leftArm.rotation.x = Math.sin(t * 0.4) * 0.02
+  }
+
+  const leftForeArm = get('mixamorig:LeftForeArm')
+  if (leftForeArm) {
+    leftForeArm.rotation.z = -0.2 + Math.sin(t * 0.5) * 0.02
+  }
+
+  const rightShoulder = get('mixamorig:RightShoulder')
+  if (rightShoulder) rightShoulder.rotation.z = 0.15 + Math.sin(t * 0.5 + 1) * 0.02
+
+  const rightArm = get('mixamorig:RightArm')
+  if (rightArm) {
+    rightArm.rotation.z = 0.8 + Math.sin(t * 0.6 + 1) * 0.03
+    rightArm.rotation.x = Math.sin(t * 0.4 + 0.5) * 0.02
+  }
+
+  const rightForeArm = get('mixamorig:RightForeArm')
+  if (rightForeArm) {
+    rightForeArm.rotation.z = 0.2 + Math.sin(t * 0.5 + 1) * 0.02
+  }
+
+  const leftUpLeg = get('mixamorig:LeftUpLeg')
+  if (leftUpLeg) {
+    leftUpLeg.rotation.z = 0.04 + Math.sin(t * 0.4) * 0.008
+  }
+
+  const rightUpLeg = get('mixamorig:RightUpLeg')
+  if (rightUpLeg) {
+    rightUpLeg.rotation.z = -0.04 + Math.sin(t * 0.4 + 1) * 0.008
+  }
+}
+
+function applyLipSync(model, t) {
+  model.traverse(child => {
+    if (child.isMesh && child.morphTargetDictionary) {
+      const idx = child.morphTargetDictionary['jawOpen']
+        ?? child.morphTargetDictionary['JawOpen']
+        ?? child.morphTargetDictionary['mouthOpen']
+      if (idx !== undefined) {
+        child.morphTargetInfluences[idx] =
+          Math.abs(Math.sin(t * 7)) * 0.5 + Math.abs(Math.sin(t * 11)) * 0.2
+      }
+    }
+  })
+  const jaw = model.getObjectByName('mixamorig:Jaw')
+  if (jaw) {
+    jaw.rotation.x = Math.abs(Math.sin(t * 7)) * 0.18
+  }
+}
+
+function resetLipSync(model) {
+  model.traverse(child => {
+    if (child.isMesh && child.morphTargetInfluences) {
+      child.morphTargetInfluences.fill(0)
+    }
+  })
+  const jaw = model.getObjectByName('mixamorig:Jaw')
+  if (jaw) jaw.rotation.x = 0
+}
+
 function SceneContent({ stateRef }) {
   const { camera } = useThree()
   const [loaded, setLoaded] = useState(false)
   const groupRef = useRef(null)
   const mixerRef = useRef(null)
   const actionsRef = useRef({})
-  const currentAnimRef = useRef('idle')
+  const currentStateRef = useRef('idle')
   const modelRef = useRef(null)
   const pulseLightRef = useRef(null)
   const animPosRef = useRef(null)
-  const boneRefs = useRef({})
-  const morphRef = useRef({})
 
   useEffect(() => {
     let cancelled = false
@@ -94,19 +193,9 @@ function SceneContent({ stateRef }) {
             child.castShadow = true
             child.receiveShadow = true
             if (child.morphTargetDictionary) {
-              morphRef.current.mesh = child
               console.log('[Sophie morphs]', Object.keys(child.morphTargetDictionary))
             }
           }
-        })
-
-        const boneNames = ['mixamorig:Hips', 'Hips', 'mixamorig:Spine', 'Spine',
-          'mixamorig:Spine1', 'Spine1', 'mixamorig:Spine2', 'Spine2',
-          'mixamorig:LeftArm', 'LeftArm', 'mixamorig:RightArm', 'RightArm',
-          'mixamorig:Head', 'Head']
-        boneNames.forEach(name => {
-          const bone = model.getObjectByName(name)
-          if (bone) boneRefs.current[name] = bone
         })
 
         const box = new THREE.Box3().setFromObject(model)
@@ -161,73 +250,13 @@ function SceneContent({ stateRef }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function animateIdle(model, time) {
-    const hips = boneRefs.current['mixamorig:Hips'] || boneRefs.current['Hips']
-    const spine1 = boneRefs.current['mixamorig:Spine1'] || boneRefs.current['Spine1']
-    const spine = boneRefs.current['mixamorig:Spine'] || boneRefs.current['Spine']
-    const lArm = boneRefs.current['mixamorig:LeftArm'] || boneRefs.current['LeftArm']
-    const rArm = boneRefs.current['mixamorig:RightArm'] || boneRefs.current['RightArm']
-
-    if (hips) {
-      hips.position.y += Math.sin(time * 0.8) * 0.0003
-      hips.rotation.z = Math.sin(time * 0.5) * 0.008
-    }
-    if (spine1) {
-      spine1.rotation.z = Math.sin(time * 0.6 + 0.5) * 0.012
-      spine1.rotation.x = Math.sin(time * 0.4) * 0.008
-    }
-    if (spine) {
-      spine.rotation.z = Math.sin(time * 0.8) * 0.012
-      spine.rotation.x = Math.sin(time * 0.6) * 0.008
-    }
-    if (lArm) {
-      lArm.rotation.z = -1.4 + Math.sin(time * 0.7) * 0.04
-    }
-    if (rArm) {
-      rArm.rotation.z = 1.4 + Math.sin(time * 0.7 + 1) * 0.04
-    }
-  }
-
-  function animateTalking(model, time) {
-    const jawBone = boneRefs.current['mixamorig:Head'] || boneRefs.current['Head']
-    if (jawBone) {
-      jawBone.rotation.x = Math.abs(Math.sin(time * 8)) * 0.1
-    }
-
-    const mesh = morphRef.current.mesh
-    if (mesh && mesh.morphTargetDictionary) {
-      const jawOpen = mesh.morphTargetDictionary['jawOpen']
-        ?? mesh.morphTargetDictionary['JawOpen']
-        ?? mesh.morphTargetDictionary['mouth_open']
-      if (jawOpen !== undefined) {
-        const speed = 8
-        const openAmount = Math.abs(Math.sin(time * speed)) * 0.6
-          + Math.abs(Math.sin(time * speed * 1.3)) * 0.3
-        mesh.morphTargetInfluences[jawOpen] = openAmount
-      }
-    }
-  }
-
-  function resetMouth(model) {
-    const mesh = morphRef.current.mesh
-    if (mesh && mesh.morphTargetInfluences) {
-      mesh.morphTargetInfluences.fill(0)
-    }
-    const jawBone = boneRefs.current['mixamorig:Head'] || boneRefs.current['Head']
-    if (jawBone) {
-      jawBone.rotation.x = 0
-    }
-  }
-
   useFrame((state, delta) => {
-    if (mixerRef.current) mixerRef.current.update(delta)
-
     const t = state.clock.elapsedTime
     const wanted = stateRef.current
 
-    // Handle animation state transitions
-    if (wanted !== currentAnimRef.current) {
-      const prev = actionsRef.current[currentAnimRef.current]
+    // Handle state transitions
+    if (wanted !== currentStateRef.current) {
+      const prev = actionsRef.current[currentStateRef.current]
       const next = actionsRef.current[wanted]
 
       if (prev && next && prev !== next) {
@@ -267,24 +296,29 @@ function SceneContent({ stateRef }) {
         }
       }
 
-      if (wanted === 'idle' && prev) {
-        resetMouth(modelRef.current)
+      if (wanted === 'idle') {
+        if (mixerRef.current) {
+          mixerRef.current.stopAllAction()
+        }
+        resetLipSync(modelRef.current)
       }
 
-      currentAnimRef.current = wanted
+      currentStateRef.current = wanted
     }
 
-    // Procedural idle animation (breathing + arm sway)
-    if (wanted === 'idle' && modelRef.current) {
-      animateIdle(modelRef.current, t)
+    if (mixerRef.current) mixerRef.current.update(delta)
+
+    // Procedural idle — runs when no FBX animation is active
+    if (modelRef.current && wanted === 'idle') {
+      applyIdleAnimation(modelRef.current, t)
     }
 
     // Lip sync during talking
-    if (wanted === 'talking' && modelRef.current) {
-      animateTalking(modelRef.current, t)
+    if (modelRef.current && wanted === 'talking') {
+      applyLipSync(modelRef.current, t)
     }
 
-    // Position animation for walking/returning
+    // Position interpolation for walking/returning
     if (animPosRef.current && modelRef.current) {
       const ap = animPosRef.current
       const progress = Math.min(
