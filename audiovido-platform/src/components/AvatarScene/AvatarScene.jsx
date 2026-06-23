@@ -146,7 +146,7 @@ function SceneContent({ stateRef }) {
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const height = size.y || 1
-        const targetHeight = 1.6
+        const targetHeight = 1.8
         const scale = targetHeight / height
         model.scale.setScalar(scale)
 
@@ -212,7 +212,7 @@ function SceneContent({ stateRef }) {
       } else if (wanted === 'talking') {
         if (isTalkingRef.current) return
         isTalkingRef.current = true
-        playAction('idle', true)
+        playAction('talking', true)
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
         talkingTimerRef.current = setTimeout(() => {
           isTalkingRef.current = false
@@ -289,7 +289,7 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
       }}
     >
       <Canvas
-        camera={{ fov: 55, position: [0, 1.0, 2.8], near: 0.1, far: 100 }}
+        camera={{ fov: 60, position: [0, 1.1, 2.4], near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true }}
         onCreated={({ gl }) => {
           gl.setClearAlpha(0)
