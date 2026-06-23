@@ -289,7 +289,7 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
       }}
     >
       <Canvas
-        camera={{ fov: 50, position: [0, 0.9, 3.2], near: 0.1, far: 100 }}
+        camera={{ fov: 55, position: [0, 1.0, 2.8], near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true }}
         onCreated={({ gl }) => {
           gl.setClearAlpha(0)

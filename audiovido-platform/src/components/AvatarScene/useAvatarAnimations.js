@@ -13,22 +13,22 @@ export default function useAvatarAnimations() {
 
   const setIdle = useCallback(() => {
     setCurrentState('idle')
-    avatarRef.current?.setIdle()
+    avatarRef.current?.setAnimationState('IDLE')
   }, [])
 
   const setTalking = useCallback(() => {
     setCurrentState('talking')
-    avatarRef.current?.setTalking()
+    avatarRef.current?.setAnimationState('TALKING')
   }, [])
 
   const setWalkingOut = useCallback(() => {
     setCurrentState('walking_out')
-    avatarRef.current?.setWalkingOut()
+    avatarRef.current?.setAnimationState('WALKING_OUT')
   }, [])
 
   const setReturning = useCallback(() => {
     setCurrentState('returning')
-    avatarRef.current?.setReturning()
+    avatarRef.current?.setAnimationState('RETURNING')
   }, [])
 
   return {
