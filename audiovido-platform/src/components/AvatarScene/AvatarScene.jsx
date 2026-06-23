@@ -146,13 +146,13 @@ function SceneContent({ stateRef }) {
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const height = size.y || 1
-        const targetHeight = 2.0
+        const targetHeight = 1.6
         const scale = targetHeight / height
         model.scale.setScalar(scale)
 
         box.setFromObject(model)
         const center = box.getCenter(new THREE.Vector3())
-        model.position.set(0, -center.y, 0)
+        model.position.set(0, -center.y + 0.1, 0)
 
         camera.lookAt(0, 0.8, 0)
 
@@ -202,10 +202,13 @@ function SceneContent({ stateRef }) {
     const wanted = stateRef.current
 
     if (wanted !== currentStateNameRef.current) {
+      currentStateNameRef.current = wanted
+
       if (wanted === 'idle') {
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
-        if (isTalkingRef.current) isTalkingRef.current = false
+        isTalkingRef.current = false
         playAction('idle', true)
+
       } else if (wanted === 'talking') {
         if (isTalkingRef.current) return
         isTalkingRef.current = true
@@ -213,16 +216,26 @@ function SceneContent({ stateRef }) {
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
         talkingTimerRef.current = setTimeout(() => {
           isTalkingRef.current = false
+          stateRef.current = 'idle'
+          currentStateNameRef.current = 'idle'
           playAction('idle', true)
         }, 4000)
+
       } else if (wanted === 'walking_out') {
         playAction('walking_out', false)
         const fromX = modelRef.current?.position.x || 0
-        animatePosition(fromX, -0.6, 1000, () => playAction('idle', true))
+        animatePosition(fromX, -0.55, 1000, () => {
+          playAction('idle', true)
+        })
+
       } else if (wanted === 'returning') {
         playAction('returning', false)
-        const fromX = modelRef.current?.position.x || -0.6
-        animatePosition(fromX, 0, 900, () => playAction('idle', true))
+        const fromX = modelRef.current?.position.x || -0.55
+        animatePosition(fromX, 0, 900, () => {
+          stateRef.current = 'idle'
+          currentStateNameRef.current = 'idle'
+          playAction('idle', true)
+        })
       }
     }
 
@@ -254,10 +267,15 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
   useImperativeHandle(ref, () => ({
     setAnimationState(state) {
       console.log(`[Avatar] setAnimationState: ${state}`)
-      if (ANIM_STATES[state.toUpperCase()]) {
-        stateRef.current = state
+      const key = state.toUpperCase()
+      if (ANIM_STATES[key]) {
+        stateRef.current = ANIM_STATES[key]
       }
     },
+    setIdle() { stateRef.current = 'idle' },
+    setTalking() { stateRef.current = 'talking' },
+    setWalkingOut() { stateRef.current = 'walking_out' },
+    setReturning() { stateRef.current = 'returning' },
   }))
 
   return (
@@ -271,7 +289,7 @@ const AvatarScene = forwardRef(function AvatarScene({ style }, ref) {
       }}
     >
       <Canvas
-        camera={{ fov: 45, position: [0, 0.5, 3.5], near: 0.1, far: 100 }}
+        camera={{ fov: 50, position: [0, 0.9, 3.2], near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true }}
         onCreated={({ gl }) => {
           gl.setClearAlpha(0)
