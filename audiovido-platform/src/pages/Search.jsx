@@ -223,7 +223,7 @@ export default function Search() {
       {/* Input bar — fixed above bottom nav */}
       <div style={{
         position: 'absolute',
-        bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))',
+        bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))',
         left: 16,
         right: 16,
         zIndex: 20,
