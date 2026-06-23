@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AvatarScene from '../components/AvatarScene/AvatarScene'
-import AvatarScene from '../components/AvatarScene/AvatarScene'
 import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
 import { getCompletion } from '../services/ai'
 
