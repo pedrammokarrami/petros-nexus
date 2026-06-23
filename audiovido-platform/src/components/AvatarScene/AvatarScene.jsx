@@ -95,32 +95,28 @@ function applyIdleAnimation(model, elapsedTime) {
   }
 
   const leftShoulder = get('mixamorig:LeftShoulder')
-  if (leftShoulder) leftShoulder.rotation.z = -0.15 + Math.sin(t * 0.5) * 0.02
+  if (leftShoulder) leftShoulder.rotation.z = -0.3 + Math.sin(t * 0.5) * 0.02
 
   const leftArm = get('mixamorig:LeftArm')
   if (leftArm) {
-    leftArm.rotation.z = -0.8 + Math.sin(t * 0.6) * 0.03
-    leftArm.rotation.x = Math.sin(t * 0.4) * 0.02
+    leftArm.rotation.z = -1.45 + Math.sin(t * 0.6) * 0.03
+    leftArm.rotation.x = 0.15 + Math.sin(t * 0.4) * 0.02
   }
 
   const leftForeArm = get('mixamorig:LeftForeArm')
-  if (leftForeArm) {
-    leftForeArm.rotation.z = -0.2 + Math.sin(t * 0.5) * 0.02
-  }
+  if (leftForeArm) leftForeArm.rotation.z = -0.05 + Math.sin(t * 0.5) * 0.015
 
   const rightShoulder = get('mixamorig:RightShoulder')
-  if (rightShoulder) rightShoulder.rotation.z = 0.15 + Math.sin(t * 0.5 + 1) * 0.02
+  if (rightShoulder) rightShoulder.rotation.z = 0.3 + Math.sin(t * 0.5 + 1) * 0.02
 
   const rightArm = get('mixamorig:RightArm')
   if (rightArm) {
-    rightArm.rotation.z = 0.8 + Math.sin(t * 0.6 + 1) * 0.03
-    rightArm.rotation.x = Math.sin(t * 0.4 + 0.5) * 0.02
+    rightArm.rotation.z = 1.45 + Math.sin(t * 0.6 + 1) * 0.03
+    rightArm.rotation.x = 0.15 + Math.sin(t * 0.4 + 0.5) * 0.02
   }
 
   const rightForeArm = get('mixamorig:RightForeArm')
-  if (rightForeArm) {
-    rightForeArm.rotation.z = 0.2 + Math.sin(t * 0.5 + 1) * 0.02
-  }
+  if (rightForeArm) rightForeArm.rotation.z = 0.05 + Math.sin(t * 0.5 + 1) * 0.015
 
   const leftUpLeg = get('mixamorig:LeftUpLeg')
   if (leftUpLeg) {
