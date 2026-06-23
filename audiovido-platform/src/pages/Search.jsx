@@ -4,6 +4,33 @@ import AvatarScene from '../components/AvatarScene/AvatarScene'
 import useAvatarAnimations from '../components/AvatarScene/useAvatarAnimations'
 import { getCompletion } from '../services/ai'
 
+function speakText(text) {
+  if (!window.speechSynthesis) return
+
+  window.speechSynthesis.cancel()
+
+  const utterance = new SpeechSynthesisUtterance(text.replace(/CHOICES:.*$/s, '').trim())
+  utterance.rate = 1.0
+  utterance.pitch = 1.1
+  utterance.volume = 1.0
+
+  const voices = window.speechSynthesis.getVoices()
+  const femaleVoice = voices.find(v =>
+    v.name.includes('Female') ||
+    v.name.includes('Samantha') ||
+    v.name.includes('Victoria') ||
+    v.name.includes('Karen') ||
+    (v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
+  )
+  if (femaleVoice) utterance.voice = femaleVoice
+
+  window.speechSynthesis.speak(utterance)
+}
+
+if (typeof window !== 'undefined' && window.speechSynthesis?.onvoiceschanged !== undefined) {
+  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices() }
+}
+
 const SOPHIE_SYSTEM_PROMPT = `You are Sophie, an AI music assistant for AudioVido. 
 Be friendly, concise (max 2 sentences).
 When you want to offer choices, end your response with:
@@ -35,6 +62,7 @@ export default function Search() {
     setChatState('talking')
     console.log('[Search] handleAIResponse -> setTalking')
     setTalking()
+    speakText(text)
 
     if (choices && choices.length > 0) {
       setTimer(() => {
@@ -54,9 +82,10 @@ export default function Search() {
   const sendMessage = useCallback(async (userText) => {
     if (!userText.trim()) return
 
+    if (window.speechSynthesis) window.speechSynthesis.cancel()
+
     setChatState('thinking')
     setCurrentChoices(null)
-    setLastMessage(null)
 
     conversationRef.current.push({ role: 'user', content: userText })
 
@@ -161,8 +190,8 @@ export default function Search() {
         </div>
       )}
 
-      {/* Response bubble */}
-      {chatState === 'talking' && lastMessage && (
+      {/* Response bubble — stays until next message */}
+      {lastMessage && (
         <div style={{
           position: 'absolute',
           top: '15%', left: '5%', right: '5%',

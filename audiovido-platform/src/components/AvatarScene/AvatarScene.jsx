@@ -148,6 +148,8 @@ function SceneContent({ stateRef }) {
 
         console.log('[Animations loaded]',
           animFiles.map(a => a.key + ': ' + (a.fbx.animations[0]?.name || 'none')))
+        console.log('[Talking clips]',
+          talkingFbx.animations.map(a => a.name + ' dur:' + a.duration.toFixed(2)))
 
         mixer.stopAllAction()
 
@@ -174,7 +176,7 @@ function SceneContent({ stateRef }) {
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
         playAction('idle', true)
       } else if (wanted === 'talking') {
-        playAction('talking', true)
+        playAction('idle', true)
         if (talkingTimerRef.current) clearTimeout(talkingTimerRef.current)
         talkingTimerRef.current = setTimeout(() => {
           playAction('idle', true)
