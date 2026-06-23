@@ -10,19 +10,21 @@ const StopWalkingUrl = '/avatars/Stop_Walking.fbx'
 
 function initializePose(model) {
   const get = (n) => model.getObjectByName(n)
-  const leftArm = get('mixamorig:LeftArm')
-  const rightArm = get('mixamorig:RightArm')
-  const leftForeArm = get('mixamorig:LeftForeArm')
-  const rightForeArm = get('mixamorig:RightForeArm')
-  const leftShoulder = get('mixamorig:LeftShoulder')
-  const rightShoulder = get('mixamorig:RightShoulder')
+  const LA = get('mixamorig:LeftArm')
+  const RA = get('mixamorig:RightArm')
+  const LFA = get('mixamorig:LeftForeArm')
+  const RFA = get('mixamorig:RightForeArm')
+  const LS = get('mixamorig:LeftShoulder')
+  const RS = get('mixamorig:RightShoulder')
 
-  if (leftArm) leftArm.rotation.z = -1.55
-  if (rightArm) rightArm.rotation.z = 1.55
-  if (leftForeArm) leftForeArm.rotation.z = -0.1
-  if (rightForeArm) rightForeArm.rotation.z = 0.1
-  if (leftShoulder) leftShoulder.rotation.z = -0.3
-  if (rightShoulder) rightShoulder.rotation.z = 0.3
+  if (LA) LA.rotation.set(0.1, 0, -1.5)
+  if (RA) RA.rotation.set(0.1, 0, 1.5)
+  if (LFA) LFA.rotation.set(0, 0, -0.1)
+  if (RFA) RFA.rotation.set(0, 0, 0.1)
+  if (LS) LS.rotation.set(0, 0, -0.25)
+  if (RS) RS.rotation.set(0, 0, 0.25)
+
+  console.log('[Avatar] initializePose applied')
 }
 
 const ANIM_STATES = {
@@ -77,73 +79,23 @@ function LoadingPlaceholder() {
   )
 }
 
-function applyIdleAnimation(model, elapsedTime) {
-  const t = elapsedTime
-
-  const get = (name) => model.getObjectByName(name)
+function applyIdleAnimation(model, t) {
+  const get = (n) => model.getObjectByName(n)
 
   const hips = get('mixamorig:Hips')
-  if (hips) {
-    hips.position.y += Math.sin(t * 0.9) * 0.0004
-    hips.rotation.z += Math.sin(t * 0.4) * 0.006
-  }
-
-  const spine = get('mixamorig:Spine')
-  if (spine) {
-    spine.rotation.z += Math.sin(t * 0.5) * 0.010
-    spine.rotation.x += Math.sin(t * 0.35) * 0.006
-  }
+  if (hips) hips.rotation.z += Math.sin(t * 0.4) * 0.003
 
   const spine1 = get('mixamorig:Spine1')
-  if (spine1) {
-    spine1.rotation.z += Math.sin(t * 0.55 + 0.3) * 0.012
-    spine1.rotation.x += Math.sin(t * 0.4) * 0.007
-  }
-
-  const spine2 = get('mixamorig:Spine2')
-  if (spine2) {
-    spine2.rotation.z += Math.sin(t * 0.5 + 0.6) * 0.008
-  }
+  if (spine1) spine1.rotation.z += Math.sin(t * 0.5 + 0.3) * 0.005
 
   const head = get('mixamorig:Head')
-  if (head) {
-    head.rotation.x += Math.sin(t * 0.4) * 0.012
-    head.rotation.z += Math.sin(t * 0.3) * 0.008
-  }
+  if (head) head.rotation.x += Math.sin(t * 0.35) * 0.004
 
-  const leftShoulder = get('mixamorig:LeftShoulder')
-  if (leftShoulder) leftShoulder.rotation.z += Math.sin(t * 0.5) * 0.02
+  const LA = get('mixamorig:LeftArm')
+  if (LA) LA.rotation.z += Math.sin(t * 0.6) * 0.015
 
-  const leftArm = get('mixamorig:LeftArm')
-  if (leftArm) {
-    leftArm.rotation.z += Math.sin(t * 0.6) * 0.025
-    leftArm.rotation.x += Math.sin(t * 0.4) * 0.02
-  }
-
-  const leftForeArm = get('mixamorig:LeftForeArm')
-  if (leftForeArm) leftForeArm.rotation.z += Math.sin(t * 0.5) * 0.015
-
-  const rightShoulder = get('mixamorig:RightShoulder')
-  if (rightShoulder) rightShoulder.rotation.z += Math.sin(t * 0.5 + 1) * 0.02
-
-  const rightArm = get('mixamorig:RightArm')
-  if (rightArm) {
-    rightArm.rotation.z += Math.sin(t * 0.6 + 1) * 0.025
-    rightArm.rotation.x += Math.sin(t * 0.4 + 0.5) * 0.02
-  }
-
-  const rightForeArm = get('mixamorig:RightForeArm')
-  if (rightForeArm) rightForeArm.rotation.z += Math.sin(t * 0.5 + 1) * 0.015
-
-  const leftUpLeg = get('mixamorig:LeftUpLeg')
-  if (leftUpLeg) {
-    leftUpLeg.rotation.z += Math.sin(t * 0.4) * 0.008
-  }
-
-  const rightUpLeg = get('mixamorig:RightUpLeg')
-  if (rightUpLeg) {
-    rightUpLeg.rotation.z += Math.sin(t * 0.4 + 1) * 0.008
-  }
+  const RA = get('mixamorig:RightArm')
+  if (RA) RA.rotation.z += Math.sin(t * 0.6 + 1) * 0.015
 }
 
 function applyLipSync(model, t) {
@@ -226,14 +178,6 @@ function SceneContent({ stateRef }) {
 
         camera.lookAt(0, 0.8, 0)
 
-        model.traverse(child => {
-          if (child.isSkinnedMesh && child.skeleton) {
-            child.skeleton.pose()
-          }
-        })
-
-        initializePose(model)
-
         const mixer = new THREE.AnimationMixer(model)
         mixerRef.current = mixer
 
@@ -263,7 +207,10 @@ function SceneContent({ stateRef }) {
         }
 
         mixer.stopAllAction()
-        mixer.setTime(0)
+
+        requestAnimationFrame(() => {
+          initializePose(model)
+        })
 
         console.log('[Animations on load]',
           Object.values(clips).map(c => c ? c.name + ' dur:' + c.duration.toFixed(2) : 'none'))
